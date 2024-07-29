@@ -4,7 +4,7 @@
   "description": "tokibot",
   "main": "index.js",
   "scripts": {
-    "test": "hi"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
