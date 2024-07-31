@@ -18,6 +18,8 @@ intents = discord.Intents.all()
 intents.message_content = True
 intents.members = True
 
+
+
 class aclient(discord.Client):
     def __init__(self):
         super().__init__(intents = intents)
@@ -35,6 +37,10 @@ tree = app_commands.CommandTree(client)
 schedule_times_messages = [
     ('19:00', '아리스랑 놀아주세요!'),]
 
+
+
+
+
 @client.event
 async def on_ready():
     print(f'Logged in as {client.user.name}')
@@ -47,8 +53,6 @@ async def on_member_join(member):
         await channel.send('인간이 이곳에 온 것은 수천 년 만이군...')
     else:
         print('...')
-
-
 
 @tasks.loop(minutes=1)
 async def scheduled_task():
@@ -77,6 +81,9 @@ async def scheduled_task():
 
     
 
+
+
+
 @tree.command(name='안녕', description="아리스에게 인사를 건넵니다")
 async def slash(interaction: discord.Interaction):
     await interaction.response.send_message("뽜밤뽜밤-!", ephemeral=False)
@@ -90,6 +97,57 @@ async def slash(interaction: discord.Interaction):
 @tree.command(name='밥', description="아리스에게 밥을 줍니다")
 async def slash(interaction: discord.Interaction):
     await interaction.response.send_message("응..? 아리스는 건전지를 먹지 않습니다!!", ephemeral=False)
+
+
+class NumberBaseballBot(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+        self.games = {}
+        
+    @tree.command(name='숫자야구', description="아리스와 숫자야구 게임을 합니다.")
+    async def start_game(self, interaction: discord.Interaction):
+        if interaction.channel.id in self.games:
+            await interaction.response.send_message("게임이 이미 진행 중입니다.")
+            return
+        self.games[interaction.channel.id] = {
+            'number': self.generate_number(),
+            'attempts': 0}
+        await interaction.response.send_message("뽜밤뽜밤-! 숫자야구 게임이 시작되었습니다! '/추측'을 사용해, 3자리 숫자를 맞춰보세요~")
+
+    @tree.command(name='추측', description="숫자를 추측합니다.")
+    async def guess_number(self, interaction: discord.Interaction, guess: str):
+        if interaction.channel.id not in self.games:
+            await interaction.response.send_message("게임 진행 중이 아닙니다. /숫자야구 명령어로 게임을 시작해보세요!")
+            return
+        if len(guess) != 3 or not guess.isdigit():
+            await interaction.response.send_message("3자리 숫자를 입력하세요.")
+            return
+        result = self.check_guess(self.games[interaction.channel.id]['number'], guess)
+        self.games[interaction.channel.id]['attempts'] += 1
+
+        if result == "3A0B":
+            await interaction.response.send_message(f"와아~ 정답입니다! {self.games[interaction.channel.id]['attempts']}회 만에 맞췄어요!")
+            del self.games[interaction.channel.id]
+        else:
+            await interaction.response.send_message(result)
+            
+    def generate_number(self):
+        a = sum(n == g for n, g in zip(number, guess))
+        b = sum(min(number.count(d), guess.count(d)) for d in set(guess)) - a
+        return f"{a}A{b}B"
+
+    
+
+    
+        
+       
+           
+
+        
+
+
+
+
 
 
 @tree.command(name='가위바위보', description="아리스와 가위바위보를 합니다")
