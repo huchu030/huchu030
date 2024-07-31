@@ -38,7 +38,7 @@ schedule_times_messages = [
     ('12:00', '점심 시간입니다.'),
     ('16:00', '심심하지 않으세요? 도박을 권장드립니다.'),
     ('19:00', '저녁 드실 시간이에요.'),
-    ('23:10', '테스트')]
+    ('23:25', '테스트')]
 
 
 @client.event
@@ -54,20 +54,25 @@ async def scheduled_task():
         now = datetime.datetime.now()
         current_time = now.time()
         print(f'현재시각:{current_time}')
+        
         for time_str, message in schedule_times_messages:
             target_time = datetime.datetime.strptime(time_str, '%H:%M').time()
             print(f'설정시각:{target_time}')
+            
             if current_time.hour == target_time.hour and current_time.minute == target_time.minute:
                 print('지정시각이당')
                 channel = client.get_channel(tchid)
+                
                 if channel:
                     await channel.send(message)
+                    print(f'성공')
                 else:
-                    print(f'...')
-
+                    print(f'채널없어')
+                    
                 await asyncio.sleep(60)
                 break
         else:
+            print('지정시각아니야')
             await asyncio.sleep(10)
     except Exception as e:
         print(f'오류 발생: {e}')
