@@ -51,7 +51,7 @@ async def on_ready():
 @tasks.loop(minutes=1)
 async def scheduled_task():
     try:
-        now = datetime.datime.now(tz)
+        now = datetime.dateime.now(tz)
         current_time = now.strftime('%H:%M')
         print(f'[DEBUG] 현재시각:{current_time}')
         
