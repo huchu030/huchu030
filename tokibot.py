@@ -63,6 +63,7 @@ async def scheduled_task():
                 if channel:
                     await channel.send(message)
                     print(f'[DEBUG] 성공')
+                    await asyncio.sleep(60)
                 else:
                     print(f'[ERROR] 채널없어')
 

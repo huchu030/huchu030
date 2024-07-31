@@ -28,6 +28,11 @@ class MyBot(commands.Bot):
         self.tree = app_commands.CommandTree(self)
         self.add_cog(NumberBaseballBot(self))
         self.synced = False
+    async def on_ready(self):
+        print(f'봇이 로그인되었습니다: {self.user}')
+        if not self.synced:
+            await self.tree.sync()
+            self.synced = True
 
 
 @bot.event
