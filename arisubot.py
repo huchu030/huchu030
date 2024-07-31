@@ -89,7 +89,7 @@ async def slash(interaction: discord.Interaction):
 
 @tree.command(name='밥', description="아리스에게 밥을 줍니다")
 async def slash(interaction: discord.Interaction):
-    await interaction.response.send_message("아리스는 건전지를 먹지 않습니다!!", ephemeral=False)
+    await interaction.response.send_message("응..? 아리스는 건전지를 먹지 않습니다!!", ephemeral=False)
 
 
 @tree.command(name='가위바위보', description="아리스와 가위바위보를 합니다")
