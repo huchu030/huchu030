@@ -104,7 +104,7 @@ class NumberBaseballBot(commands.Cog):
         self.bot = bot
         self.games = {}
         
-    @app_commands.command(name='숫자야구', description="아리스와 숫자야구 게임을 합니다.")
+    @bot.tree.command(name='숫자야구', description="아리스와 숫자야구 게임을 합니다.")
     async def start_game(self, interaction: discord.Interaction):
         if interaction.channel.id in self.games:
             await interaction.response.send_message("게임이 이미 진행 중입니다.")
@@ -114,7 +114,7 @@ class NumberBaseballBot(commands.Cog):
             'attempts': 0}
         await interaction.response.send_message("뽜밤뽜밤-! 숫자야구 게임이 시작되었습니다! '/추측'을 사용해, 3자리 숫자를 맞춰보세요~")
 
-    @app_commands.command(name='추측', description="숫자를 추측합니다.")
+    @bot.tree.command(name='추측', description="숫자를 추측합니다.")
     async def guess_number(self, interaction: discord.Interaction, guess: str):
         if interaction.channel.id not in self.games:
             await interaction.response.send_message("게임 진행 중이 아닙니다. /숫자야구 명령어로 게임을 시작해보세요!")
