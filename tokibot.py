@@ -4,7 +4,6 @@ from discord.ext import commands, tasks
 import datetime
 import time
 import asyncio
-import logging
 
 
 
@@ -12,11 +11,6 @@ token = 'MTI2NzEyNTczMzk2MTEwOTUxNA.GBqLjK.Jpd9QwikmgDKEjQh48jRbAEnS0ioP4WKOZogx
 tchid = 1267153846258499675
 mchid = 1266916147639615639
 
-logging.basicConfig(
-    level=logging.DEBUG,
-    format='%(asctime)s - %(leverlname)s - %(message)s',
-    handlers=[
-        logging.StreamHandler()])
 
     
 intents = discord.Intents.all()
@@ -40,10 +34,10 @@ tree = app_commands.CommandTree(client)
 schedule_times_messages = [
     ('00:00', '잘 시간입니다. 좋은 꿈 꾸세요.'),
     ('08:00', '일어날 시간입니다. 아침밥도 드셔야 해요.'),
-    ('12:00', '점심 시간입니다.'),
-    ('16:00', '심심하지 않으세요? 도박을 권장드립니다.'),
-    ('19:00', '저녁 드실 시간이에요.'),
-    ('23:45', '테스트')]
+    ('12:00', '오늘의 점심은, 무엇인가요?'),
+    ('16:00', '심심하지 않으신가요? 그럴 땐, 도박을 권장드립니다.'),
+    ('19:00', '오늘도 수고하셨습니다. 물론 저도요. 뿅뿅'),
+    ('00:50', '테스트')]
 
 
 @client.event
