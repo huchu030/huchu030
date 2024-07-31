@@ -16,7 +16,7 @@ logging.basicConfig(
     level=logging.DEBUG,
     format='%(asctime)s - %(leverlname)s - %(message)s',
     handlers=[
-        logging.StreamHandler()]
+        logging.StreamHandler()])
 
     
 intents = discord.Intents.all()
@@ -43,7 +43,7 @@ schedule_times_messages = [
     ('12:00', '점심 시간입니다.'),
     ('16:00', '심심하지 않으세요? 도박을 권장드립니다.'),
     ('19:00', '저녁 드실 시간이에요.'),
-    ('23:33', '테스트')]
+    ('23:35', '테스트')]
 
 
 @client.event
