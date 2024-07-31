@@ -1,14 +1,20 @@
 import discord
 from discord import app_commands
-from discord.ext import tasks
+from discord.ext import commands, tasks
 import datetime
-from datetime import datetime, time, timedelta
 import time
 import asyncio
 
 
-token = "MTI2NzEyNTczMzk2MTEwOTUxNA.GBqLjK.Jpd9QwikmgDKEjQh48jRbAEnS0ioP4WKOZogxg"
+
+
+token = 'MTI2NzEyNTczMzk2MTEwOTUxNA.GBqLjK.Jpd9QwikmgDKEjQh48jRbAEnS0ioP4WKOZogxg'
+tchid = 1267153846258499675
+mchid = 1266916147639615639
+
+
 intents = discord.Intents.all()
+intents.message_content = True
 
 class aclient(discord.Client):
     def __init__(self):
@@ -20,21 +26,53 @@ class aclient(discord.Client):
             await tree.sync()
             self.synced = True
 
-client = aclient()
+
+client = discord.Client(intents=intents)
 tree = app_commands.CommandTree(client)
 
-mchid = 1266916147639615639
-tchid = 1267153846258499675
 
 
-@tasks.loop(seconds=1)
-async def every_write_forum():
-    dt = datetime.datetime.now()
-    channel = client.get_channel(tchid)
-    if (dt.hour == 2) and (dt.minute == 32) and (dt.second > 30):
-        await channel.send("test")
-        await asyncio.sleep(10)
-        
+schedule_times_messages = [
+    ('00:00', '잘 시간입니다. 좋은 꿈 꾸세요.'),
+    ('08:00', '일어날 시간입니다. 아침밥도 드셔야 해요.'),
+    ('12:00', '점심 시간입니다.'),
+    ('16:00', '심심하지 않으세요? 도박을 권장드립니다.'),
+    ('19:00', '저녁 드실 시간이에요.'),
+    ('22:25', '테스트')]
+
+
+@client.event
+async def on_ready():
+    print(f'Logged in as {client.user.name}')
+    scheduled_task.start()
+
+
+
+@tasks.loop(seconds=10)
+async def scheduled_task():
+    try:
+        now = datetime.datetime.now()
+        current_time = now.time()
+        print(f'현재시각:{current_time}')
+        for time_str, message in schedule_times_messages:
+            target_time = datetime.datetime.strptime(time_str, '%H:%M').time()
+            print(f'설정시각:{target_time}')
+            if current_time.hour == target_time.hour and current_time.minute == target_time.minute:
+                print('지정시각이당')
+                channel = client.get_channel(tchid)
+                if channel:
+                    await channel.send(message)
+                else:
+                    print(f'...')
+
+                await asyncio.sleep(60)
+                break
+        else:
+            await asyncio.sleep(10)
+    except Exception as e:
+        print(f'오류 발생: {e}')
+
+
     
 
 @tree.command(name='안녕', description="토키에게 인사를 건넵니다")
@@ -52,5 +90,15 @@ async def slash(interaction: discord.Interaction):
 @tree.command(name='쓰담', description="토키를 쓰다듬습니다")
 async def slash(interaction: discord.Interaction):
     await interaction.response.send_message("엣. . 갑자기요?", ephemeral=False)
+
+@tree.command(name='테스트', description="테스트입니다")
+async def slash(interaction: discord.Interaction):
+    await interaction.response.send_message("테스트메시지", ephemeral=False)
+
+
+
+
+
+    
 
 client.run(token)
