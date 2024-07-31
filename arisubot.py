@@ -38,9 +38,6 @@ schedule_times_messages = [
     ('19:00', '아리스랑 놀아주세요!'),]
 
 
-
-
-
 @client.event
 async def on_ready():
     print(f'Logged in as {client.user.name}')
@@ -132,6 +129,11 @@ class NumberBaseballBot(commands.Cog):
             await interaction.response.send_message(result)
             
     def generate_number(self):
+        while True:
+            number = ''.join(random.sample('123456789', 3))
+            if len(set(number)) == 3:
+                return number
+    def check_guess(self, number, guess):
         a = sum(n == g for n, g in zip(number, guess))
         b = sum(min(number.count(d), guess.count(d)) for d in set(guess)) - a
         return f"{a}A{b}B"
