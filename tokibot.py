@@ -4,7 +4,7 @@ from discord.ext import commands, tasks
 import datetime
 import time
 import asyncio
-
+import logging
 
 
 
@@ -12,7 +12,13 @@ token = 'MTI2NzEyNTczMzk2MTEwOTUxNA.GBqLjK.Jpd9QwikmgDKEjQh48jRbAEnS0ioP4WKOZogx
 tchid = 1267153846258499675
 mchid = 1266916147639615639
 
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s - %(leverlname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler()]
 
+    
 intents = discord.Intents.all()
 intents.message_content = True
 
@@ -31,14 +37,13 @@ client = discord.Client(intents=intents)
 tree = app_commands.CommandTree(client)
 
 
-
 schedule_times_messages = [
     ('00:00', '잘 시간입니다. 좋은 꿈 꾸세요.'),
     ('08:00', '일어날 시간입니다. 아침밥도 드셔야 해요.'),
     ('12:00', '점심 시간입니다.'),
     ('16:00', '심심하지 않으세요? 도박을 권장드립니다.'),
     ('19:00', '저녁 드실 시간이에요.'),
-    ('23:25', '테스트')]
+    ('23:33', '테스트')]
 
 
 @client.event
@@ -53,29 +58,29 @@ async def scheduled_task():
     try:
         now = datetime.datetime.now()
         current_time = now.time()
-        print(f'현재시각:{current_time}')
+        print(f'[DEBUG] 현재시각:{current_time}')
         
         for time_str, message in schedule_times_messages:
             target_time = datetime.datetime.strptime(time_str, '%H:%M').time()
-            print(f'설정시각:{target_time}')
+            print(f'[DEBUG] 설정시각:{target_time}')
             
             if current_time.hour == target_time.hour and current_time.minute == target_time.minute:
-                print('지정시각이당')
+                print('[DEBUG] 지정시각이당')
                 channel = client.get_channel(tchid)
                 
                 if channel:
                     await channel.send(message)
-                    print(f'성공')
+                    print(f'[DEBUG] 성공')
                 else:
-                    print(f'채널없어')
+                    print(f'[ERROR] 채널없어')
                     
                 await asyncio.sleep(60)
                 break
         else:
-            print('지정시각아니야')
+            print('[DEBUG] 지정시각아니야')
             await asyncio.sleep(10)
     except Exception as e:
-        print(f'오류 발생: {e}')
+        print(f'[ERROR] 오류 발생: {e}')
 
 
     
