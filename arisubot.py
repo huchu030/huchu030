@@ -19,6 +19,8 @@ intents.message_content = True
 intents.members = True
 bot = commands.Bot(command_prefix='!', intents=intents)
 
+
+
 @bot.event
 async def on_ready():
     print(f'봇이 로그인되었습니다: {bot.user}')
@@ -103,21 +105,26 @@ class NumberBaseballBot(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.games = {}
-        
-    @bot.tree.command(name='숫자야구', description="아리스와 숫자야구 게임을 합니다.")
+
+    @commands.Cog.listener()
+    async def on_ready(self):
+        await self.bot.tree.sync()
+
+    @discord.app_commands.command(name='숫자야구', description="아리스와 숫자야구 게임을 합니다.")
     async def start_game(self, interaction: discord.Interaction):
         if interaction.channel.id in self.games:
             await interaction.response.send_message("게임이 이미 진행 중입니다.")
             return
         self.games[interaction.channel.id] = {
             'number': self.generate_number(),
-            'attempts': 0}
-        await interaction.response.send_message("뽜밤뽜밤-! 숫자야구 게임이 시작되었습니다! '/추측'을 사용해, 3자리 숫자를 맞춰보세요~")
+            'attempts': 0
+        }
+        await interaction.response.send_message("뽜밤뽜밤-! 숫자야구 게임이 시작되었습니다! `/추측` 명령어를 사용해, 3자리 숫자를 맞춰보세요~")
 
-    @bot.tree.command(name='추측', description="숫자를 추측합니다.")
+    @discord.app_commands.command(name='추측', description="숫자를 추측합니다.")
     async def guess_number(self, interaction: discord.Interaction, guess: str):
         if interaction.channel.id not in self.games:
-            await interaction.response.send_message("게임 진행 중이 아닙니다. /숫자야구 명령어로 게임을 시작해보세요!")
+            await interaction.response.send_message("게임 진행 중이 아닙니다. `/숫자야구` 명령어로 게임을 시작해보세요!")
             return
         if len(guess) != 3 or not guess.isdigit():
             await interaction.response.send_message("3자리 숫자를 입력하세요.")
@@ -130,16 +137,19 @@ class NumberBaseballBot(commands.Cog):
             del self.games[interaction.channel.id]
         else:
             await interaction.response.send_message(result)
-            
+
     def generate_number(self):
         while True:
             number = ''.join(random.sample('123456789', 3))
             if len(set(number)) == 3:
                 return number
+
     def check_guess(self, number, guess):
         a = sum(n == g for n, g in zip(number, guess))
         b = sum(min(number.count(d), guess.count(d)) for d in set(guess)) - a
         return f"{a}A{b}B"
+
+bot.add_cog(NumberBaseballBot(bot))
 
 
 
