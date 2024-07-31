@@ -81,9 +81,13 @@ async def scheduled_task():
 
 
 
+@tree.command(name='test', description="testing")
+async def slash(interaction: discord.Interaction):
+    await interaction.response.send_message("tested", ephemeral=False)
+
 @tree.command(name='안녕', description="아리스에게 인사를 건넵니다")
 async def slash(interaction: discord.Interaction):
-    await interaction.response.send_message("뽜밤뽜밤-!", ephemeral=False)
+    await interaction.response.send_message("뽜밤뽜밤-!", ephemeral=False) 
     
 
 @tree.command(name='로봇주제에', description="아리스를 놀립니다")
