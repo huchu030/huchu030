@@ -14,38 +14,40 @@ mchid = 1266916147639615639
 
 
 tz = pytz.timezone('Asia/Seoul')
-intents = discord.Intents.all()
+intents = discord.Intents.default()
 intents.message_content = True
 intents.members = True
+bot = commands.Bot(command_prefix='!', intents=intents)
+
+@bot.event
+async def on_ready():
+    print(f'봇이 로그인되었습니다: {bot.user}')
 
 
-
-class aclient(discord.Client):
-    def __init__(self):
-        super().__init__(intents = intents)
+class MyBot(commands.Bot):
+    def __init__(self, **kwargs):
+        super().__init__(intents=intents, **kwargs)
+        self.tree = app_commands.CommandTree(self)
+        self.add_cog(NumberBaseballBot(self))
         self.synced = False
-    async def on_ready(self):
-        await self.wait_until_ready()
+
+    async def on_ready():
+        print(f'Logged in as {client.user.name}')
+        scheduled_task.start()
         if not self.synced:
-            await tree.sync()
+            await self.tree.sync()
             self.synced = True
-
-client = discord.Client(intents=intents)
-tree = app_commands.CommandTree(client)
-
+            print("Slash commands synced.")
+        
 
 schedule_times_messages = [
     ('19:00', '아리스랑 놀아주세요!'),]
 
 
-@client.event
-async def on_ready():
-    print(f'Logged in as {client.user.name}')
-    scheduled_task.start()
 
-@client.event
+@bot.event
 async def on_member_join(member):
-    channel = client.get_channel(mchid)
+    channel = bot.get_channel(mchid)
     if channel:
         await channel.send('인간이 이곳에 온 것은 수천 년 만이군...')
     else:
@@ -76,28 +78,31 @@ async def scheduled_task():
         print(f'[ERROR] 오류 발생: {e}')
 
 
-    
 
 
 
-
-@tree.command(name='test', description="testing")
-async def slash(interaction: discord.Interaction):
+@bot.tree.command(name='test', description="testing")
+async def test(interaction: discord.Interaction):
     await interaction.response.send_message("tested", ephemeral=False)
 
-@tree.command(name='안녕', description="아리스에게 인사를 건넵니다")
-async def slash(interaction: discord.Interaction):
+@bot.tree.command(name='안녕', description="아리스에게 인사를 건넵니다")
+async def 안녕(interaction: discord.Interaction):
     await interaction.response.send_message("뽜밤뽜밤-!", ephemeral=False) 
     
 
-@tree.command(name='로봇주제에', description="아리스를 놀립니다")
-async def slash(interaction: discord.Interaction):
+@bot.tree.command(name='로봇주제에', description="아리스를 놀립니다")
+async def 로봇주제에(interaction: discord.Interaction):
     await interaction.response.send_message("아리스는 로봇이 아닙니다!!", ephemeral=False)
 
 
-@tree.command(name='밥', description="아리스에게 밥을 줍니다")
-async def slash(interaction: discord.Interaction):
+@bot.tree.command(name='밥', description="아리스에게 밥을 줍니다")
+async def 밥(interaction: discord.Interaction):
     await interaction.response.send_message("응..? 아리스는 건전지를 먹지 않습니다!", ephemeral=False)
+
+
+
+
+
 
 
 class NumberBaseballBot(commands.Cog):
@@ -105,7 +110,7 @@ class NumberBaseballBot(commands.Cog):
         self.bot = bot
         self.games = {}
         
-    @tree.command(name='숫자야구', description="아리스와 숫자야구 게임을 합니다.")
+    @app_commands.command(name='숫자야구', description="아리스와 숫자야구 게임을 합니다.")
     async def start_game(self, interaction: discord.Interaction):
         if interaction.channel.id in self.games:
             await interaction.response.send_message("게임이 이미 진행 중입니다.")
@@ -115,7 +120,7 @@ class NumberBaseballBot(commands.Cog):
             'attempts': 0}
         await interaction.response.send_message("뽜밤뽜밤-! 숫자야구 게임이 시작되었습니다! '/추측'을 사용해, 3자리 숫자를 맞춰보세요~")
 
-    @tree.command(name='추측', description="숫자를 추측합니다.")
+    @app_commands.command(name='추측', description="숫자를 추측합니다.")
     async def guess_number(self, interaction: discord.Interaction, guess: str):
         if interaction.channel.id not in self.games:
             await interaction.response.send_message("게임 진행 중이 아닙니다. /숫자야구 명령어로 게임을 시작해보세요!")
@@ -142,21 +147,12 @@ class NumberBaseballBot(commands.Cog):
         b = sum(min(number.count(d), guess.count(d)) for d in set(guess)) - a
         return f"{a}A{b}B"
 
-    
-
-    
-        
-       
-           
-
-        
 
 
 
 
 
-
-@tree.command(name='가위바위보', description="아리스와 가위바위보를 합니다")
+@bot.tree.command(name='가위바위보', description="아리스와 가위바위보를 합니다")
 @app_commands.choices(choices=[
     app_commands.Choice(name="가위", value="가위"),
     app_commands.Choice(name="바위", value="바위"),
@@ -187,4 +183,6 @@ async def slash3(interaction: discord.Interaction, choices: app_commands.Choice[
 
 
 
-client.run(token)
+
+
+bot.run(token)
