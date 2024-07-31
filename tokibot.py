@@ -38,7 +38,7 @@ schedule_times_messages = [
     ('12:00', '오늘의 점심은, 무엇인가요?'),
     ('16:00', '심심하지 않으신가요? 그럴 땐, 도박을 권장드립니다.'),
     ('19:00', '오늘도 수고하셨습니다. 물론 저도요. 뿅뿅'),
-    ('01:16', '테스트')]
+    ('01:20', '테스트')]
 
 
 @client.event
@@ -51,7 +51,7 @@ async def on_ready():
 @tasks.loop(minutes=1)
 async def scheduled_task():
     try:
-        now = datetime.dateime.now(tz)
+        now = datetime.datetime.now(tz)
         current_time = now.strftime('%H:%M')
         print(f'[DEBUG] 현재시각:{current_time}')
         
