@@ -22,6 +22,8 @@ bot = commands.Bot(command_prefix='!', intents=intents)
 @bot.event
 async def on_ready():
     print(f'봇이 로그인되었습니다: {bot.user}')
+    scheduled_task.start()
+    await bot.tree.sync()
 
 
 class MyBot(commands.Bot):
@@ -31,14 +33,6 @@ class MyBot(commands.Bot):
         self.add_cog(NumberBaseballBot(self))
         self.synced = False
 
-    async def on_ready():
-        print(f'Logged in as {client.user.name}')
-        scheduled_task.start()
-        if not self.synced:
-            await self.tree.sync()
-            self.synced = True
-            print("Slash commands synced.")
-        
 
 schedule_times_messages = [
     ('19:00', '아리스랑 놀아주세요!'),]
@@ -88,7 +82,7 @@ async def test(interaction: discord.Interaction):
 @bot.tree.command(name='안녕', description="아리스에게 인사를 건넵니다")
 async def 안녕(interaction: discord.Interaction):
     await interaction.response.send_message("뽜밤뽜밤-!", ephemeral=False) 
-    
+
 
 @bot.tree.command(name='로봇주제에', description="아리스를 놀립니다")
 async def 로봇주제에(interaction: discord.Interaction):
