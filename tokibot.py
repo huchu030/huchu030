@@ -5,7 +5,7 @@ import datetime
 from datetime import datetime, time, timedelta
 import time
 import asyncio
-import schedule
+
 
 token = "MTI2NzEyNTczMzk2MTEwOTUxNA.GBqLjK.Jpd9QwikmgDKEjQh48jRbAEnS0ioP4WKOZogxg"
 intents = discord.Intents.all()
