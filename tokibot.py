@@ -4,6 +4,7 @@ from discord.ext import commands, tasks
 import datetime
 import time
 import asyncio
+import pytz
 
 
 
@@ -12,7 +13,7 @@ tchid = 1267153846258499675
 mchid = 1266916147639615639
 
 
-    
+tz = pytz.timezone('Asia/Seoul')
 intents = discord.Intents.all()
 intents.message_content = True
 
@@ -37,7 +38,7 @@ schedule_times_messages = [
     ('12:00', '오늘의 점심은, 무엇인가요?'),
     ('16:00', '심심하지 않으신가요? 그럴 땐, 도박을 권장드립니다.'),
     ('19:00', '오늘도 수고하셨습니다. 물론 저도요. 뿅뿅'),
-    ('01:03', '테스트')]
+    ('01:16', '테스트')]
 
 
 @client.event
@@ -47,18 +48,15 @@ async def on_ready():
 
 
 
-@tasks.loop(seconds=10)
+@tasks.loop(minutes=1)
 async def scheduled_task():
     try:
-        now = datetime.datetime.now()
-        current_time = now.time()
+        now = datetime.datime.now(tz)
+        current_time = now.strftime('%H:%M')
         print(f'[DEBUG] 현재시각:{current_time}')
         
         for time_str, message in schedule_times_messages:
-            target_time = datetime.datetime.strptime(time_str, '%H:%M').time()
-            print(f'[DEBUG] 설정시각:{target_time}')
-            
-            if current_time.hour == target_time.hour and current_time.minute == target_time.minute:
+            if current_time == time_str:
                 print('[DEBUG] 지정시각이당')
                 channel = client.get_channel(tchid)
                 
@@ -67,17 +65,14 @@ async def scheduled_task():
                     print(f'[DEBUG] 성공')
                 else:
                     print(f'[ERROR] 채널없어')
-                    
-                await asyncio.sleep(60)
+
                 break
         else:
             print('[DEBUG] 지정시각아니야')
-            await asyncio.sleep(10)
     except Exception as e:
         print(f'[ERROR] 오류 발생: {e}')
 
 
-    
 
 @tree.command(name='안녕', description="토키에게 인사를 건넵니다")
 async def slash(interaction: discord.Interaction):
