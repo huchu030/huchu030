@@ -77,7 +77,7 @@ async def scheduled_task():
 
 
 
-@bot.tree.command(name='test', description="testing")
+@bot.tree.command(name='testttttt', description="testing")
 async def test(interaction: discord.Interaction):
     await interaction.response.send_message("tested", ephemeral=False)
 
