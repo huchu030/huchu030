@@ -3,26 +3,23 @@ from discord import app_commands
 from discord.ext import commands, tasks
 import datetime
 import random
-import asyncio
 import pytz
 import tracemalloc
 
-
-token = "YOUR_BOT_TOKEN"
+# Bot token and channel IDs
+token = "MTI2NzEyNDUwNTY4MDI4MTYyMA.Gp_5nb.WpD1gpVbMCVCPrIHIb53jupN67qHj0ps58FE8k"
 mchid = 1266916147639615639
 
-
+# Timezone and intents
 tz = pytz.timezone('Asia/Seoul')
-intents = discord.Intents.all()
+intents = discord.Intents.default()
 intents.message_content = True
 intents.members = True
 
-
+# Custom bot class
 class MyBot(commands.Bot):
     def __init__(self, **kwargs):
-        super().__init__(intents=intents, **kwargs)
-        self.tree = app_commands.CommandTree(self)
-        self.add_cog(NumberBaseballBot(self))
+        super().__init__(command_prefix='!', intents=intents, **kwargs)
         self.synced = False
 
     async def on_ready(self):
@@ -33,10 +30,10 @@ class MyBot(commands.Bot):
         scheduled_task.start()
         tracemalloc.start()
 
+# Create bot instance
+bot = MyBot()
 
-bot = MyBot(command_prefix='!', intents=intents)
-
-
+# Events
 @bot.event
 async def on_member_join(member):
     channel = bot.get_channel(mchid)
@@ -45,7 +42,7 @@ async def on_member_join(member):
     else:
         print('채널을 찾을 수 없습니다.')
 
-
+# Scheduled tasks
 schedule_times_messages = [
     ('19:00', '아리스랑 놀아주세요!'),
 ]
@@ -74,7 +71,7 @@ async def scheduled_task():
     except Exception as e:
         print(f'[ERROR] 오류 발생: {e}')
 
-
+# Cogs
 class NumberBaseballBot(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -102,7 +99,6 @@ class NumberBaseballBot(commands.Cog):
         result = self.check_guess(self.games[interaction.channel.id]['number'], guess)
         self.games[interaction.channel.id]['attempts'] += 1
         
-
         if result == "3S0B":
             await interaction.response.send_message(f"와아~ 정답입니다! {self.games[interaction.channel.id]['attempts']}회 만에 맞췄어요!")
             del self.games[interaction.channel.id]
@@ -175,15 +171,15 @@ async def rock_paper_scissors(interaction: discord.Interaction, choice: str):
         if ranNum == 1:
             await interaction.response.send_message("(가위) 아리스가 이겼습니다!!")
         elif ranNum == 2:
-            await interaction.responsesend_message("(바위) 아리스가 졌어요. 끄앙")
+            await interaction.response.send_message("(바위) 아리스가 졌어요. 끄앙")
         elif ranNum == 3:
             await interaction.response.send_message("(보) 비겼습니다. 한 판 더!")
 
+# Add cog and run bot
 async def main():
-    async with bot:
-        await bot.start(token)
+    await bot.add_cog(NumberBaseballBot(bot))
+    await bot.start(token)
 
 if __name__ == "__main__":
+    import asyncio
     asyncio.run(main())
-
-
