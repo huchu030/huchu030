@@ -8,10 +8,10 @@ import asyncio
 import pytz
 
 
+
 token = "MTI2NzEyNDUwNTY4MDI4MTYyMA.Gp_5nb.WpD1gpVbMCVCPrIHIb53jupN67qHj0ps58FE8k"
 tchid = 1267153846258499675
 mchid = 1266916147639615639
-
 
 tz = pytz.timezone('Asia/Seoul')
 intents = discord.Intents.default()
@@ -19,13 +19,6 @@ intents.message_content = True
 intents.members = True
 bot = commands.Bot(command_prefix='!', intents=intents)
 
-
-
-@bot.event
-async def on_ready():
-    print(f'봇이 로그인되었습니다: {bot.user}')
-    scheduled_task.start()
-    await bot.tree.sync()
 
 
 class MyBot(commands.Bot):
@@ -36,10 +29,12 @@ class MyBot(commands.Bot):
         self.synced = False
 
 
-schedule_times_messages = [
-    ('19:00', '아리스랑 놀아주세요!'),]
 
-
+@bot.event
+async def on_ready():
+    print(f'봇이 로그인되었습니다: {bot.user}')
+    scheduled_task.start()
+    await bot.tree.sync()
 
 @bot.event
 async def on_member_join(member):
@@ -48,6 +43,11 @@ async def on_member_join(member):
         await channel.send('인간이 이곳에 온 것은 수천 년 만이군...')
     else:
         print('...')
+
+
+
+schedule_times_messages = [
+    ('19:00', '아리스랑 놀아주세요!'),]
 
 @tasks.loop(minutes=1)
 async def scheduled_task():
@@ -59,7 +59,7 @@ async def scheduled_task():
         for time_str, message in schedule_times_messages:
             if current_time == time_str:
                 print('[DEBUG] 지정시각이당')
-                channel = client.get_channel(mchid)
+                channel = bot.get_channel(mchid)
                 
                 if channel:
                     await channel.send(message)
@@ -76,9 +76,8 @@ async def scheduled_task():
 
 
 
-
-@bot.tree.command(name='testttttt', description="testing")
-async def test(interaction: discord.Interaction):
+@bot.tree.command(name='testing', description="testing")
+async def testing(interaction: discord.Interaction):
     await interaction.response.send_message("tested", ephemeral=False)
 
 @bot.tree.command(name='안녕', description="아리스에게 인사를 건넵니다")
@@ -96,11 +95,6 @@ async def 밥(interaction: discord.Interaction):
     await interaction.response.send_message("응..? 아리스는 건전지를 먹지 않습니다!", ephemeral=False)
 
 
-
-
-
-
-
 class NumberBaseballBot(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -109,6 +103,7 @@ class NumberBaseballBot(commands.Cog):
     @commands.Cog.listener()
     async def on_ready(self):
         await self.bot.tree.sync()
+        print(f'Logged in as {self.bot.user}')
 
     @discord.app_commands.command(name='숫자야구', description="아리스와 숫자야구 게임을 합니다.")
     async def start_game(self, interaction: discord.Interaction):
@@ -149,6 +144,12 @@ class NumberBaseballBot(commands.Cog):
         b = sum(min(number.count(d), guess.count(d)) for d in set(guess)) - a
         return f"{a}A{b}B"
 
+bot = commands.Bot(command_prefix="!", intents=discord.Intents.default())
+
+@bot.event
+async def on_ready():
+    print(f'Logged in as {bot.user}')
+
 bot.add_cog(NumberBaseballBot(bot))
 
 
@@ -156,36 +157,42 @@ bot.add_cog(NumberBaseballBot(bot))
 
 
 
+         
+
+
+
+
+
 @bot.tree.command(name='가위바위보', description="아리스와 가위바위보를 합니다")
-@app_commands.choices(choices=[
-    app_commands.Choice(name="가위", value="가위"),
-    app_commands.Choice(name="바위", value="바위"),
-    app_commands.Choice(name="보", value="보")])
-async def slash3(interaction: discord.Interaction, choices: app_commands.Choice[str]):
+@app_commands.describe(choice="가위, 바위, 보 중 하나를 선택하세요.")
+@app_commands.choices(
+    choice=[
+        app_commands.Choice(name="가위", value="가위"),
+        app_commands.Choice(name="바위", value="바위"),
+        app_commands.Choice(name="보", value="보")])
+async def rock_paper_scissors(interaction: discord.Interaction, choice: str):
     ranNum = (random.randint(1,3))
-    if(choices.value == '가위'):
+    if choice == '가위':
         if ranNum == 1:
             await interaction.response.send_message("(가위) 비겼습니다. 한 판 더!")
         elif ranNum == 2:
             await interaction.response.send_message("(바위) 아리스가 이겼습니다!!")
         elif ranNum == 3:
             await interaction.response.send_message("(보) 아리스가 졌어요. 끄앙")
-    elif(choices.value == '바위'):
+    elif choice == '바위':
         if ranNum == 1:
             await interaction.response.send_message("(가위) 아리스가 졌어요. 끄앙")
         elif ranNum == 2:
             await interaction.response.send_message("(바위) 비겼습니다. 한 판 더!")
         elif ranNum == 3:
             await interaction.response.send_message("(보) 아리스가 이겼습니다!!")
-    elif(choices.value == '보'):
+    elif choices == '보':
         if ranNum == 1:
             await interaction.response.send_message("(가위) 아리스가 이겼습니다!!")
         elif ranNum == 2:
             await interaction.response.send_message("(바위) 아리스가 졌어요. 끄앙")
         elif ranNum == 3:
             await interaction.response.send_message("(보) 비겼습니다. 한 판 더!")
-
-
 
 
 
