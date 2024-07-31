@@ -1,12 +1,22 @@
 import discord
 from discord import app_commands
-from discord.ext import commands
+from discord.ext import commands, tasks
+import datetime
+import time
 import random
 import asyncio
+import pytz
 
 
 token = "MTI2NzEyNDUwNTY4MDI4MTYyMA.Gp_5nb.WpD1gpVbMCVCPrIHIb53jupN67qHj0ps58FE8k"
+tchid = 1267153846258499675
+mchid = 1266916147639615639
+
+
+tz = pytz.timezone('Asia/Seoul')
 intents = discord.Intents.all()
+intents.message_content = True
+intents.members = True
 
 class aclient(discord.Client):
     def __init__(self):
@@ -18,11 +28,52 @@ class aclient(discord.Client):
             await tree.sync()
             self.synced = True
 
-client = aclient()
+client = discord.Client(intents=intents)
 tree = app_commands.CommandTree(client)
 
-mchid = 1266916147639615639
-tchid = 1267153846258499675
+
+schedule_times_messages = [
+    ('19:00', '아리스랑 놀아주세요!'),]
+
+@client.event
+async def on_ready():
+    print(f'Logged in as {client.user.name}')
+    scheduled_task.start()
+
+@client.event
+async def on_member_join(member):
+    channel = client.get_channel(mchid)
+    if channel:
+        await channel.send('인간이 이곳에 온 것은 수천 년 만이군...')
+    else:
+        print('...')
+
+
+
+@tasks.loop(minutes=1)
+async def scheduled_task():
+    try:
+        now = datetime.datetime.now(tz)
+        current_time = now.strftime('%H:%M')
+        print(f'[DEBUG] 현재시각:{current_time}')
+        
+        for time_str, message in schedule_times_messages:
+            if current_time == time_str:
+                print('[DEBUG] 지정시각이당')
+                channel = client.get_channel(mchid)
+                
+                if channel:
+                    await channel.send(message)
+                    print(f'[DEBUG] 성공')
+                else:
+                    print(f'[ERROR] 채널없어')
+
+                break
+        else:
+            print('[DEBUG] 지정시각아니야')
+    except Exception as e:
+        print(f'[ERROR] 오류 발생: {e}')
+
 
     
 

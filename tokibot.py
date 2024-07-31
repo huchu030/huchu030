@@ -3,6 +3,7 @@ from discord import app_commands
 from discord.ext import commands, tasks
 import datetime
 import time
+import random
 import asyncio
 import pytz
 
@@ -16,6 +17,7 @@ mchid = 1266916147639615639
 tz = pytz.timezone('Asia/Seoul')
 intents = discord.Intents.all()
 intents.message_content = True
+intents.members = True
 
 class aclient(discord.Client):
     def __init__(self):
@@ -37,15 +39,13 @@ schedule_times_messages = [
     ('08:00', '일어날 시간입니다. 아침밥도 드셔야 해요.'),
     ('12:00', '오늘의 점심은, 무엇인가요?'),
     ('16:00', '심심하지 않으신가요? 그럴 땐, 도박을 권장드립니다.'),
-    ('19:00', '오늘도 수고하셨습니다. 물론 저도요. 뿅뿅'),
-    ('03:03', '테스트')]
+    ('22:00', '오늘도 수고하셨습니다. 물론 저도요. 뿅뿅'),]
 
 
 @client.event
 async def on_ready():
     print(f'Logged in as {client.user.name}')
     scheduled_task.start()
-
 
 
 @tasks.loop(minutes=1)
@@ -58,7 +58,7 @@ async def scheduled_task():
         for time_str, message in schedule_times_messages:
             if current_time == time_str:
                 print('[DEBUG] 지정시각이당')
-                channel = client.get_channel(tchid)
+                channel = client.get_channel(mchid)
                 
                 if channel:
                     await channel.send(message)
