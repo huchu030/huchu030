@@ -102,7 +102,7 @@ class NumberBaseballBot(commands.Cog):
             del self.games[interaction.channel.id]
         else:
             await interaction.response.send_message(f"{guess} : {result}")
-    @discord.app_commands.command(name='포기', description="숫자야구 - 게임을 포기합니다")
+    @discord.app_commands.command(name='포기_야구', description="숫자야구 - 게임을 포기합니다")
     async def surrender_game(self, interaction: discord.Interaction):
         if interaction.channel.id not in self.games:
             await interaction.response.send_message("진행 중인 게임이 없습니다. 도전부터 해야 포기하는 법!")
@@ -124,17 +124,21 @@ class NumberBaseballBot(commands.Cog):
 class NumberGuessingGameBot(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.games = {}
         self.target_number = None
         self.attempts = 0
 
     @discord.app_commands.command(name='숫자게임', description="아리스와 숫자 맞추기 게임을 합니다")
-    async def start_game(self, ctx):
+    async def start_game(self, interaction: discord.Interaction):
+        if interaction.channel.id in self.games:
+            await interaction.response.send_message("게임이 이미 진행 중입니다..!")
+            return
         self.target_number = random.randint(1, 100)
         self.attempts = 0
         await ctx.send("뽜밤뽜밤-! 숫자 맞추기 게임이 시작되었습니다! \n`/추측_숫자` 명령어를 사용해, 1부터 100 사이의 숫자를 맞춰보세요.")
 
     @discord.app_commands.command(name='추측_숫자', description="숫자게임 - 숫자를 추측합니다")
-    async def guess_number(self, ctx, guess: int):
+    async def guess_number(self, interaction: discord.Interaction, guess: int):
         if self.target_number is None:
             await ctx.send("게임 진행 중이 아닙니다. `/숫자게임` 명령어로 게임을 시작해보세요!")
             return
@@ -148,6 +152,14 @@ class NumberGuessingGameBot(commands.Cog):
         else:
             await ctx.send(f"와아~ 정답입니다! 숫자는 {self.target_number}였어요. 총 {self.attempts}번 시도했습니다.")
             self.target_number = None
+            
+    @discord.app_commands.command(name='포기_숫자', description="숫자게임 - 게임을 포기합니다")
+    async def surrender_game(self, interaction: discord.Interaction):
+        if interaction.channel.id not in self.games:
+            await interaction.response.send_message("진행 중인 게임이 없습니다. 도전부터 해야 포기하는 법!")
+            return
+        del self.games[interaction.channel.id]
+        await interaction.response.send_message("게임을 포기했습니다. 아리스랑 놀아주세요...")
 
 
 
@@ -220,7 +232,7 @@ async def rock_paper_scissors(interaction: discord.Interaction, choice: str):
 # Add cog and run bot
 async def main():
     await bot.add_cog(NumberBaseballBot(bot))
-    bot.add_cog(NumberGuessingGameBot(bot))
+    await bot.add_cog(NumberGuessingGameBot(bot))
     await bot.start(token)
 
 if __name__ == "__main__":
