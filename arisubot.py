@@ -143,12 +143,14 @@ class NumberBaseballBot(commands.Cog):
             await interaction.response.send_message(f"{strike}S {ball}B")
 
     @bot.tree.command(name='숫자야구_포기', description="숫자야구 - 게임을 포기합니다")
-    async def surrender_game(self, interaction: discord.Interaction):
-        if interaction.channel.id not in self.games:
+    async def 숫자야구_포기(self, interaction: discord.Interaction):
+        user_id = interaction.user.id
+        if user_id not in self.games:
             await interaction.response.send_message("진행 중인 게임이 없습니다. 아리스랑 같이 놀아요!")
-            return
-        del self.games[interaction.channel.id]
-        await interaction.response.send_message("게임을 포기했습니다. 아리스랑 놀아주세요...")
+        else:
+            secret_number = self.games.pop(user_id)
+            await interaction.response.send_message("게임을 포기했습니다. 아리스랑 놀아주세요...")
+
 
     def generate_number(self):
         while True:
