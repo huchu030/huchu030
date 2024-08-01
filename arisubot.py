@@ -125,30 +125,41 @@ class NumberGuessingGameBot(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.games = {}
-        self.target_number = None
-        self.attempts = 0
 
     @discord.app_commands.command(name='숫자게임', description="아리스와 숫자 맞추기 게임을 합니다")
     async def start_game(self, interaction: discord.Interaction):
-        self.target_number = random.randint(1, 100)
-        self.attempts = 0
+        if interaction.channel_id in self.games:
+            await interaction.response.send.message("게임이 이미 진행 중입니다..!")
+            return
+        self.games[interaction.channel_id] = {
+            'target_number': random.randint(1, 100),
+            'attempts': 0}
         await interaction.response.send_message("뽜밤뽜밤-! 숫자 맞추기 게임이 시작되었습니다! \n`/추측_숫자게임` 명령어를 사용해, 1부터 100 사이의 숫자를 맞춰보세요.")
 
     @discord.app_commands.command(name='추측_숫자게임', description="숫자게임 - 숫자를 추측합니다")
     async def guess_number(self, interaction: discord.Interaction, guess: int):
-        if self.target_number is None:
+        if interaction.channel_id not in self.games:
             await interaction.response.send_message("게임 진행 중이 아닙니다. `/숫자게임` 명령어로 게임을 시작해보세요!")
             return
 
-        self.attempts += 1
+        game = self.games[interaction.channel_id]
+        game['attempts'] += 1
 
-        if guess < self.target_number:
+        if guess < game['target_number']:
             await interaction.response.send_message("더 높아요!")
-        elif guess > self.target_number:
+        elif guess > game['target_number']:
             await interaction.response.send_message("더 낮아요!")
         else:
-            await interaction.response.send_message(f"와아~ 정답입니다! 숫자는 {self.target_number}였어요. 총 {self.attempts}번 시도했습니다.")
-            self.target_number = None
+            await interaction.response.send_message(f"와아~ 정답입니다! 숫자는 {game['target_number']}였어요. 총 {game['attempts']}번 시도했습니다.")
+            del self.games[interaction.channel_id]
+
+    @discord.app_commands.command(name='포기_숫자게임', description="숫자게임 - 게임을 포기합니다")
+    async def surrender_game(self, interaction: discord.Interaction):
+        if interaction.channel_id not in self.games:
+            await interaction.response.send_message("진행 중인 게임이 없습니다. 도전부터 해야 포기하는 법!")
+            return
+        del self.games[interaction.channel_id]
+        await interaction.response.send_message("게임을 포기했습니다. 아리스랑 놀아주세요...")
 
 
 
