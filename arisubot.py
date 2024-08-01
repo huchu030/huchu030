@@ -78,6 +78,37 @@ async def scheduled_task():
         except Exception as e:
             print(f'[ERROR] 오류 발생: {e}')
 
+
+
+
+
+@bot.tree.command(name='안녕', description="아리스에게 인사를 건넵니다")
+async def 안녕(interaction: discord.Interaction):
+    await interaction.response.send_message("뽜밤뽜밤-!")
+
+@bot.tree.command(name='로봇주제에', description="아리스를 놀립니다")
+async def 로봇주제에(interaction: discord.Interaction):
+    await interaction.response.send_message("아리스는 로봇이 아닙니다!!")
+
+@bot.tree.command(name='밥', description="아리스에게 밥을 줍니다")
+async def 밥(interaction: discord.Interaction):
+    await interaction.response.send_message("응..? 아리스는 건전지를 먹지 않습니다!")
+
+@bot.tree.command(name='쓰담', description="아리스의 인공 단백질 피부가 따뜻해집니다")
+async def 쓰담(interaction: discord.Interaction):
+    await interaction.response.send_message("아리스는 행복합니다..")
+
+@bot.tree.command(name='숫자야구_규칙', description="아리스가 숫자야구의 규칙을 설명해줍니다")
+async def 숫자야구_규칙(interaction: discord.Interaction):
+    await interaction.response.send_message(
+        "[숫자야구 룰]\n \n아리스가 정한 3자리 숫자를 맞히는 게임입니다! 사용되는 숫자는 0부터 9까지 서로 다른 숫자 3개이며 숫자와 위치가 전부 맞으면 S (스트라이크), 숫자와 위치가 틀리면 B (볼) 입니다. \n \n예시를 들어볼까요? 제가 정한 숫자가 ‘123’이면\n456 : 0S0B\n781 : 0S1B\n130 : 1S1B\n132 : 1S2B\n123 : 3S0B 입니다! \n아리스랑 같이 놀아요 끄앙")
+
+
+
+
+
+
+
 # 숫자야구 게임 클래스
 class NumberBaseballBot(commands.Cog):
     def __init__(self, bot):
