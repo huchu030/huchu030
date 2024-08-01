@@ -151,18 +151,6 @@ class NumberBaseballBot(commands.Cog):
             secret_number = self.games.pop(user_id)
             await interaction.response.send_message("게임을 포기했습니다. 아리스랑 놀아주세요...")
 
-
-    def generate_number(self):
-        while True:
-            number = ''.join(random.sample('123456789', 3))
-            if len(set(number)) == 3:
-                return number
-
-    def check_guess(self, number, guess):
-        s = sum(n == g for n, g in zip(number, guess))
-        b = sum(min(number.count(d), guess.count(d)) for d in set(guess)) - s
-        return f"{s}S{b}B"
-
     
 
 # main 함수에 슬래시 명령어 동기화 추가
