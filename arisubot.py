@@ -88,7 +88,7 @@ class NumberBaseballBot(commands.Cog):
         }
         await interaction.response.send_message("뽜밤뽜밤-! 숫자야구 게임이 시작되었습니다! \n`/추측` 명령어를 사용해, 3자리 숫자를 맞춰보세요. \n'/숫자야구_규칙' 명령어를 사용하면 게임 규칙을 볼 수 있습니다!")
 
-    @discord.app_commands.command(name='추측', description="숫자야구 - 숫자를 추측합니다.")
+    @discord.app_commands.command(name='추측', description="숫자야구 - 숫자를 추측합니다")
     async def guess_number(self, interaction: discord.Interaction, guess: str):
         if interaction.channel.id not in self.games:
             await interaction.response.send_message("게임 진행 중이 아닙니다. `/숫자야구` 명령어로 게임을 시작해보세요!")
@@ -105,10 +105,10 @@ class NumberBaseballBot(commands.Cog):
         else:
             await interaction.response.send_message(f"{guess} : {result}")
 
-    @discord.app_commands.command(name='포기', description="숫자야구 - 게임을 포기합니다.")
+    @discord.app_commands.command(name='포기', description="숫자야구 - 게임을 포기합니다")
     async def surrender_game(self, interaction: discord.Interaction):
         if interaction.channel.id not in self.games:
-            await interaction.response.send_message("진행 중인 게임이 없습니다.")
+            await interaction.response.send_message("진행 중인 게임이 없습니다. 도전부터 해야 포기하는 법!")
             return
         del self.games[interaction.channel.id]
         await interaction.response.send_message("게임을 포기했습니다. 아리스랑 놀아주세요..")
@@ -143,7 +143,7 @@ async def 밥(interaction: discord.Interaction):
 
 @bot.tree.command(name='숫자야구_규칙', description="아리스가 숫자야구의 규칙을 설명해줍니다")
 async def 숫자야구_규칙(interaction: discord.Interaction):
-    await interaction.response.send_message("[숫자야구 룰]\n \n아리스가 정한 3자리의 숫자를 맞히는 게임입니다!\n사용되는 숫자는 0부터 9까지 서로 다른 숫자 3개이며\n숫자와 위치가 전부 맞으면 S (스트라이크),\n숫자는 맞지만 위치가 틀렸을 경우 B (볼) 입니다.\n \n예시를 들어볼까요? 제가 정한 숫자가 ‘123’이면\n456 : 0S0B\n781 : 0S1B\n130 : 1S1B\n132 : 1S2B\n123 : 3S0B 입니다!\n \n아리스랑 같이 놀아요!", ephemeral=False)
+    await interaction.response.send_message("[숫자야구 룰]\n \n아리스가 정한 3자리의 숫자를 맞히는 게임입니다!\n사용되는 숫자는 0부터 9까지 서로 다른 숫자 3개이며\n숫자와 위치가 전부 맞으면 S (스트라이크),\n숫자는 맞지만 위치가 틀렸을 경우 B (볼) 입니다.\n \n예시를 들어볼까요? 제가 정한 숫자가 ‘123’이면\n456 : 0S0B\n781 : 0S1B\n130 : 1S1B\n132 : 1S2B\n123 : 3S0B 입니다!\n \n아리스랑 같이 놀아요 끄앙", ephemeral=False)
                                             
 
 @bot.tree.command(name='가위바위보', description="아리스와 가위바위보를 합니다")
