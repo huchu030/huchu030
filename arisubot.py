@@ -30,6 +30,11 @@ class MyBot(commands.Bot):
             await self.tree.sync()
             self.synced = True
         scheduled_task.start()
+        await self.load_cogs()  # Cogs를 로드하는 비동기 메서드 호출
+
+    async def load_cogs(self):
+        self.add_cog(NumberBaseballBot(self))
+        self.add_cog(NumberGuessingGameBot(self))
 
 bot = MyBot()
 
@@ -183,10 +188,6 @@ async def 쓰담(interaction: discord.Interaction):
 @bot.tree.command(name='숫자야구_규칙', description="아리스가 숫자야구의 규칙을 설명해줍니다")
 async def 숫자야구_규칙(interaction: discord.Interaction):
     await interaction.response.send_message("[숫자야구 룰]\n \n아리스가 정한 3자리 숫자를 맞히는 게임입니다!\n사용되는 숫자는 0부터 9까지 서로 다른 숫자 3개이며\n숫자와 위치가 전부 맞으면 S (스트라이크),\n숫자는 맞지만 위치가 틀렸을 경우 B (볼) 입니다.\n \n예시를 들어볼까요? 제가 정한 숫자가 ‘123’이면\n456 : 0S0B\n781 : 0S1B\n130 : 1S1B\n132 : 1S2B\n123 : 3S0B 입니다!\n \n아리스랑 같이 놀아요 끄앙", ephemeral=False)
-
-# 게임 Cog 추가
-bot.add_cog(NumberBaseballBot(bot))
-bot.add_cog(NumberGuessingGameBot(bot))
 
 # 봇 실행
 bot.run(TOKEN)
