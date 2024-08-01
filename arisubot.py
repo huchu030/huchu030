@@ -36,7 +36,7 @@ class MyBot(commands.Bot):
         await self.add_cogs()
 
     async def add_cogs(self):
-        await self.add_cog(NumberBaseballBot(self))
+        await bot.add_cog(NumberBaseballBot(self))
 
 bot = MyBot()
 lock = asyncio.Lock()
