@@ -206,6 +206,14 @@ async def 숫자야구_추측(interaction: discord.Interaction, guess: str):
 async def 숫자야구_포기(interaction: discord.Interaction):
     await bot.number_baseball.give_up(interaction)
 
+@bot.tree.command(name="로또", description="아리스가 로또 번호를 골라줍니다")
+async def 로또(interaction: discord.Interaction):
+    numbers = random.sample(range(1, 46), 6)
+    numbers.sort()
+    response = f"이번 주 로또 번호는: {', '.join(map(str, numbers))} 입니다."
+    
+    await interaction.response.send_message(f"이번 주 로또 번호는~ {', '.join(map(str, numbers))} 입니다! 당첨되면 저도...")
+
 # Run the bot
 async def main():
     async with bot:
