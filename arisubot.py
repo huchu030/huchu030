@@ -175,7 +175,7 @@ class NumberGuessingGameBot(commands.Cog):
 
 @bot.tree.command(name='안녕', description="아리스에게 인사를 건넵니다")
 async def 안녕(interaction: discord.Interaction):
-    await interaction.response.send_message("뽜밤뽜밤-!", ephemeral=False)
+    await interaction.response.send_message("뽜밤뽜밤-!!", ephemeral=False)
 
 @bot.tree.command(name='로봇주제에', description="아리스를 놀립니다")
 async def 로봇주제에(interaction: discord.Interaction):
