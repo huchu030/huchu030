@@ -116,7 +116,7 @@ class NumberBaseballBot(commands.Cog):
         ball = sum(1 for g in guess if g in secret) - strike
         return strike, ball
 
-    @app_commands.command(name="숫자야구_시작", description="숫자야구 게임을 시작합니다")
+    @bot.tree.command(name="숫자야구_시작", description="숫자야구 게임을 시작합니다")
     async def 숫자야구_시작(self, interaction: discord.Interaction):
         user_id = interaction.user.id
         if user_id in self.games:
@@ -126,7 +126,7 @@ class NumberBaseballBot(commands.Cog):
             self.games[user_id] = secret_number
             await interaction.response.send_message("숫자야구 게임을 시작합니다! 0부터 9까지 서로 다른 숫자 3개를 맞춰보세요.")
 
-    @app_commands.command(name="숫자야구_추측", description="숫자야구 게임에서 숫자를 추측합니다")
+    @bot.tree.command(name="숫자야구_추측", description="숫자야구 게임에서 숫자를 추측합니다")
     async def 숫자야구_추측(self, interaction: discord.Interaction, guess: str):
         user_id = interaction.user.id
         if user_id not in self.games:
