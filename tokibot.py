@@ -22,7 +22,7 @@ class MyBot(commands.Bot):
         self.synced = False
 
     async def on_ready(self):
-        print(f'Logged in as {self.user.name}')
+        print(f'봇이 로그인되었습니다: {self.user.name}')
         if not self.synced:
             await self.tree.sync()
             self.synced = True
@@ -87,5 +87,9 @@ async def 테스트(interaction: discord.Interaction):
     await interaction.response.send_message("테스트메시지", ephemeral=False)
 
 # Run the bot
-if __name__ == "__main__":
-    bot.run(token)
+
+async def main():
+    async with bot:
+        await bot.start(TOKEN)
+
+asyncio.run(main())

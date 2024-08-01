@@ -26,7 +26,7 @@ class MyBot(commands.Bot):
         self.synced = False
 
     async def on_ready(self):
-        print(f'봇이 로그인되었습니다: {self.user}')
+        print(f'봇이 로그인되었습니다: {self.user.name}')
         if not self.synced:
             await self.tree.sync()
             print("슬래시 명령어가 동기화되었습니다.")
@@ -116,8 +116,8 @@ class NumberBaseballBot(commands.Cog):
         ball = sum(1 for g in guess if g in secret) - strike
         return strike, ball
 
-    @bot.tree.command(name="숫자야구_시작", description="숫자야구 게임을 시작합니다")
-    async def 숫자야구_시작(self, interaction: discord.Interaction):
+    @bot.tree.command(name="숫자야구", description="숫자야구 게임을 시작합니다")
+    async def 숫자야구(self, interaction: discord.Interaction):
         user_id = interaction.user.id
         if user_id in self.games:
             await interaction.response.send_message("이미 게임이 진행 중입니다!")
@@ -143,9 +143,9 @@ class NumberBaseballBot(commands.Cog):
                 await interaction.response.send_message(f"{strike}S {ball}B", ephemeral=True)
 
 # main 함수에 슬래시 명령어 동기화 추가
+
 async def main():
     async with bot:
         await bot.start(TOKEN)
 
-import asyncio
 asyncio.run(main())
