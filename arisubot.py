@@ -130,9 +130,6 @@ class NumberGuessingGameBot(commands.Cog):
 
     @discord.app_commands.command(name='숫자게임', description="아리스와 숫자 맞추기 게임을 합니다")
     async def start_game(self, interaction: discord.Interaction):
-        if interaction.channel.id in self.games:
-            await interaction.response.send_message("게임이 이미 진행 중입니다..!")
-            return
         self.target_number = random.randint(1, 100)
         self.attempts = 0
         await interaction.response.send_message("뽜밤뽜밤-! 숫자 맞추기 게임이 시작되었습니다! \n`/추측_숫자게임` 명령어를 사용해, 1부터 100 사이의 숫자를 맞춰보세요.")
@@ -152,14 +149,6 @@ class NumberGuessingGameBot(commands.Cog):
         else:
             await interaction.response.send_message(f"와아~ 정답입니다! 숫자는 {self.target_number}였어요. 총 {self.attempts}번 시도했습니다.")
             self.target_number = None
-            
-    @discord.app_commands.command(name='포기_숫자게임', description="숫자게임 - 게임을 포기합니다")
-    async def surrender_game(self, interaction: discord.Interaction):
-        if interaction.channel.id not in self.games:
-            await interaction.response.send_message("진행 중인 게임이 없습니다. 도전부터 해야 포기하는 법!")
-            return
-        del self.games[interaction.channel.id]
-        await interaction.response.send_message("게임을 포기했습니다. 아리스랑 놀아주세요...")
 
 
 
