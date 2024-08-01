@@ -4,11 +4,10 @@ from discord.ext import commands, tasks
 import datetime
 import random
 import pytz
-import tracemalloc
-import asyncio
+import os
 
-# 봇 토큰과 채널 ID
-TOKEN = "MTI2NzEyNDUwNTY4MDI4MTYyMA.Gp_5nb.WpD1gpVbMCVCPrIHIb53jupN67qHj0ps58FE8k"  # 실제 토큰으로 교체하세요
+# 환경 변수에서 봇 토큰 불러오기
+TOKEN = "MTI2NzEyNDUwNTY4MDI4MTYyMA.Gp_5nb.WpD1gpVbMCVCPrIHIb53jupN67qHj0ps58FE8k"
 MCHID = 1266916147639615639
 
 # 타임존 설정
@@ -31,7 +30,6 @@ class MyBot(commands.Bot):
             await self.tree.sync()
             self.synced = True
         scheduled_task.start()
-        tracemalloc.start()
 
 bot = MyBot()
 
@@ -44,7 +42,7 @@ async def on_member_join(member):
     else:
         print('채널을 찾을 수 없습니다.')
 
-# 알림 메시지
+# 예약된 메시지 전송 작업
 schedule_times_messages = [
     ('19:00', '아리스랑 놀아주세요!'),
 ]
@@ -54,21 +52,21 @@ async def scheduled_task():
     try:
         now = datetime.datetime.now(tz)
         current_time = now.strftime('%H:%M')
-        print(f'[DEBUG] 현재시각: {current_time}')
+        print(f'[DEBUG] 현재 시각: {current_time}')
         
         for time_str, message in schedule_times_messages:
             if current_time == time_str:
-                print('[DEBUG] 지정시각이당')
+                print('[DEBUG] 지정된 시각입니다.')
                 channel = bot.get_channel(MCHID)
                 
                 if channel:
                     await channel.send(message)
-                    print(f'[DEBUG] 성공')
+                    print('[DEBUG] 메시지 전송 성공')
                 else:
-                    print(f'[ERROR] 채널없어')
+                    print('[ERROR] 채널을 찾을 수 없습니다.')
                 break
         else:
-            print('[DEBUG] 지정시각아니야')
+            print('[DEBUG] 지정된 시각이 아닙니다.')
     except Exception as e:
         print(f'[ERROR] 오류 발생: {e}')
 
@@ -78,7 +76,7 @@ class NumberBaseballBot(commands.Cog):
         self.bot = bot
         self.games = {}
 
-    @app_commands.command(name='숫자야구', description="아리스와 숫자야구 게임을 합니다")
+    @app_commands.command(name='숫자야구', description="아리스와 숫자야구 게임을 시작합니다")
     async def start_game(self, interaction: discord.Interaction):
         if interaction.channel.id in self.games:
             await interaction.response.send_message("게임이 이미 진행 중입니다..!")
@@ -87,7 +85,7 @@ class NumberBaseballBot(commands.Cog):
             'number': self.generate_number(),
             'attempts': 0
         }
-        await interaction.response.send_message("뽜밤뽜밤-! 숫자야구 게임이 시작되었습니다! \n`/추측_숫자야구` 명령어를 사용해, 3자리 숫자를 맞춰보세요. \n`/숫자야구_규칙` 명령어를 사용하면 게임 규칙을 볼 수 있습니다!")
+        await interaction.response.send_message("숫자야구 게임이 시작되었습니다! \n`/추측_숫자야구` 명령어를 사용해, 3자리 숫자를 맞춰보세요. \n`/숫자야구_규칙` 명령어로 게임 규칙을 볼 수 있습니다!")
 
     @app_commands.command(name='추측_숫자야구', description="숫자야구 - 숫자를 추측합니다")
     async def guess_number(self, interaction: discord.Interaction, guess: str):
@@ -95,12 +93,12 @@ class NumberBaseballBot(commands.Cog):
             await interaction.response.send_message("게임 진행 중이 아닙니다. `/숫자야구` 명령어로 게임을 시작해보세요!")
             return
         if len(guess) != 3 or not guess.isdigit():
-            await interaction.response.send_message("3자리 숫자를 입력해야돼요!")
+            await interaction.response.send_message("3자리 숫자를 입력해야 합니다!")
             return
         result = self.check_guess(self.games[interaction.channel.id]['number'], guess)
         self.games[interaction.channel.id]['attempts'] += 1
         if result == "3S0B":
-            await interaction.response.send_message(f"와아~ 정답입니다! {self.games[interaction.channel.id]['attempts']}회 만에 맞췄어요!")
+            await interaction.response.send_message(f"정답입니다! {self.games[interaction.channel.id]['attempts']}회 만에 맞췄어요!")
             del self.games[interaction.channel.id]
         else:
             await interaction.response.send_message(f"{guess} : {result}")
@@ -108,7 +106,7 @@ class NumberBaseballBot(commands.Cog):
     @app_commands.command(name='포기_숫자야구', description="숫자야구 - 게임을 포기합니다")
     async def surrender_game(self, interaction: discord.Interaction):
         if interaction.channel.id not in self.games:
-            await interaction.response.send_message("진행 중인 게임이 없습니다. 도전부터 해야 포기하는 법!")
+            await interaction.response.send_message("진행 중인 게임이 없습니다. 도전부터 해야 포기할 수 있습니다!")
             return
         del self.games[interaction.channel.id]
         await interaction.response.send_message("게임을 포기했습니다. 아리스랑 놀아주세요...")
@@ -130,7 +128,7 @@ class NumberGuessingGameBot(commands.Cog):
         self.bot = bot
         self.games = {}
 
-    @app_commands.command(name='숫자게임', description="아리스와 숫자 맞추기 게임을 합니다")
+    @app_commands.command(name='숫자게임', description="아리스와 숫자 맞추기 게임을 시작합니다")
     async def start_game(self, interaction: discord.Interaction):
         if interaction.channel.id in self.games:
             await interaction.response.send_message("게임이 이미 진행 중입니다..!")
@@ -138,7 +136,7 @@ class NumberGuessingGameBot(commands.Cog):
         self.games[interaction.channel.id] = {
             'target_number': random.randint(1, 100),
             'attempts': 0}
-        await interaction.response.send_message("뽜밤뽜밤-! 숫자 맞추기 게임이 시작되었습니다! \n`/추측_숫자게임` 명령어를 사용해, 1부터 100 사이의 숫자를 맞춰보세요.")
+        await interaction.response.send_message("숫자 맞추기 게임이 시작되었습니다! \n`/추측_숫자게임` 명령어를 사용해, 1부터 100 사이의 숫자를 맞춰보세요.")
 
     @app_commands.command(name='추측_숫자게임', description="숫자게임 - 숫자를 추측합니다")
     async def guess_number(self, interaction: discord.Interaction, guess: int):
@@ -154,13 +152,13 @@ class NumberGuessingGameBot(commands.Cog):
         elif guess > game['target_number']:
             await interaction.response.send_message("더 낮아요!")
         else:
-            await interaction.response.send_message(f"와아~ 정답입니다! 숫자는 {game['target_number']}였어요. 총 {game['attempts']}번 시도했습니다.")
+            await interaction.response.send_message(f"정답입니다! 숫자는 {game['target_number']}였어요. 총 {game['attempts']}번 시도했습니다.")
             del self.games[interaction.channel.id]
 
     @app_commands.command(name='포기_숫자게임', description="숫자게임 - 게임을 포기합니다")
     async def surrender_game(self, interaction: discord.Interaction):
         if interaction.channel.id not in self.games:
-            await interaction.response.send_message("진행 중인 게임이 없습니다. 도전부터 해야 포기하는 법!")
+            await interaction.response.send_message("진행 중인 게임이 없습니다. 도전부터 해야 포기할 수 있습니다!")
             return
         del self.games[interaction.channel.id]
         await interaction.response.send_message("게임을 포기했습니다. 아리스랑 놀아주세요...")
@@ -168,7 +166,7 @@ class NumberGuessingGameBot(commands.Cog):
 # 기본 슬래시 명령어
 @bot.tree.command(name='안녕', description="아리스에게 인사를 건넵니다")
 async def 안녕(interaction: discord.Interaction):
-    await interaction.response.send_message("뽜밤뽜밤-!", ephemeral=False)
+    await interaction.response.send_message("안녕하세요!", ephemeral=False)
 
 @bot.tree.command(name='로봇주제에', description="아리스를 놀립니다")
 async def 로봇주제에(interaction: discord.Interaction):
@@ -176,7 +174,7 @@ async def 로봇주제에(interaction: discord.Interaction):
 
 @bot.tree.command(name='밥', description="아리스에게 밥을 줍니다")
 async def 밥(interaction: discord.Interaction):
-    await interaction.response.send_message("응..? 아리스는 건전지를 먹지 않습니다!", ephemeral=False)
+    await interaction.response.send_message("아리스는 건전지를 먹지 않습니다!", ephemeral=False)
 
 @bot.tree.command(name='쓰담', description="아리스의 인공 단백질 피부가 따뜻해집니다")
 async def 쓰담(interaction: discord.Interaction):
@@ -184,8 +182,7 @@ async def 쓰담(interaction: discord.Interaction):
 
 @bot.tree.command(name='숫자야구_규칙', description="아리스가 숫자야구의 규칙을 설명해줍니다")
 async def 숫자야구_규칙(interaction: discord.Interaction):
-    await interaction.response.send_message("[숫자야구 룰]\n \n아리스가 정한 3자리의 숫자를 맞히는 게임입니다!\n사용되는 숫자는 0부터 9까지 서로 다른 숫자 3개이며\n숫자와 위치가 전부 맞으면 S (스트라이크),\n숫자는 맞지만 위치가 틀렸을 경우 B (볼) 입니다.\n \n예시를 들어볼까요? 제가 정한 숫자가 ‘123’이면\n456 : 0S0B\n781 : 0S1B\n130 : 1S1B\n132 : 1S2B\n123 : 3S0B 입니다!\n \n아리스랑 같이 놀아요 끄앙", ephemeral=False)
-
+    await interaction.response.send_message("[숫자야구 룰]\n \n아리스가 정한 3자리 숫자를 맞히는 게임입니다!\n사용되는 숫자는 0부터 9까지 서로 다른 숫자 3개이며\n숫자와 위치가 전부 맞으면 S (스트라이크),\n숫자는 맞지만 위치가 틀렸을 경우 B (볼) 입니다.\n \n예시를 들어볼까요? 제가 정한 숫자가 ‘123’이면\n456 : 0S0B\n781 : 0S1B\n130 : 1S1B\n132 : 1S2B\n123 : 3S0B 입니다!\n \n아리스랑 같이 놀아요 끄앙", ephemeral=False)
 
 # 게임 Cog 추가
 bot.add_cog(NumberBaseballBot(bot))
