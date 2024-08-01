@@ -133,7 +133,7 @@ class NumberBaseballBot(commands.Cog):
             await interaction.response.send_message("게임 진행 중이 아닙니다. `/숫자야구` 명령어로 게임을 시작해보세요!")
         elif len(guess) != 3 or not guess.isdigit() or len(set(guess)) != 3:
             await interaction.response.send_message("3자리 숫자를 입력해야 합니다!")
-        else:
+        elif:
             secret_number = self.games[user_id]
             strike, ball = self.check_guess(secret_number, guess)
             if strike == 3:
