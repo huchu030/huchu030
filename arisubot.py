@@ -158,6 +158,7 @@ class NumberBaseballBot(commands.Cog):
         else:
             self.games.pop(user_id)
             await interaction.response.send_message("게임을 포기했습니다. 아리스랑 놀아주세요...")
+            
 
 # main 함수에 슬래시 명령어 동기화 추가
 async def main():
