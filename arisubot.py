@@ -86,7 +86,7 @@ class NumberBaseballBot(commands.Cog):
             'number': self.generate_number(),
             'attempts': 0
         }
-        await interaction.response.send_message("뽜밤뽜밤-! 숫자야구 게임이 시작되었습니다! \n`/추측_야구` 명령어를 사용해, 3자리 숫자를 맞춰보세요. \n'/숫자야구_규칙' 명령어를 사용하면 게임 규칙을 볼 수 있습니다!")
+        await interaction.response.send_message("뽜밤뽜밤-! 숫자야구 게임이 시작되었습니다! \n`/추측_야구게임` 명령어를 사용해, 3자리 숫자를 맞춰보세요. \n'/숫자야구_규칙' 명령어를 사용하면 게임 규칙을 볼 수 있습니다!")
     @discord.app_commands.command(name='추측_숫자야구', description="숫자야구 - 숫자를 추측합니다")
     async def guess_number(self, interaction: discord.Interaction, guess: str):
         if interaction.channel.id not in self.games:
@@ -135,7 +135,7 @@ class NumberGuessingGameBot(commands.Cog):
             return
         self.target_number = random.randint(1, 100)
         self.attempts = 0
-        await interaction.response.send_message("뽜밤뽜밤-! 숫자 맞추기 게임이 시작되었습니다! \n`/추측_숫자` 명령어를 사용해, 1부터 100 사이의 숫자를 맞춰보세요.")
+        await interaction.response.send_message("뽜밤뽜밤-! 숫자 맞추기 게임이 시작되었습니다! \n`/추측_숫자게임` 명령어를 사용해, 1부터 100 사이의 숫자를 맞춰보세요.")
 
     @discord.app_commands.command(name='추측_숫자게임', description="숫자게임 - 숫자를 추측합니다")
     async def guess_number(self, interaction: discord.Interaction, guess: int):
