@@ -27,6 +27,7 @@ class MyBot(commands.Bot):
             await self.tree.sync()
             self.synced = True
         scheduled_task.start()
+        tracemalloc.start()
 
 # Create bot instance
 bot = MyBot()
