@@ -154,7 +154,7 @@ async def 쓰담(interaction: discord.Interaction):
 @bot.tree.command(name='숫자야구_규칙', description="아리스가 숫자야구의 규칙을 설명해줍니다")
 async def 숫자야구_규칙(interaction: discord.Interaction):
     await interaction.response.send_message(
-        "[숫자야구 룰]\n \n아리스가 정한 3자리 숫자를 맞히는 게임입니다! \n사용되는 숫자는 0부터 9까지 서로 다른 숫자 3개이며 \n숫자와 위치가 전부 맞으면 S (스트라이크), \n숫자와 위치가 틀리면 B (볼) 입니다. \n \n예시를 들어볼까요? 제가 정한 숫자가 ‘123’이면\n456 : 0S 0B\n781 : 0S 1B\n130 : 1S 1B\n132 : 1S 2B\n123 : 3S 0B 입니다! \n \n아리스랑 같이 놀아요 끄앙")
+        "[숫자야구 룰]\n \n아리스가 정한 3자리 숫자를 맞히는 게임입니다! \n숫자는 0부터 9까지의 서로 다른 숫자 3개이며 \n숫자와 위치가 전부 맞으면 S (스트라이크), \n숫자와 위치가 틀리면 B (볼) 입니다. \n \n예시를 들어볼까요? 제가 정한 숫자가 ‘123’이면\n456 : 0S 0B\n781 : 0S 1B\n130 : 1S 1B\n132 : 1S 2B\n123 : 3S 0B 입니다! \n \n아리스랑 같이 놀아요 끄앙")
 
 @bot.tree.command(name="숫자야구", description="아리스와 숫자야구 게임을 시작합니다")
 async def 숫자야구(interaction: discord.Interaction):
