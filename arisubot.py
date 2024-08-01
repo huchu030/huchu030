@@ -8,17 +8,12 @@ import asyncio
 
 # 봇 토큰과 채널 ID
 TOKEN = "MTI2NzEyNDUwNTY4MDI4MTYyMA.Gp_5nb.WpD1gpVbMCVCPrIHIb53jupN67qHj0ps58FE8k"
-MCHID = 1266916147639615639
-
-# 타임존 설정
-
+MCHID = 1266916147639615639 
 
 # 인텐트 설정
-intents = discord.Intents.all()
+intents = discord.Intents.default()
 intents.message_content = True
 intents.members = True
-
-
 
 class NumberBaseball:
     def __init__(self, bot):
@@ -64,7 +59,7 @@ class NumberBaseball:
             await interaction.response.send_message("저와 이미 게임을 하고 있어요!")
         else:
             self.start_game()
-            await interaction.response.send_message("뽜밤뽜밤-! 숫자야구 게임이 시작되었습니다! \n`/추측_숫자야구` 명령어를 사용해, 3자리 숫자를 맞춰보세요. \n`/숫자야구_규칙` 명령어로 게임 규칙을 볼 수 있습니다!")
+            await interaction.response.send_message("뽜밤뽜밤-! 숫자야구 게임이 시작되었습니다! \n`/숫자야구_추측` 명령어를 사용해, 3자리 숫자를 맞춰보세요. \n`/숫자야구_규칙` 명령어로 게임 규칙을 볼 수 있습니다!")
 
     async def guess_number(self, interaction: discord.Interaction, guess: str):
         result = self.make_guess(guess)
@@ -76,8 +71,6 @@ class NumberBaseball:
         else:
             self.game_active = False
             await interaction.response.send_message(f"게임을 포기하셨습니다. 정답은 {self.secret_number}이었습니다! 아리스랑 놀아주세요...")
-
-
 
 # 봇 클래스 정의
 class MyBot(commands.Bot):
@@ -95,9 +88,8 @@ class MyBot(commands.Bot):
         scheduled_task.start()
         tracemalloc.start()
 
-    
+# Instantiate the bot
 bot = MyBot()
-
 
 # 채널에 메시지 전송
 @bot.event
@@ -139,8 +131,7 @@ async def scheduled_task():
         except Exception as e:
             print(f'[ERROR] 오류 발생: {e}')
 
-
-
+# Define slash commands
 @bot.tree.command(name='안녕', description="아리스에게 인사를 건넵니다")
 async def 안녕(interaction: discord.Interaction):
     await interaction.response.send_message("뽜밤뽜밤-!")
@@ -164,7 +155,7 @@ async def 숫자야구_규칙(interaction: discord.Interaction):
 
 @bot.tree.command(name="숫자야구", description="아리스와 숫자야구 게임을 시작합니다")
 async def 숫자야구(interaction: discord.Interaction):
-    await bot.number_baseball.start_game(interaction)
+    await bot.number_baseball.start_game_interaction(interaction)
 
 @bot.tree.command(name="숫자야구_추측", description="숫자야구 - 숫자를 추측합니다")
 async def 숫자야구_추측(interaction: discord.Interaction, guess: str):
@@ -174,15 +165,7 @@ async def 숫자야구_추측(interaction: discord.Interaction, guess: str):
 async def 숫자야구_포기(interaction: discord.Interaction):
     await bot.number_baseball.give_up(interaction)
 
-
-
-
-
-
-
-            
-
-# main 함수에 슬래시 명령어 동기화 추가
+# Run the bot
 async def main():
     async with bot:
         await bot.start(TOKEN)
