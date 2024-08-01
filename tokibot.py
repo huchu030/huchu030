@@ -6,7 +6,7 @@ import asyncio
 import pytz
 
 # Token and channel IDs
-token = 'MTI2NzEyNTczMzk2MTEwOTUxNA.GBqLjK.Jpd9QwikmgDKEjQh48jRbAEnS0ioP4WKOZogxg'
+TOKEN = 'MTI2NzEyNTczMzk2MTEwOTUxNA.GBqLjK.Jpd9QwikmgDKEjQh48jRbAEnS0ioP4WKOZogxg'
 mchid = 1266916147639615639
 
 # Timezone and intents
