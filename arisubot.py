@@ -116,7 +116,7 @@ class NumberBaseballBot(commands.Cog):
         ball = sum(1 for g in guess if g in secret) - strike
         return strike, ball
 
-    @bot.tree.command(name="숫자야구", description="아리스와 숫자야구 게임을 시작합니다")
+    @app_commands.command(name="숫자야구", description="아리스와 숫자야구 게임을 시작합니다")
     async def 숫자야구(self, interaction: discord.Interaction):
         user_id = interaction.user.id
         if user_id in self.games:
@@ -124,9 +124,9 @@ class NumberBaseballBot(commands.Cog):
         else:
             secret_number = self.generate_number()
             self.games[user_id] = secret_number
-            await interaction.response.send_message("뽜밤뽜밤-! 숫자야구 게임이 시작되었습니다! \n`/추측_숫자야구` 명령어를 사용해, 3자리 숫자를 맞춰보세요. \n`/숫자야구_규칙` 명령어로 게임 규칙을 볼 수 있습니다!")
+            await interaction.response.send_message("뽜밤뽜밤-! 숫자야구 게임이 시작되었습니다! \n`/숫자야구_추측` 명령어를 사용해, 3자리 숫자를 맞춰보세요. \n`/숫자야구_규칙` 명령어로 게임 규칙을 볼 수 있습니다!")
 
-    @bot.tree.command(name="숫자야구_추측", description="숫자야구 - 숫자를 추측합니다")
+    @app_commands.command(name="숫자야구_추측", description="숫자야구 - 숫자를 추측합니다")
     async def 숫자야구_추측(self, interaction: discord.Interaction, guess: str):
         user_id = interaction.user.id
         if user_id not in self.games:
@@ -142,7 +142,7 @@ class NumberBaseballBot(commands.Cog):
             else:
                 await interaction.response.send_message(f"{strike}S {ball}B")
 
-    @bot.tree.command(name='숫자야구_포기', description="숫자야구 - 게임을 포기합니다")
+    @app_commands.command(name='숫자야구_포기', description="숫자야구 - 게임을 포기합니다")
     async def 숫자야구_포기(self, interaction: discord.Interaction):
         user_id = interaction.user.id
         if user_id not in self.games:
@@ -150,8 +150,6 @@ class NumberBaseballBot(commands.Cog):
         else:
             secret_number = self.games.pop(user_id)
             await interaction.response.send_message("게임을 포기했습니다. 아리스랑 놀아주세요...")
-
-    
 
 # main 함수에 슬래시 명령어 동기화 추가
 
