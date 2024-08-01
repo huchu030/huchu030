@@ -7,7 +7,7 @@ import random
 import asyncio
 
 # 봇 토큰과 채널 ID
-TOKEN = "YOUR_BOT_TOKEN_HERE"  # 실제 토큰으로 교체하세요
+TOKEN = "MTI2NzEyNDUwNTY4MDI4MTYyMA.Gp_5nb.WpD1gpVbMCVCPrIHIb53jupN67qHj0ps58FE8k"
 MCHID = 1266916147639615639
 
 # 타임존 설정
