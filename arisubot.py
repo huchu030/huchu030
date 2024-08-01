@@ -47,7 +47,7 @@ class NumberBaseball:
             return f"와아~ 정답이에요! {self.attempts}회 만에 맞췄습니다!"
         
         strikes, balls = self.calculate_strikes_and_balls(guess)
-        return f"{guess} : {strikes}S {balls} B"
+        return f"{guess} : {strikes}S {balls}B"
     
     def calculate_strikes_and_balls(self, guess):
         strikes = sum(1 for a, b in zip(guess, self.secret_number) if a == b)
@@ -62,8 +62,11 @@ class NumberBaseball:
             await interaction.response.send_message("뽜밤뽜밤-! 숫자야구 게임이 시작되었습니다! \n`/숫자야구_추측` 명령어를 사용해 3자리 숫자를 맞춰보세요. \n`/숫자야구_규칙` 명령어로 게임 규칙을 볼 수 있습니다!")
 
     async def guess_number(self, interaction: discord.Interaction, guess: str):
-        result = self.make_guess(guess)
-        await interaction.response.send_message(result)
+        if not self.game_active:
+            await interaction.response.send_message("진행 중인 게임이 없습니다. 아리스랑 같이 놀아요!")
+        else:
+            result = self.make_guess(guess)
+            await interaction.response.send_message(result)
 
     async def give_up(self, interaction: discord.Interaction):
         if not self.game_active:
