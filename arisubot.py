@@ -147,7 +147,7 @@ async def rock_paper_scissors(interaction: discord.Interaction):
         button = discord.ui.Button(label=option, style=discord.ButtonStyle.primary, custom_id=option)
         button.callback = lambda i: button_callback(i, interaction.user)
         view.add_item(button)
-    await interaction.response.send_message(" \n안 내면 집니다!", view=view)
+    await interaction.response.send_message("n안 내면 집니다!", view=view)
 
 async def button_callback(interaction: discord.Interaction, user: discord.User):
     # 봇의 선택
@@ -160,7 +160,7 @@ async def button_callback(interaction: discord.Interaction, user: discord.User):
     result = ""
     
     if user_choice == bot_choice:
-        result = f"비겼습니다. 한 판 더! ( 당신 : {user_choice}, 아리스 : {bot_choice} )"
+        result = f"비겼습니다. 한 판 더 해요! ( 당신 : {user_choice}, 아리스 : {bot_choice} )"
     elif (user_choice == '가위' and bot_choice == '보') or \
          (user_choice == '바위' and bot_choice == '가위') or \
          (user_choice == '보' and bot_choice == '바위'):
