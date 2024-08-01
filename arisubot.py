@@ -32,7 +32,7 @@ class MyBot(commands.Bot):
         scheduled_task.start()
         tracemalloc.start()
         await self.add_cogs()
-        
+
     async def add_cogs(self):
         await self.add_cog(NumberBaseballBot(self))
 
@@ -139,6 +139,7 @@ class NumberBaseballBot(commands.Cog):
             else:
                 await interaction.response.send_message(f"{strike}S {ball}B", ephemeral=True)
 
+# main 함수에 슬래시 명령어 동기화 추가
 async def main():
     async with bot:
         scheduled_task.start()  # 일정 작업 시작
