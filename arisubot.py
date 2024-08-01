@@ -106,9 +106,6 @@ async def 숫자야구_규칙(interaction: discord.Interaction):
 
 
 
-
-
-
 # 숫자야구 게임 클래스
 class NumberBaseballBot(commands.Cog):
     def __init__(self, bot):
