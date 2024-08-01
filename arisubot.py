@@ -142,7 +142,6 @@ class NumberBaseballBot(commands.Cog):
 # main 함수에 슬래시 명령어 동기화 추가
 async def main():
     async with bot:
-        scheduled_task.start()  # 일정 작업 시작
         await bot.start(TOKEN)
 
 import asyncio
