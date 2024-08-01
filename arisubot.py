@@ -171,4 +171,5 @@ async def main():
     async with bot:
         await bot.start(TOKEN)
 
+import asyncio
 asyncio.run(main())
