@@ -196,5 +196,9 @@ async def 숫자야구_규칙(interaction: discord.Interaction):
     )
 
 
-# 봇 실행
-bot.run(TOKEN)
+async def main():
+    async with bot:
+        await bot.start('TOKEN')
+
+import asyncio
+asyncio.run(main())
