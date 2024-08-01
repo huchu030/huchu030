@@ -13,6 +13,7 @@ MCHID = 1266916147639615639
 # 타임존 설정
 tz = pytz.timezone('Asia/Seoul')
 
+
 # 인텐트 설정
 intents = discord.Intents.all()
 intents.message_content = True
