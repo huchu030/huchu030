@@ -118,35 +118,34 @@ class NumberBaseballBot(commands.Cog):
 
     @bot.tree.command(name="숫자야구", description="아리스와 숫자야구 게임을 시작합니다")
     async def 숫자야구(self, interaction: discord.Interaction):
-        if interaction.channel.id in self.games:
+        user_id = interaction.user.id
+        if user_id in self.games:
             await interaction.response.send_message("저랑 이미 게임을 하고 있습니다!")
-            return
-        self.games[interaction.channel.id] = {
-            'number': self.generate_number(),
-            'attempts': 0
-        }
+        else:
+            secret_number = self.generate_number()
+            self.games[user_id] = secret_number
             await interaction.response.send_message("뽜밤뽜밤-! 숫자야구 게임이 시작되었습니다! \n`/추측_숫자야구` 명령어를 사용해, 3자리 숫자를 맞춰보세요. \n`/숫자야구_규칙` 명령어로 게임 규칙을 볼 수 있습니다!")
 
     @bot.tree.command(name="숫자야구_추측", description="숫자야구 - 숫자를 추측합니다")
     async def 숫자야구_추측(self, interaction: discord.Interaction, guess: str):
-        if interaction.channel.id not in self.games:
+        user_id = interaction.user.id
+        if user_id not in self.games:
             await interaction.response.send_message("게임 진행 중이 아닙니다. `/숫자야구` 명령어로 게임을 시작해보세요!")
-            return
-        if len(guess) != 3 or not guess.isdigit():
+        elif len(guess) != 3 or not guess.isdigit() or len(set(guess)) != 3:
             await interaction.response.send_message("3자리 숫자를 입력해야 합니다!")
-            return
-        result = self.check_guess(self.games[interaction.channel.id]['number'], guess)
-        self.games[interaction.channel.id]['attempts'] += 1
-        if result == "3S0B":
-            await interaction.response.send_message(f"와아~ 정답입니다! {self.games[interaction.channel.id]['attempts']}회 만에 맞췄어요!")
-            del self.games[interaction.channel.id]
         else:
-            await interaction.response.send_message(f"{guess} : {result}")
+            secret_number = self.games[user_id]
+            strike, ball = self.check_guess(secret_number, guess)
+            if strike == 3:
+                await interaction.response.send_message(f"와아~ 정답입니다! {self.games[interaction.channel.id]['attempts']}회 만에 맞췄어요!")
+            del self.games[user_id]
+        else:
+            await interaction.response.send_message(f"{strike}S {ball}B")
 
     @bot.tree.command(name='숫자야구_포기', description="숫자야구 - 게임을 포기합니다")
     async def surrender_game(self, interaction: discord.Interaction):
         if interaction.channel.id not in self.games:
-            await interaction.response.send_message("진행 중인 게임이 없습니다. 도전부터 해야 포기도 할 수 있는 법!")
+            await interaction.response.send_message("진행 중인 게임이 없습니다. 아리스랑 같이 놀아요!")
             return
         del self.games[interaction.channel.id]
         await interaction.response.send_message("게임을 포기했습니다. 아리스랑 놀아주세요...")
