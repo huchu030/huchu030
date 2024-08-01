@@ -133,10 +133,6 @@ class NumberGuessingGameBot(commands.Cog):
         if interaction.channel.id in self.games:
             await interaction.response.send_message("게임이 이미 진행 중입니다..!")
             return
-        self.games[interaction.channel.id] = {
-            'number': self.generate_number(),
-            'attempts': 0
-        }
         self.target_number = random.randint(1, 100)
         self.attempts = 0
         await interaction.response.send_message("뽜밤뽜밤-! 숫자 맞추기 게임이 시작되었습니다! \n`/추측_숫자게임` 명령어를 사용해, 1부터 100 사이의 숫자를 맞춰보세요.")
