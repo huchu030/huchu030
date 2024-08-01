@@ -143,7 +143,7 @@ class NumberBaseballBot(commands.Cog):
         else:
             await interaction.response.send_message(f"{guess} : {result}")
 
-    @bot.tree.command(name='포기_숫자야구', description="숫자야구 - 게임을 포기합니다")
+    @bot.tree.command(name='숫자야구_포기', description="숫자야구 - 게임을 포기합니다")
     async def surrender_game(self, interaction: discord.Interaction):
         if interaction.channel.id not in self.games:
             await interaction.response.send_message("진행 중인 게임이 없습니다. 도전부터 해야 포기도 할 수 있는 법!")
