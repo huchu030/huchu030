@@ -136,7 +136,7 @@ async def scheduled_task():
 
 # 가위바위보
 
-@bot.tree.command(name="가위바위보", description="아리스와 가위바위보를 합니다.")
+@bot.tree.command(name="가위바위보", description="아리스와 가위바위보를 합니다")
 async def rock_paper_scissors(interaction: discord.Interaction):
     options = ['가위', '바위', '보']
 
@@ -147,8 +147,6 @@ async def rock_paper_scissors(interaction: discord.Interaction):
         button = discord.ui.Button(label=option, style=discord.ButtonStyle.primary, custom_id=option)
         button.callback = lambda i: button_callback(i, interaction.user)
         view.add_item(button)
-
-    await interaction.response.send_message("가위, 바위, 보 중 하나를 선택하세요:", view=view)
 
 async def button_callback(interaction: discord.Interaction, user: discord.User):
     # 봇의 선택
@@ -161,13 +159,13 @@ async def button_callback(interaction: discord.Interaction, user: discord.User):
     result = ""
     
     if user_choice == bot_choice:
-        result = f"비겼습니다. 한 판 더! (당신 : {user_choice}, 아리스 : {bot_choice})"
+        result = f"비겼습니다. 한 판 더! ( 당신 : {user_choice}, 아리스 : {bot_choice} )"
     elif (user_choice == '가위' and bot_choice == '보') or \
          (user_choice == '바위' and bot_choice == '가위') or \
          (user_choice == '보' and bot_choice == '바위'):
-        result = f"아리스가 졌어요. 끄앙 (당신 : {user_choice}, 아리스 : {bot_choice})"
+        result = f"아리스가 졌어요. 끄앙 ( 당신 : {user_choice}, 아리스 : {bot_choice} )"
     else: 
-        result = f"아리스가 이겼습니다!! (당신 : {user_choice}, 아리스 : {bot_choice})"
+        result = f"아리스가 이겼습니다!! ( 당신 : {user_choice}, 아리스 : {bot_choice} )"
 
     await interaction.response.edit_message(content=result, view=None)
 
