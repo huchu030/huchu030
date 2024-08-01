@@ -210,8 +210,6 @@ async def 숫자야구_포기(interaction: discord.Interaction):
 async def 로또(interaction: discord.Interaction):
     numbers = random.sample(range(1, 46), 6)
     numbers.sort()
-    response = f"이번 주 로또 번호는: {', '.join(map(str, numbers))} 입니다."
-    
     await interaction.response.send_message(f"이번 주 로또 번호는~ {', '.join(map(str, numbers))} 입니다! 당첨되면 저도...")
 
 # Run the bot
