@@ -111,7 +111,7 @@ class NumberBaseballBot(commands.Cog):
             await interaction.response.send_message("진행 중인 게임이 없습니다. 도전부터 해야 포기하는 법!")
             return
         del self.games[interaction.channel.id]
-        await interaction.response.send_message("게임을 포기했습니다. 아리스랑 놀아주세요..")
+        await interaction.response.send_message("게임을 포기했습니다. 아리스랑 놀아주세요...")
 
     def generate_number(self):
         while True:
