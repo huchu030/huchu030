@@ -149,7 +149,7 @@ async def 숫자야구_규칙(interaction: discord.Interaction):
 async def lotto(interaction: discord.Interaction):
     numbers = random.sample(range(1, 46), 6)
     numbers.sort()
-    await interaction.response.send_message(f'이번 주 로또 번호는~ [{numbers}]입니다!', ephemeral=False)
+    await interaction.response.send_message(f'이번 주 로또 번호는~ {numbers} 입니다!', ephemeral=False)
 
 
 
