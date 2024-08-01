@@ -133,14 +133,14 @@ class NumberBaseballBot(commands.Cog):
             await interaction.response.send_message("게임 진행 중이 아닙니다. `/숫자야구` 명령어로 게임을 시작해보세요!")
         elif len(guess) != 3 or not guess.isdigit() or len(set(guess)) != 3:
             await interaction.response.send_message("3자리 숫자를 입력해야 합니다!")
-        elif:
+        else:
             secret_number = self.games[user_id]
             strike, ball = self.check_guess(secret_number, guess)
             if strike == 3:
                 await interaction.response.send_message(f"와아~ 정답입니다! {self.games[interaction.channel.id]['attempts']}회 만에 맞췄어요!")
-            del self.games[user_id]
-        else:
-            await interaction.response.send_message(f"{strike}S {ball}B")
+                del self.games[user_id]
+            else:
+                await interaction.response.send_message(f"{strike}S {ball}B")
 
     @bot.tree.command(name='숫자야구_포기', description="숫자야구 - 게임을 포기합니다")
     async def 숫자야구_포기(self, interaction: discord.Interaction):
