@@ -171,6 +171,11 @@ class NumberGuessingGameBot(commands.Cog):
         await interaction.response.send_message("게임을 포기했습니다. 아리스랑 놀아주세요...")
 
 # 기본 슬래시 명령어
+
+@bot.tree.command(name='test', description="testing")
+async def 안녕(interaction: discord.Interaction):
+    await interaction.response.send_message("tested", ephemeral=False)
+
 @bot.tree.command(name='안녕', description="아리스에게 인사를 건넵니다")
 async def 안녕(interaction: discord.Interaction):
     await interaction.response.send_message("뽜밤뽜밤-!", ephemeral=False)
