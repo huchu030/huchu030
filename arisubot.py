@@ -11,12 +11,73 @@ TOKEN = "MTI2NzEyNDUwNTY4MDI4MTYyMA.Gp_5nb.WpD1gpVbMCVCPrIHIb53jupN67qHj0ps58FE8
 MCHID = 1266916147639615639
 
 # 타임존 설정
-tz = pytz.timezone('Asia/Seoul')
+
 
 # 인텐트 설정
 intents = discord.Intents.all()
 intents.message_content = True
 intents.members = True
+
+
+
+class NumberBaseball:
+    def __init__(self, bot):
+        self.bot = bot
+        self.reset_game()
+
+    def generate_secret_number(self):
+        return ''.join(random.sample('123456789', 3))
+
+    def reset_game(self):
+        self.secret_number = None
+        self.guesses = []
+        self.game_active = False
+        self.attempts = 0
+
+    def start_game(self):
+        self.secret_number = self.generate_secret_number()
+        self.guesses = []
+        self.game_active = True
+        self.attempts = 0
+
+    def make_guess(self, guess):
+        if len(guess) != 3 or len(set(guess)) != 3 or not guess.isdigit():
+            return "3자리 숫자를 입력해야 합니다!"
+
+        self.guesses.append(guess)
+        self.attempts += 1
+
+        if guess == self.secret_number:
+            self.game_active = False
+            return f"와아~ 정답이에요! {self.attempts}회 만에 맞췄습니다!"
+        
+        strikes, balls = self.calculate_strikes_and_balls(guess)
+        return f"{guess} : {strikes}S {balls} B"
+    
+    def calculate_strikes_and_balls(self, guess):
+        strikes = sum(1 for a, b in zip(guess, self.secret_number) if a == b)
+        balls = sum(1 for g in guess if g in self.secret_number) - strikes
+        return strikes, balls
+
+    async def start_game_interaction(self, interaction: discord.Interaction):
+        if self.game_active:
+            await interaction.response.send_message("저와 이미 게임을 하고 있어요!")
+        else:
+            self.start_game()
+            await interaction.response.send_message("뽜밤뽜밤-! 숫자야구 게임이 시작되었습니다! \n`/추측_숫자야구` 명령어를 사용해, 3자리 숫자를 맞춰보세요. \n`/숫자야구_규칙` 명령어로 게임 규칙을 볼 수 있습니다!")
+
+    async def guess_number(self, interaction: discord.Interaction, guess: str):
+        result = self.make_guess(guess)
+        await interaction.response.send_message(result)
+
+    async def give_up(self, interaction: discord.Interaction):
+        if not self.game_active:
+            await interaction.response.send_message("진행 중인 게임이 없습니다. 아리스랑 같이 놀아요!")
+        else:
+            self.game_active = False
+            await interaction.response.send_message(f"게임을 포기하셨습니다. 정답은 {self.secret_number}이었습니다! 아리스랑 놀아주세요...")
+
+
 
 # 봇 클래스 정의
 class MyBot(commands.Bot):
@@ -35,10 +96,8 @@ class MyBot(commands.Bot):
         tracemalloc.start()
 
     
-
-
 bot = MyBot()
-lock = asyncio.Lock()
+
 
 # 채널에 메시지 전송
 @bot.event
@@ -53,6 +112,8 @@ async def on_member_join(member):
 schedule_times_messages = [
     ('19:00', '아리스랑 놀아주세요!'),
 ]
+lock = asyncio.Lock()
+tz = pytz.timezone('Asia/Seoul')
 
 @tasks.loop(minutes=1)
 async def scheduled_task():
@@ -116,62 +177,7 @@ async def 숫자야구_포기(interaction: discord.Interaction):
 
 
 
-class NumberBaseball:
-    def __init__(self, bot):
-        self.bot = bot
-        self.reset_game()
 
-    def generate_secret_number(self):
-        return ''.join(random.sample('123456789', 3))
-
-    def reset_game(self):
-        self.secret_number = None
-        self.guesses = []
-        self.game_active = False
-        self.attempts = 0
-
-    def start_game(self):
-        self.secret_number = self.generate_secret_number()
-        self.guesses = []
-        self.game_active = True
-        self.attempts = 0
-
-    def make_guess(self, guess):
-        if len(guess) != 3 or len(set(guess)) != 3 or not guess.isdigit():
-            return "3자리 숫자를 입력해야 합니다!"
-
-        self.guesses.append(guess)
-        self.attempts += 1
-
-        if guess == self.secret_number:
-            self.game_active = False
-            return f"와아~ 정답이에요! {self.attempts}회 만에 맞췄습니다!"
-        
-        strikes, balls = self.calculate_strikes_and_balls(guess)
-        return f"{guess} : {strikes}S {balls} B"
-    
-    def calculate_strikes_and_balls(self, guess):
-        strikes = sum(1 for a, b in zip(guess, self.secret_number) if a == b)
-        balls = sum(1 for g in guess if g in self.secret_number) - strikes
-        return strikes, balls
-
-    async def start_game_interaction(self, interaction: discord.Interaction):
-        if self.game_active:
-            await interaction.response.send_message("저와 이미 게임을 하고 있어요!")
-        else:
-            self.start_game()
-            await interaction.response.send_message("뽜밤뽜밤-! 숫자야구 게임이 시작되었습니다! \n`/추측_숫자야구` 명령어를 사용해, 3자리 숫자를 맞춰보세요. \n`/숫자야구_규칙` 명령어로 게임 규칙을 볼 수 있습니다!")
-
-    async def guess_number(self, interaction: discord.Interaction, guess: str):
-        result = self.make_guess(guess)
-        await interaction.response.send_message(result)
-
-    async def give_up(self, interaction: discord.Interaction):
-        if not self.game_active:
-            await interaction.response.send_message("진행 중인 게임이 없습니다. 아리스랑 같이 놀아요!")
-        else:
-            self.game_active = False
-            await interaction.response.send_message(f"게임을 포기하셨습니다. 정답은 {self.secret_number}이었습니다! 아리스랑 놀아주세요...")
 
 
             
