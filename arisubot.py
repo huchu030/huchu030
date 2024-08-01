@@ -5,6 +5,7 @@ import datetime
 import pytz
 import tracemalloc
 import random
+import asyncio
 
 # 봇 토큰과 채널 ID
 TOKEN = "MTI2NzEyNDUwNTY4MDI4MTYyMA.Gp_5nb.WpD1gpVbMCVCPrIHIb53jupN67qHj0ps58FE8k"  # 실제 토큰으로 교체하세요
@@ -37,6 +38,7 @@ class MyBot(commands.Bot):
         await self.add_cog(NumberBaseballBot(self))
 
 bot = MyBot()
+lock = asyncio.Lock()
 
 # 채널에 메시지 전송
 @bot.event
@@ -54,26 +56,27 @@ schedule_times_messages = [
 
 @tasks.loop(minutes=1)
 async def scheduled_task():
-    try:
-        now = datetime.datetime.now(tz)
-        current_time = now.strftime('%H:%M')
-        print(f'[DEBUG] 현재시각: {current_time}')
+    async with lock:
+        try:
+            now = datetime.datetime.now(tz)
+            current_time = now.strftime('%H:%M')
+            print(f'[DEBUG] 현재시각: {current_time}')
         
-        for time_str, message in schedule_times_messages:
-            if current_time == time_str:
-                print('[DEBUG] 지정시각이당')
-                channel = bot.get_channel(MCHID)
+            for time_str, message in schedule_times_messages:
+                if current_time == time_str:
+                    print('[DEBUG] 지정시각이당')
+                    channel = bot.get_channel(MCHID)
                 
-                if channel:
-                    await channel.send(message)
-                    print(f'[DEBUG] 성공')
-                else:
-                    print(f'[ERROR] 채널없어')
-                break
-        else:
-            print('[DEBUG] 지정시각아니야')
-    except Exception as e:
-        print(f'[ERROR] 오류 발생: {e}')
+                    if channel:
+                        await channel.send(message)
+                        print(f'[DEBUG] 성공')
+                    else:
+                        print(f'[ERROR] 채널없어')
+                    break
+            else:
+                print('[DEBUG] 지정시각아니야')
+        except Exception as e:
+            print(f'[ERROR] 오류 발생: {e}')
 
 # 기본 슬래시 명령어
 @bot.tree.command(name='안녕', description="아리스에게 인사를 건넵니다")
