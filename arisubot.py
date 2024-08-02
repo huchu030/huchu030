@@ -253,7 +253,7 @@ class RPG:
 
     def end_game(self, user):
         if user.id in self.game_in_progress:
-        del self.game_in_progress[user.id]
+            del self.game_in_progress[user.id]
         if user.id in self.enemies:
             del self.enemies[user.id]
         self.save_game_state() # 게임이 종료될 때 상태를 저장
