@@ -31,6 +31,7 @@ file_path = 'game_state.json'
 api_url = f'https://api.github.com/repos/{repo_owner}/{repo_name}/contents/{file_path}'
 
 # GitHub 파일 업데이트 함수
+
 def update_github_file(game_state):
     encoded_content = base64.b64encode(json.dumps(game_state).encode()).decode()
     headers = {
@@ -265,7 +266,8 @@ class Enemy:
 
 
 class RPG:
-    def __init__(self):
+    def __init__(self, save_file_path):
+        self.save_file = save_file_path
         self.players = {}
         self.game_in_progress = {}
         self.enemies = {}
@@ -310,8 +312,8 @@ class RPG:
         print("Game state saved.")  # 디버그 로그
 
     def load_game_state(self):
-        print(f"Loading game state from {API_URL}...")
-        response = requests.get(API_URL)
+        print(f"Loading game state from {api_url}...")
+        response = requests.get(api_url)
         if response.status_code == 200:
             file_info = response.json()
             content = base64.b64decode(file_info['content']).decode()
