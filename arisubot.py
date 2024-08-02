@@ -305,7 +305,7 @@ class MyBot(commands.Bot):
         scheduled_task.start()
         tracemalloc.start()
 
-def get_member_nickname(guild, user_id):
+def get_user_nickname(guild, user_id):
     member = guild.get_member(user_id)
     if member:
         return member.display_name
