@@ -198,8 +198,8 @@ async def 운세(interaction: discord.Interaction):
         fortune = random.choice(bot.fortunes)  # 리스트에서 랜덤으로 메시지 선택
         bot.fortune_manager.set_last_fortune(user_id, fortune)
         bot.fortune_manager.update_last_fortune_date(user_id)
-        await interaction.response.send_message(f"[오늘의 {user_nickname}님의 운세]\n",
-                                                "\n",
+        await interaction.response.send_message(f"[오늘의 {user_nickname}님의 운세]\n"
+                                                "\n"
                                                 f"{fortune}")
     else:
         last_fortune = bot.fortune_manager.get_last_fortune(user_id)
