@@ -15,7 +15,7 @@ intents = discord.Intents.default()
 intents.message_content = True
 intents.members = True
 
-class NumberBaseball:
+class NumberBaseballGame:
     def __init__(self, bot):
         self.bot = bot
         self.reset_game()
@@ -44,7 +44,7 @@ class NumberBaseball:
 
         if guess == self.secret_number:
             self.game_active = False
-            return f"와아~ 정답이에요! {self.attempts}회 만에 맞췄습니다!"
+            return f"와아~ 정답이에요! 답은 {game.secret_number}! {self.attempts}회 만에 맞췄습니다!"
         
         strikes, balls = self.calculate_strikes_and_balls(guess)
         return f"{guess} : {strikes}S {balls}B"
@@ -54,26 +54,44 @@ class NumberBaseball:
         balls = sum(1 for g in guess if g in self.secret_number) - strikes
         return strikes, balls
 
+
+class NumberBaseball:
+    def __init__(self, bot):
+        self.bot = bot
+        self.games = {}
+
+    def get_game(self, user):
+        if user not in self.games:
+            self.games[user] = NumberBaseballGame()
+        return self.games[user]
+
     async def start_game_interaction(self, interaction: discord.Interaction):
-        if self.game_active:
+        user = interaction.user
+        game = self.get_game(user)
+        if game.game_active:
             await interaction.response.send_message("저와 이미 게임을 하고 있어요!")
         else:
-            self.start_game()
+            game.start_game()
             await interaction.response.send_message("뽜밤뽜밤-! 숫자야구 게임이 시작되었습니다! \n`/숫자야구_추측` 명령어를 사용해 3자리 숫자를 맞춰보세요. \n`/숫자야구_규칙` 명령어로 게임 규칙을 볼 수 있습니다!")
 
     async def guess_number(self, interaction: discord.Interaction, guess: str):
-        if not self.game_active:
+        user = interaction.user
+        game = self.get_game(user)
+        if not game.game_active:
             await interaction.response.send_message("진행 중인 게임이 없습니다. 아리스랑 같이 놀아요!")
         else:
-            result = self.make_guess(guess)
+            result = game.make_guess(guess)
             await interaction.response.send_message(result)
 
     async def give_up(self, interaction: discord.Interaction):
-        if not self.game_active:
+        user = interaction.user
+        game = self.get_game(user)
+        if not game.game_active:
             await interaction.response.send_message("진행 중인 게임이 없습니다. 아리스랑 같이 놀아요!")
         else:
-            self.game_active = False
-            await interaction.response.send_message(f"게임을 포기하셨습니다. 정답은 {self.secret_number}입니다! \n아리스랑 놀아주세요...")
+            game.game_active = False
+            await interaction.response.send_message(f"게임을 포기하셨습니다. 정답은 {game.secret_number}입니다! \n아리스랑 놀아주세요...")
+
 
 # 봇 클래스 정의
 class MyBot(commands.Bot):
