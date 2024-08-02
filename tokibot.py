@@ -175,6 +175,8 @@ async def 서브웨이(interaction: discord.Interaction):
 
 @bot.tree.command(name="운세", description="토키가 오늘의 운세를 알려줍니다")
 async def 운세(interaction: discord.Interaction):
+    await interaction.response.defer()
+    
     user_id = interaction.user.id
     if bot.fortune_manager.can_show_fortune(user_id):
         fortune = random.choice(bot.fortunes)  # 리스트에서 랜덤으로 메시지 선택
