@@ -269,7 +269,7 @@ class RPG:
         print("Game state saved.")  # 디버그 로그
 
     def load_game_state(self):
-    print(f"Loading game state from {self.save_file}...")
+        print(f"Loading game state from {self.save_file}...")
     if os.path.exists(self.save_file):
         with open(self.save_file, 'r') as f:
             try:
