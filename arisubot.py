@@ -212,7 +212,7 @@ class rpg:
         user_id = str(interaction.user.id)
         data = self.load_game_data()
         if user_id in data["players"]:
-            await interaction.response.send_message("저와 이미 게임을 하고 있어요!")
+            await interaction.response.send_message("'/공격'으로 빨리 적을 공격하세요!")
             return
         
         self.add_new_player(user_id)
@@ -376,17 +376,18 @@ async def button_callback(interaction: discord.Interaction, user: discord.User):
     options = ['가위', '바위', '보']
     bot_choice = random.choice(options)
     user_choice = interaction.data['custom_id']
-    
+    guild = interaction.guild
+    user_nickname = get_user_nickname(guild, interaction.user.id)
     result = ""
     
     if user_choice == bot_choice:
-        result = f"비겼습니다. 한 판 더 해요! \n( 당신 : {user_choice}, 아리스 : {bot_choice} )"
+        result = f"비겼습니다. 한 판 더 해요! \n( {user_nickname} : {user_choice}, 아리스 : {bot_choice} )"
     elif (user_choice == '가위' and bot_choice == '보') or \
          (user_choice == '바위' and bot_choice == '가위') or \
          (user_choice == '보' and bot_choice == '바위'):
-        result = f"아리스가 졌어요. 끄앙 \n( 당신 : {user_choice}, 아리스 : {bot_choice} )"
+        result = f"아리스가 졌어요. 끄앙 \n( {user_nickname} : {user_choice}, 아리스 : {bot_choice} )"
     else: 
-        result = f"아리스가 이겼습니다!! \n( 당신 : {user_choice}, 아리스 : {bot_choice} )"
+        result = f"아리스가 이겼습니다!! \n( {user_nickname} : {user_choice}, 아리스 : {bot_choice} )"
 
     await interaction.response.edit_message(content=result, view=None)
 
