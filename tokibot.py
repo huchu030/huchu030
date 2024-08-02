@@ -1,7 +1,6 @@
 import discord
 from discord.ext import commands, tasks
 import datetime
-from datetime import datetime
 import asyncio
 import tracemalloc
 import random
@@ -94,32 +93,32 @@ schedule_times_messages = [
     ('16:00', '심심하지 않으신가요? 그럴 땐, 도박을 권장드립니다.'),
     ('22:00', '오늘도 수고하셨습니다. 물론 저도요. 뿅뿅'),
 ]
+lock = asyncio.Lock()
 tz = pytz.timezone('Asia/Seoul')
 
 @tasks.loop(minutes=1)
 async def scheduled_task():
-    try:
-        now = datetime.datetime.now(tz)
-        current_time = now.strftime('%H:%M')
-        print(f'[DEBUG] 현재시각:{current_time}')
+    async with lock:
+        try:
+            now = datetime.datetime.now(tz)
+            current_time = now.strftime('%H:%M')
+            print(f'[DEBUG] 현재시각: {current_time}')
         
-        for time_str, message in schedule_times_messages:
-            if current_time == time_str:
-                print('[DEBUG] 지정시각이당')
-                channel = bot.get_channel(mchid)
+            for time_str, message in schedule_times_messages:
+                if current_time == time_str:
+                    print('[DEBUG] 지정시각이당')
+                    channel = bot.get_channel(MCHID)
                 
-                if channel:
-                    await channel.send(message)
-                    print(f'[DEBUG] 성공')
-                    await asyncio.sleep(60)  # Avoid multiple messages within the same minute
-                else:
-                    print(f'[ERROR] 채널없어')
-
-                break
-        else:
-            print('[DEBUG] 지정시각아니야')
-    except Exception as e:
-        print(f'[ERROR] 오류 발생: {e}')
+                    if channel:
+                        await channel.send(message)
+                        print(f'[DEBUG] 성공')
+                    else:
+                        print(f'[ERROR] 채널없어')
+                    break
+            else:
+                print('[DEBUG] 지정시각아니야')
+        except Exception as e:
+            print(f'[ERROR] 오류 발생: {e}')
 
 # 가위바위보
 
