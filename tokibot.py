@@ -17,12 +17,53 @@ intents = discord.Intents.all()
 intents.message_content = True
 intents.members = True
 
+# 운세
+
+class FortuneManager:
+    def __init__(self):
+        self.user_last_fortune_date = {}  # 유저별 마지막 운세 조회 날짜 저장
+
+    def can_show_fortune(self, user_id):
+        today = datetime.now().date()
+        if user_id in self.user_last_fortune_date:
+            last_date = self.user_last_fortune_date[user_id]
+            return last_date < today
+        return True
+
+    def update_last_fortune_date(self, user_id):
+        self.user_last_fortune_date[user_id] = datetime.now().date()
+
 # 봇 클래스 정의
 
 class MyBot(commands.Bot):
     def __init__(self, **kwargs):
         super().__init__(command_prefix='!', intents=intents, **kwargs)
         self.synced = False
+        self.fortune_manager = FortuneManager()
+        self.fortunes = [  # 운세 메시지 리스트
+            "오늘은 행운이 가득한 날입니다.",
+            "조금 더 노력하면 큰 성과를 얻을 수 있을 것입니다.",
+            "누군가가 당신에게 도움을 줄 것입니다.",
+            "오늘은 도전 정신이 필요한 날입니다. 어려운 문제를 해결하는 기회로 삼으세요.",
+            "오늘은 쉬어도 됩니다.",
+            "인내와 끈기가 필요한 하루입니다. 힘든 일이 닥치더라도 나아가세요.",
+            "소중한 사람과의 만남이 기다리고 있습니다.",
+            "균형 잡힌 식사와 충분한 휴식이 필요한 날입니다. 몸과 마음을 돌보는 시간을 가지세요.”,
+            "예상치 못한 어려움이 올 수 있지만, 그것이 성장의 계기가 될 것입니다.",
+            "소중한 사람과의 관계가 더욱 깊어질 수 있는 기회가 올 것입니다.",
+            "감정 표현이 중요한 날입니다. 소중한 사람에게 당신의 진심을 전해보세요.",
+            "활동적인 하루를 보내세요. 운동이나 산책으로 스트레스를 해소하는 것이 좋습니다.",
+            "긍정적인 생각이 긍정적인 결과를 가져올 것입니다.",
+            "오늘은 수능 만점이 나올 운세입니다!",
+            "오늘의 행운의 색은 노란색입니다.",
+            "오늘의 행운의 색은 보라색입니다.",
+            "오늘의 행운의 색은 검정색입니다.",
+            "오늘의 행운의 색은 빨간색입니다.",
+            "오늘의 행운의 색은 파란색입니다.",
+            "오늘의 행운의 색은 흰색입니다.",
+            "오늘은 서브웨이를 드셔보세요. '/서브웨이' 명령어를 사용해 레시피를 추천받을 수 있습니다."
+            
+        ]
 
     async def on_ready(self):
         print(f'봇이 로그인되었습니다: {self.user.name}')
@@ -104,24 +145,39 @@ async def button_callback(interaction: discord.Interaction, user: discord.User):
 
     await interaction.response.edit_message(content=result, view=None)
 
-
 # 기본 명령어
 
 @bot.tree.command(name='안녕', description="토키에게 인사를 건넵니다")
 async def 안녕(interaction: discord.Interaction):
-    await interaction.response.send_message("안녕하세요.", ephemeral=False)
+    await interaction.response.send_message("안녕하세요.")
 
 @bot.tree.command(name='청소', description="토키가 청소를 합니다")
 async def 청소(interaction: discord.Interaction):
-    await interaction.response.send_message("쓱싹쓱싹..", ephemeral=False)
+    await interaction.response.send_message("쓱싹쓱싹..")
 
 @bot.tree.command(name='퍽', description="토키를 때립니다")
 async def 퍽(interaction: discord.Interaction):
-    await interaction.response.send_message("아야..", ephemeral=False)
+    await interaction.response.send_message("아야..")
 
 @bot.tree.command(name='쓰담', description="토키를 쓰다듬습니다")
 async def 쓰담(interaction: discord.Interaction):
-    await interaction.response.send_message("엣. . 갑자기요? 저야 좋습니다만.", ephemeral=False)
+    await interaction.response.send_message("엣. . 갑자기요? 저야 좋습니다만.")
+
+@bot.tree.command(name='서브웨이', description="토키가 서브웨이 레시피를 추천해줍니다")
+async def 서브웨이(interaction: discord.Interaction):
+    await interaction.response.send_message("[메뉴] \n클럽 / 이탈리안 비엠티 + 에그마요 / 쉬림프 + 에그마요 / k바비큐 + 에그마요 \n \n[빵] \n화이트 / 파마산 / 플랫브레드 \n \n[치즈] \n모짜렐라 \n \n[야채] \n알아서 \n \n[소스] \n스위트칠리 + 어니언 / 랜치 + 스위트칠리 / 스위트어니언 + 치폴레 / 스모크바비큐 + 스위트칠리 \n \n[팁] \n소스에 소금/후추를 추가해보세요. \n오븐에 토스팅하기 전에 피망/양파를 추가해서 같이 토스팅해보세요.")
+
+@bot.tree.command(name="운세", description="토키가 오늘의 운세를 알려줍니다")
+async def 운세(interaction: discord.Interaction):
+    user_id = interaction.user.id
+    if bot.fortune_manager.can_show_fortune(user_id):
+        fortune = random.choice(bot.fortunes)  # 리스트에서 랜덤으로 메시지 선택
+        await interaction.response.send_message(f"{fortune}")
+        bot.fortune_manager.update_last_fortune_date(user_id)
+    else:
+        await interaction.response.send_message(f"{fortune}")
+
+
 
 
 # 봇 실행
