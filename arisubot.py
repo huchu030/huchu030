@@ -93,17 +93,6 @@ class NumberBaseball:
             game.game_active = False
             await interaction.response.send_message(f"게임을 포기했습니다. 정답은 {game.secret_number}입니다! \n아리스랑 놀아주세요...")
 
-@bot.tree.command(name="숫자야구", description="아리스와 숫자야구 게임을 시작합니다")
-async def 숫자야구(interaction: discord.Interaction):
-    await bot.number_baseball.start_game_interaction(interaction)
-
-@bot.tree.command(name="숫자야구_추측", description="숫자야구 - 숫자를 추측합니다")
-async def 숫자야구_추측(interaction: discord.Interaction, guess: str):
-    await bot.number_baseball.guess_number(interaction, guess)
-
-@bot.tree.command(name="숫자야구_포기", description="숫자야구 - 게임을 포기합니다")
-async def 숫자야구_포기(interaction: discord.Interaction):
-    await bot.number_baseball.give_up(interaction)
 
 
 # 숫자 맞히기
@@ -178,17 +167,7 @@ class NumberGuessing:
             game.game_active = False
             await interaction.response.send_message(f"게임을 포기했습니다. 정답은 {game.secret_number}입니다! \n아리스랑 놀아주세요...")
 
-@bot.tree.command(name="숫자게임", description="아리스와 숫자 맞히기 게임을 시작합니다")
-async def 숫자추측(interaction: discord.Interaction):
-    await bot.number_guessing.start_game_interaction(interaction)
 
-@bot.tree.command(name="숫자게임_추측", description="숫자게임 - 숫자를 추측합니다")
-async def 숫자추측_추측(interaction: discord.Interaction, guess: str):
-    await bot.number_guessing.guess_number(interaction, guess)
-
-@bot.tree.command(name="숫자게임_포기", description="숫자게임 - 게임을 포기합니다")
-async def 숫자추측_포기(interaction: discord.Interaction):
-    await bot.number_guessing.give_up(interaction)
 
 
 # RPG 게임
@@ -215,7 +194,7 @@ class Enemy:
         self.attack = attack
         self.defense = defense
 
-        def attack_player(self, player):
+    def attack_player(self, player):
         damage = self.attack - player.defense
         if damage > 0:
             player.hp -= damage
@@ -229,23 +208,6 @@ class RPG:
         if user.id not in self.players:
             self.players[user.id] = Player(user.name)
         return self.players[user.id]
-
-@bot.tree.command(name='RPG게임', description="아리스와 RPG 게임을 합니다")
-async def RPG게임(interaction: discord.Interaction):
-    player = bot.rpg.get_player(interaction.user)
-    await interaction.response.send_message(f"{player.name}님, RPG 게임을 시작합니다! HP: {player.hp}, 공격력: {player.attack}, 방어력: {player.defense}")
-
-@bot.tree.command(name='RPG_공격', description="적을 공격합니다")
-async def RPG_공격(interaction: discord.Interaction):
-    player = bot.rpg.get_player(interaction.user)
-    enemy = Enemy("쨈미", 50, 5, 2)
-    damage = player.attack_enemy(enemy)
-    if enemy.hp <= 0:
-        await interaction.response.send_message(f"{enemy.name}을(를) 공격하여 {damage}의 피해를 입혔습니다. {enemy.name}이(가) 쓰러졌습니다!")
-    else:
-        enemy_damage = enemy.attack_player(player)
-        await interaction.response.send_message(f"{enemy.name}을(를) 공격하여 {damage}의 피해를 입혔습니다. {enemy.name}의 HP: {enemy.hp}\n{enemy.name}이(가) 반격하여 {enemy_damage}의 피해를 입었습니다. {player.name}님의 HP: {player.hp}")
-
 
 
 
@@ -367,6 +329,47 @@ async def 쓰담(interaction: discord.Interaction):
 async def 숫자야구_규칙(interaction: discord.Interaction):
     await interaction.response.send_message(
         "[숫자야구 룰]\n \n아리스가 정한 3자리 숫자를 맞히는 게임입니다! \n숫자는 0부터 9까지의 서로 다른 숫자 3개이며 \n숫자와 위치가 전부 맞으면 S (스트라이크), \n숫자와 위치가 틀리면 B (볼) 입니다. \n \n예시를 들어볼까요? 제가 정한 숫자가 ‘123’이면\n456 : 0S 0B\n781 : 0S 1B\n130 : 1S 1B\n132 : 1S 2B\n123 : 3S 0B 입니다! \n \n아리스랑 같이 놀아요 끄앙")
+
+@bot.tree.command(name="숫자야구", description="아리스와 숫자야구 게임을 시작합니다")
+async def 숫자야구(interaction: discord.Interaction):
+    await bot.number_baseball.start_game_interaction(interaction)
+
+@bot.tree.command(name="숫자야구_추측", description="숫자야구 - 숫자를 추측합니다")
+async def 숫자야구_추측(interaction: discord.Interaction, guess: str):
+    await bot.number_baseball.guess_number(interaction, guess)
+
+@bot.tree.command(name="숫자야구_포기", description="숫자야구 - 게임을 포기합니다")
+async def 숫자야구_포기(interaction: discord.Interaction):
+    await bot.number_baseball.give_up(interaction)
+
+
+@bot.tree.command(name="숫자게임", description="아리스와 숫자 맞히기 게임을 시작합니다")
+async def 숫자추측(interaction: discord.Interaction):
+    await bot.number_guessing.start_game_interaction(interaction)
+
+@bot.tree.command(name="숫자게임_추측", description="숫자게임 - 숫자를 추측합니다")
+async def 숫자추측_추측(interaction: discord.Interaction, guess: str):
+    await bot.number_guessing.guess_number(interaction, guess)
+
+@bot.tree.command(name="숫자게임_포기", description="숫자게임 - 게임을 포기합니다")
+async def 숫자추측_포기(interaction: discord.Interaction):
+    await bot.number_guessing.give_up(interaction)
+
+@bot.tree.command(name='rpg', description="아리스와 RPG 게임을 합니다")
+async def rpg(interaction: discord.Interaction):
+    player = bot.rpg.get_player(interaction.user)
+    await interaction.response.send_message(f"{player.name}님, RPG 게임을 시작합니다! HP: {player.hp}, 공격력: {player.attack}, 방어력: {player.defense}")
+
+@bot.tree.command(name='rpg_공격', description="적을 공격합니다")
+async def rpg_공격(interaction: discord.Interaction):
+    player = bot.rpg.get_player(interaction.user)
+    enemy = Enemy("쨈미", 50, 5, 2)
+    damage = player.attack_enemy(enemy)
+    if enemy.hp <= 0:
+        await interaction.response.send_message(f"{enemy.name}을(를) 공격하여 {damage}의 피해를 입혔습니다. {enemy.name}이(가) 쓰러졌습니다!")
+    else:
+        enemy_damage = enemy.attack_player(player)
+        await interaction.response.send_message(f"{enemy.name}을(를) 공격하여 {damage}의 피해를 입혔습니다. {enemy.name}의 HP: {enemy.hp}\n{enemy.name}이(가) 반격하여 {enemy_damage}의 피해를 입었습니다. {player.name}님의 HP: {player.hp}")
 
 
 
