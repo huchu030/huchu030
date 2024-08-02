@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands, tasks
 import datetime
+from datetime import datetime
 import pytz
 from discord import app_commands
 import tracemalloc
@@ -357,7 +358,7 @@ tz = pytz.timezone('Asia/Seoul')
 async def scheduled_task():
     async with lock:
         try:
-            now = datetime.datetime.now(tz)
+            now = datetime.now(tz)
             current_time = now.strftime('%H:%M')
             print(f'[DEBUG] 현재시각: {current_time}')
         
