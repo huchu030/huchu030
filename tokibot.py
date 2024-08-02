@@ -22,6 +22,7 @@ intents.members = True
 class FortuneManager:
     def __init__(self):
         self.user_last_fortune_date = {}  # 유저별 마지막 운세 조회 날짜 저장
+        self.user_last_fortune = {}
 
     def can_show_fortune(self, user_id):
         today = datetime.now().date()
@@ -32,6 +33,12 @@ class FortuneManager:
 
     def update_last_fortune_date(self, user_id):
         self.user_last_fortune_date[user_id] = datetime.now().date()
+
+    def get_last_fortune(self, user_id):
+        return self.user_last_fortune.get(user_id, None)
+
+    def set_last_fortune(self, user_id, fortune):
+        self.user_last_fortune[user_id] = fortune
 
 # 봇 클래스 정의
 
@@ -171,12 +178,13 @@ async def 운세(interaction: discord.Interaction):
     user_id = interaction.user.id
     if bot.fortune_manager.can_show_fortune(user_id):
         fortune = random.choice(bot.fortunes)  # 리스트에서 랜덤으로 메시지 선택
-        await interaction.response.send_message(f"{fortune}")
+        bot.fortune_manager.set_last_fortune(user_id, fortune)
         bot.fortune_manager.update_last_fortune_date(user_id)
+        await interaction.response.send_message(f"{fortune}")
     else:
         last_fortune = bot.fortune_manager.get_last_fortune(user_id)
         if last_fortune:
-            await interaction.response.send_message(f"오늘의 운세: {last_fortune}")
+            await interaction.response.send_message(f"{last_fortune}")
         else:
             await interaction.response.send_message("운세 메시지를 불러올 수 없습니다. 다시 시도해 주세요.")
 
