@@ -9,6 +9,7 @@ import os
 import requests
 import json
 import base64
+import aiofiles
 
 # 토큰, 채널 ID
 
@@ -297,36 +298,16 @@ class RPG:
             del self.enemies[user.id]
         self.save_game_state() # 게임이 종료될 때 상태를 저장
             
-    def save_game_state(self):
-        print("Saving game state...")
-        data = {
-            'players': {user_id: vars(player) for user_id, player in self.players.items()},
-            'game_in_progress': self.game_in_progress,
-            'enemies': {user_id: vars(enemy) for user_id, enemy in self.enemies.items()}
-        }
-        encoded_content = base64.b64encode(json.dumps(data).encode()).decode()
-        headers = {
-            'Authorization': f'token {GITHUB_TOKEN}',
-            'Content-Type': 'application/json'
-        }
-        # Fetch the current file information to get the SHA for updating
-        response = requests.get(API_URL, headers=headers)
-        if response.status_code == 200:
-            file_info = response.json()
-            sha = file_info['sha']
-            update_data = {
-                "message": "Updating game state",
-                "content": encoded_content,
-                "sha": sha
-            }
-            response = requests.put(API_URL, headers=headers, data=json.dumps(update_data))
-            if response.status_code == 200:
-                print("File updated successfully.")
-            else:
-                print(f"Failed to update file: {response.status_code} - {response.text}")
-        else:
-            print(f"Failed to fetch file info: {response.status_code} - {response.text}")
-
+    async def save_game_state(self):
+    print("Saving game state...")  # 디버그 로그
+    data = {
+        'players': {user_id: vars(player) for user_id, player in self.players.items()},
+        'game_in_progress': self.game_in_progress,
+        'enemies': {user_id: vars(enemy) for user_id, enemy in self.enemies.items()}
+    }
+    async with aiofiles.open(self.save_file, 'w') as f:
+        await f.write(json.dumps(data))
+    print("Game state saved.")  # 디버그 로그
 
     def load_game_state(self):
         print(f"Loading game state from {API_URL}...")
@@ -532,7 +513,6 @@ async def rpg_start(interaction: discord.Interaction):
     await interaction.response.send_message(f"뽜밤뽜밤-! RPG 게임을 시작합니다! \n"
                                             f"HP: {player.hp}, 공격력: {player.attack}, 방어력: {player.defense}")
 
-    
 @bot.tree.command(name='rpg_공격', description="적을 공격합니다")
 async def rpg_공격(interaction: discord.Interaction):
     player = bot.rpg.get_player(interaction.user)
@@ -554,14 +534,15 @@ async def rpg_공격(interaction: discord.Interaction):
     if enemy.hp <= 0:
         player.gain_exp(20)  # 적을 쓰러뜨리면 경험치 획득
         level_up = player.level_up()  # 레벨 업 시 True 반환
-        
+
         # 게임 상태 종료 및 적 제거
         bot.rpg.end_game(interaction.user)
         
         # 서버의 닉네임 가져오기
         guild = interaction.guild
         player_name = await get_member_nickname(guild, interaction.user.id)
-        
+
+        # 응답 메시지 전송
         if level_up:
             await interaction.response.send_message(
                 f"{player_name}님이 {enemy.name}을 공격하여 {player_damage}의 피해를 입혔습니다.\n"
@@ -576,7 +557,7 @@ async def rpg_공격(interaction: discord.Interaction):
                 f"{player_name}님의 공격력: {player.attack}, 방어력: {player.defense}, HP: {player.hp}\n"
                 f"경험치 20을 획득하였습니다. 게임이 종료되었습니다."
             )
-        return  # 추가: 게임 종료 후 바로 응답을 반환하여 이후 코드가 실행되지 않도록 함
+        return  # 응답 후 추가 실행 방지
 
     # 플레이어 사망 처리
     if player.hp <= 0:
@@ -593,10 +574,9 @@ async def rpg_공격(interaction: discord.Interaction):
             f"{enemy.name}이 반격하여 {enemy_damage}의 피해를 입었습니다.\n"
             f"{player_name}님이 사망하셔서 게임이 초기화되었습니다. 끄앙\n"
         )
-        return  # 추가: 플레이어 사망 후 응답을 반환하여 이후 코드가 실행되지 않도록 함
+        return  # 응답 후 추가 실행 방지
 
     # 일반 전투 상태
-    # 서버의 닉네임 가져오기
     guild = interaction.guild
     player_name = await get_member_nickname(guild, interaction.user.id)
     
