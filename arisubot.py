@@ -453,8 +453,8 @@ async def rpg_공격(interaction: discord.Interaction):
         return
 
     enemy = bot.rpg.enemies.get(interaction.user.id)
-    if enemy is None:
-        await interaction.response.send_message("오류 메시지입니다. 게임을 다시 시작해주세요!")
+    if not enemy:
+        await interaction.response.send_message("오류 메시지 : 적이 도망갔습니다..?")
         return
     
     # 플레이어의 공격
