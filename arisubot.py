@@ -253,9 +253,10 @@ class RPG:
 
     def end_game(self, user):
         if user.id in self.game_in_progress:
-            del self.game_in_progress[user.id]
+        del self.game_in_progress[user.id]
+        if user.id in self.enemies:
             del self.enemies[user.id]
-            self.save_game_state()  # 게임이 종료될 때 상태를 저장
+        self.save_game_state() # 게임이 종료될 때 상태를 저장
             
     def save_game_state(self):
         print("Saving game state...")  # 디버그 로그
@@ -489,9 +490,9 @@ async def rpg_공격(interaction: discord.Interaction):
         player.gain_exp(20)  # 적을 쓰러뜨리면 경험치 획득
         level_up = player.level_up()  # 레벨 업 시 True 반환
         
+        # 게임 상태 종료 및 적 제거
         bot.rpg.end_game(interaction.user)
-        bot.rpg.enemies[interaction.user.id] = None  # 적을 None으로 설정하여 초기화된 상태로
-
+        
         # 서버의 닉네임 가져오기
         guild = interaction.guild
         player_name = await get_member_nickname(guild, interaction.user.id)
