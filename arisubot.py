@@ -475,9 +475,9 @@ async def rpg_공격(interaction: discord.Interaction):
             )
     else:
         # 서버의 닉네임 가져오기
-            guild = interaction.guild
-            player_name = await get_member_nickname(guild, interaction.user.id)
-      
+        guild = interaction.guild
+        player_name = await get_member_nickname(guild, interaction.user.id)
+
         if player.hp <= 0:
             player.reset()
             bot.rpg.end_game(interaction.user)
