@@ -82,6 +82,12 @@ class MyBot(commands.Bot):
         scheduled_task.start()
         tracemalloc.start()
 
+def get_user_nickname(guild, user_id):
+    member = guild.get_member(user_id)
+    if member:
+        return member.display_name
+    return "Unknown"
+
 bot = MyBot()
 
 # 알림 메시지
@@ -139,25 +145,31 @@ async def button_callback(interaction: discord.Interaction, user: discord.User):
     options = ['가위', '바위', '보']
     bot_choice = random.choice(options)
     user_choice = interaction.data['custom_id']
-    
+    guild = interaction.guild
+    user_nickname = get_user_nickname(guild, interaction.user.id)
+
     result = ""
     
     if user_choice == bot_choice:
-        result = f"비겼습니다. 한 판 더 해주세요. \n( 당신 : {user_choice}, 토키 : {bot_choice} )"
+        result = f"비겼습니다. 한 판 더 해주세요. \n( {user_nickname} : {user_choice}, 토키 : {bot_choice} )"
     elif (user_choice == '가위' and bot_choice == '보') or \
          (user_choice == '바위' and bot_choice == '가위') or \
          (user_choice == '보' and bot_choice == '바위'):
-        result = f"제가 졌습니다. \n... \n딱히 승부욕을 느낀다거나, 그런 건 아닙니다만. \n( 당신 : {user_choice}, 토키 : {bot_choice} )"
+        result = f"제가 졌습니다. \n... \n딱히 승부욕을 느낀다거나, 그런 건 아닙니다만. \n( {user_nickname} : {user_choice}, 토키 : {bot_choice} )"
     else: 
-        result = f"제가 이겼어요. 얏호~ \n( 당신 : {user_choice}, 토키 : {bot_choice} )"
+        result = f"제가 이겼어요. 얏호~ \n( {user_nickname} : {user_choice}, 토키 : {bot_choice} )"
 
     await interaction.response.edit_message(content=result, view=None)
 
 # 기본 명령어
 
+
+
 @bot.tree.command(name='안녕', description="토키에게 인사를 건넵니다")
 async def 안녕(interaction: discord.Interaction):
-    await interaction.response.send_message("안녕하세요.")
+    guild = interaction.guild
+    user_nickname = get_user_nickname(guild, interaction.user.id)
+    await interaction.response.send_message("앗 {user_nickname}님, 안녕하세요.")
 
 @bot.tree.command(name='청소', description="토키가 청소를 합니다")
 async def 청소(interaction: discord.Interaction):
@@ -178,11 +190,15 @@ async def 서브웨이(interaction: discord.Interaction):
 @bot.tree.command(name="운세", description="토키가 오늘의 운세를 알려줍니다")
 async def 운세(interaction: discord.Interaction):
     user_id = interaction.user.id
+    guild = interaction.guild
+    user_nickname = get_user_nickname(guild, interaction.user.id)
     if bot.fortune_manager.can_show_fortune(user_id):
         fortune = random.choice(bot.fortunes)  # 리스트에서 랜덤으로 메시지 선택
         bot.fortune_manager.set_last_fortune(user_id, fortune)
         bot.fortune_manager.update_last_fortune_date(user_id)
-        await interaction.response.send_message(f"{fortune}")
+        await interaction.response.send_message(f"[오늘의 {user_nickname}님의 운세]\n",
+                                                "\n",
+                                                f"{fortune}")
     else:
         last_fortune = bot.fortune_manager.get_last_fortune(user_id)
         if last_fortune:
