@@ -550,6 +550,7 @@ async def rpg_공격(interaction: discord.Interaction):
     # 적의 반격
     enemy_damage = enemy.attack_player(player)
 
+    # 게임 승리
     if enemy.hp <= 0:
         player.gain_exp(20)  # 적을 쓰러뜨리면 경험치 획득
         level_up = player.level_up()  # 레벨 업 시 True 반환
@@ -575,33 +576,36 @@ async def rpg_공격(interaction: discord.Interaction):
                 f"{player_name}님의 공격력: {player.attack}, 방어력: {player.defense}, HP: {player.hp}\n"
                 f"경험치 20을 획득하였습니다. 게임이 종료되었습니다."
             )
-    else:
-        if player.hp <= 0:
-            player.reset()
-            bot.rpg.end_game(interaction.user)
-            
-            # 서버의 닉네임 가져오기
-            guild = interaction.guild
-            player_name = await get_member_nickname(guild, interaction.user.id)
-            
-            await interaction.response.send_message(
-                f"{player_name}님이 {enemy.name}을 공격하여 {player_damage}의 피해를 입혔습니다.\n"
-                f"{enemy.name}의 HP: {enemy.hp}\n"
-                f"{enemy.name}이 반격하여 {enemy_damage}의 피해를 입었습니다.\n"
-                f"{player_name}님이 사망하셔서 게임이 초기화되었습니다. 끄앙\n"
-            )
-        else:
-            # 서버의 닉네임 가져오기
-            guild = interaction.guild
-            player_name = await get_member_nickname(guild, interaction.user.id)
-            
-            await interaction.response.send_message(
-                f"{player_name}님이 {enemy.name}을 공격하여 {player_damage}의 피해를 입혔습니다.\n"
-                f"{enemy.name}의 HP: {enemy.hp}\n"
-                f"{enemy.name}이 반격하여 {enemy_damage}의 피해를 입었습니다.\n"
-                f"{player_name}님의 HP: {player.hp}"
-            )
+        return  # 추가: 게임 종료 후 바로 응답을 반환하여 이후 코드가 실행되지 않도록 함
 
+    # 플레이어 사망 처리
+    if player.hp <= 0:
+        player.reset()
+        bot.rpg.end_game(interaction.user)
+        
+        # 서버의 닉네임 가져오기
+        guild = interaction.guild
+        player_name = await get_member_nickname(guild, interaction.user.id)
+        
+        await interaction.response.send_message(
+            f"{player_name}님이 {enemy.name}을 공격하여 {player_damage}의 피해를 입혔습니다.\n"
+            f"{enemy.name}의 HP: {enemy.hp}\n"
+            f"{enemy.name}이 반격하여 {enemy_damage}의 피해를 입었습니다.\n"
+            f"{player_name}님이 사망하셔서 게임이 초기화되었습니다. 끄앙\n"
+        )
+        return  # 추가: 플레이어 사망 후 응답을 반환하여 이후 코드가 실행되지 않도록 함
+
+    # 일반 전투 상태
+    # 서버의 닉네임 가져오기
+    guild = interaction.guild
+    player_name = await get_member_nickname(guild, interaction.user.id)
+    
+    await interaction.response.send_message(
+        f"{player_name}님이 {enemy.name}을 공격하여 {player_damage}의 피해를 입혔습니다.\n"
+        f"{enemy.name}의 HP: {enemy.hp}\n"
+        f"{enemy.name}이 반격하여 {enemy_damage}의 피해를 입었습니다.\n"
+        f"{player_name}님의 HP: {player.hp}"
+    )
 
 
 @bot.tree.command(name="로또", description="아리스가 로또 번호를 골라줍니다")
