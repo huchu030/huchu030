@@ -461,16 +461,18 @@ async def 스탯(interaction: discord.Interaction):
 async def rpg_규칙(interaction: discord.Interaction):
     guild = interaction.guild
     user_nickname = get_user_nickname(guild, interaction.user.id)
-    await interaction.response.send_message(f"{user_nickname}님은 사악한 어둠의 쨈미몬을 물리치기 위해 모험을 떠난 용사입니다!\n",
-                                            f"{user_nickname}님의 체력은 100, 쨈미몬의 체력은 50으로 시작하며 레벨이 올라갈수록 쨈미몬이 강해집니다.\n",
-                                            "쨈미몬을 쓰러뜨릴 때마다 랜덤한 경험치가 쌓이고, 일정 수치를 넘기면 레벨업을 합니다.\n",
-                                            " \n",
-                                            f"'/공격'으로 {user_nickname}님의 체력 이하의 숫자를 입력하면 공격을 시도할 수 있습니다.\n",
-                                            "공격은 랜덤한 확률로 성공하며, 성공시 쨈미몬에게 입력한 숫자만큼의 데미지를 입힙니다.\n",
-                                            f"그러나 실패시 쨈미몬이 반격해 {user_nickname}님이 그만큼의 데미지를 입습니다!\n",
-                                            "체력이 0이 되면 사망하여 게임이 초기화되니 부디 조심하세요.\n",
-                                            "그럼 저는 이만...",)
-
+    await interaction.response.send_message(
+        f"{user_nickname}님은 사악한 어둠의 쨈미몬을 물리치기 위해 모험을 떠난 용사입니다!\n"
+        f"{user_nickname}님의 체력은 100, 쨈미몬의 체력은 50으로 시작하며 레벨이 올라갈수록 쨈미몬이 강해집니다.\n"
+        "쨈미몬을 쓰러뜨릴 때마다 랜덤한 경험치가 쌓이고, 일정 수치를 넘기면 레벨업을 합니다.\n"
+        " \n"
+        f"'/공격'으로 {user_nickname}님의 체력 이하의 숫자를 입력하면 공격을 시도할 수 있습니다.\n"
+        "공격은 랜덤한 확률로 성공하며, 성공시 쨈미몬에게 입력한 숫자만큼의 데미지를 입힙니다.\n"
+        f"그러나 실패시 쨈미몬이 반격해 {user_nickname}님이 그만큼의 데미지를 입습니다!\n"
+        "체력이 0이 되면 사망하여 게임이 초기화되니 부디 조심하세요.\n"
+        "그럼 저는 이만...")
+        
+                                                        
 
 @bot.tree.command(name="로또", description="아리스가 로또 번호를 골라줍니다")
 async def 로또(interaction: discord.Interaction):
