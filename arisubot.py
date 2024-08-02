@@ -219,7 +219,7 @@ class rpg:
         user_id = str(interaction.user.id)
         data = self.load_game_data()
         if user_id in data["players"]:
-            await interaction.response.send_message("'공격'으로 빨리 적을 공격하세요!")
+            await interaction.response.send_message("'/공격'으로 빨리 적을 공격하세요!")
             return
         
         self.add_new_player(user_id)
