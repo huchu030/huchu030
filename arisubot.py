@@ -219,6 +219,9 @@ class Enemy:
         player.hp -= damage
         return damage
 
+    def __repr__(self):
+        return f"Enemy(name={self.name}, hp={self.hp}, attack={self.attack}, defense={self.defense})"
+
 class RPG:
     def __init__(self):
         self.players = {}
@@ -242,7 +245,9 @@ class RPG:
     def start_game(self, user):
         print(f"Starting game for user: {user.name} ({user.id})")
         self.game_in_progress[user.id] = True
+        if user.id not in self.enemies:
         self.enemies[user.id] = self.generate_enemy(self.get_player(user).level)
+
         print(f"Game started. Current games in progress: {self.game_in_progress}")
 
     def end_game(self, user):
