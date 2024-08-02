@@ -555,6 +555,14 @@ async def rpg_공격(interaction: discord.Interaction):
     elif player.hp <= 0:
         player.reset()
         bot.rpg.end_game(interaction.user)
+
+        # 게임 상태 종료 및 적 제거
+        bot.rpg.end_game(interaction.user)
+
+        # 서버의 닉네임 가져오기
+        guild = interaction.guild
+        player_name = await get_member_nickname(guild, interaction.user.id)
+        
         
         await interaction.response.send_message(
             f"{player_name}님이 {enemy.name}을 공격하여 {player_damage}의 피해를 입혔습니다.\n"
@@ -563,10 +571,7 @@ async def rpg_공격(interaction: discord.Interaction):
             f"{player_name}님이 사망하셔서 게임이 초기화되었습니다. 끄앙\n"
         )
     else:
-        # 서버의 닉네임 가져오기
-        guild = interaction.guild
-        player_name = await get_member_nickname(guild, interaction.user.id)
-
+        
         await interaction.response.send_message(
             f"{player_name}님이 {enemy.name}을 공격하여 {player_damage}의 피해를 입혔습니다.\n"
             f"{enemy.name}의 HP: {enemy.hp}\n"
