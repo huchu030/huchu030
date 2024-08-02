@@ -198,16 +198,15 @@ class Player:
         self.attack += 5  # 레벨 업 시 공격력 증가
         self.defense += 2  # 레벨 업 시 방어력 증가
         self.hp = 100  # 체력 회복
-        print(f"뽜밤뽜밤-! {self.name}님이 레벨 업 하셨습니다! \n현재 레벨: {self.level}")
-
+        return True  # 레벨 업 시 True를 반환
+    
     def reset(self):
         self.attack = 10  # 초기 공격력
         self.defense = 5  # 초기 방어력
         self.hp = 100  # 체력 회복
         self.exp = 0  # 경험치 초기화
         self.level = 1  # 레벨 초기화
-        print(f"{self.name}님이 사망하여 게임이 초기화되었습니다. 끄앙 \n현재 레벨: {self.level}, 공격력: {self.attack}, 방어력: {self.defense}")
-
+    
 class Enemy:
     def __init__(self, name, hp, attack, defense):
         self.name = name
@@ -449,24 +448,43 @@ async def rpg_공격(interaction: discord.Interaction):
     player_damage = player.attack_enemy(enemy)
     if enemy.hp <= 0:
         player.gain_exp(20)  # 적을 쓰러뜨리면 경험치 획득
+        level_up = player.level_up()  # 레벨 업 시 True 반환
+        
         bot.rpg.end_game(interaction.user)
         
         # 서버의 닉네임 가져오기
         guild = interaction.guild
         player_name = await get_member_nickname(guild, interaction.user.id)
         
-        await interaction.response.send_message(f"{player_name}님이 {enemy.name}을(를) 공격하여 {player_damage}의 피해를 입혔습니다. \n{enemy.name}이(가) 쓰러졌습니다! 경험치 20을 획득하였습니다. \n현재 레벨: {self.level}, 공격력: {self.attack}, 방어력: {self.defense}, HP: {player.hp} \n게임이 종료되었습니다.")
+        if level_up:
+            await interaction.response.send_message(
+                f"{player_name}님이 {enemy.name}을(를) 공격하여 {player_damage}의 피해를 입혔습니다.\n"
+                f"{enemy.name}가 쓰러졌습니다!\n"
+                f"레벨 업! {player_name}님의 레벨: {player.level}, 공격력: {player.attack}, 방어력: {player.defense}, HP: {player.hp}\n"
+                f"경험치 20을 획득하였습니다. 게임이 종료되었습니다."
+            )
+        else:
+            await interaction.response.send_message(
+                f"{player_name}님이 {enemy.name}을(를) 공격하여 {player_damage}의 피해를 입혔습니다.\n"
+                f"{enemy.name}가 쓰러졌습니다!\n"
+                f"{player_name}님의 공격력: {player.attack}, 방어력: {player.defense}, HP: {player.hp}\n"
+                f"경험치 20을 획득하였습니다. 게임이 종료되었습니다."
+            )
     else:
         enemy_damage = enemy.attack_player(player)
         if player.hp <= 0:
             player.reset()
             bot.rpg.end_game(interaction.user)
-
+            
+            # 서버의 닉네임 가져오기
             guild = interaction.guild
             player_name = await get_member_nickname(guild, interaction.user.id)
             
             await interaction.response.send_message(
-                f"{player_name}님이 {enemy.name}을(를) 공격하여 {player_damage}의 피해를 입혔습니다. \n{enemy.name}의 HP: {enemy.hp} \n{enemy.name}이(가) 반격하여 {enemy_damage}의 피해를 입었습니다. \n \n{self.name}님이 사망하여 게임이 초기화되었습니다. 끄앙 \n현재 레벨: {self.level}, 공격력: {self.attack}, 방어력: {self.defense}, HP: {player.hp}"
+                f"{player_name}님이 {enemy.name}을(를) 공격하여 {player_damage}의 피해를 입혔습니다.\n"
+                f"{enemy.name}의 HP: {enemy.hp}\n"
+                f"{enemy.name}가 반격하여 {enemy_damage}의 피해를 입었습니다.\n"
+                f"{player_name}님이 사망하셔서 게임이 초기화되었습니다. 끄앙\n"
             )
         else:
             # 서버의 닉네임 가져오기
@@ -474,11 +492,11 @@ async def rpg_공격(interaction: discord.Interaction):
             player_name = await get_member_nickname(guild, interaction.user.id)
             
             await interaction.response.send_message(
-                f"{player_name}님이 {enemy.name}을(를) 공격하여 {player_damage}의 피해를 입혔습니다. \n{enemy.name}의 HP: {enemy.hp} \n{enemy.name}이(가) 반격하여 {enemy_damage}의 피해를 입었습니다. \n{player_name}님의 HP: {player.hp}"
+                f"{player_name}님이 {enemy.name}을(를) 공격하여 {player_damage}의 피해를 입혔습니다.\n"
+                f"{enemy.name}의 HP: {enemy.hp}\n"
+                f"{enemy.name}가 반격하여 {enemy_damage}의 피해를 입었습니다.\n"
+                f"{player_name}님의 공격력: {player.attack}, 방어력: {player.defense}, HP: {player.hp}"
             )
-
-
-    
 
 
 
