@@ -113,9 +113,9 @@ class NumberGuessingGame:
         self.attempts += 1
         guess = int(guess)
         if guess < self.secret_number:
-            return "{guess} : 더 높아요!"
+            return f"{guess} : 더 높아요!"
         elif guess > self.secret_number:
-            return "{guess} : 더 낮아요!"
+            return f"{guess} : 더 낮아요!"
         else:
             self.game_active = False
             return f"와아~ 정답이에요! 답은 {game.secret_number}! {self.attempts}회 만에 맞혔습니다!"
