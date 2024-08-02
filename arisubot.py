@@ -188,8 +188,12 @@ class rpg:
                 json.dump(default_data, f, indent=4)
 
     def load_game_data(self):
-        with open(data_file, 'r') as f:
-            return json.load(f)
+        try:
+            with open(data_file, 'r') as f:
+                return json.load(f)
+        except Exception as e:
+            print(f"Error loading game data: {e}")
+            return {"players": {}, "current_enemies": {}}
 
     def add_new_player(self, user_id):
         data = self.load_game_data()
@@ -203,10 +207,13 @@ class rpg:
                 "hp": 50
             }
             self.save_game_data(data)
-
+            
     def save_game_data(self, data):
-        with open(data_file, 'w') as f:
-            json.dump(data, f, indent=4)
+        try:
+            with open(data_file, 'w') as f:
+                json.dump(data, f, indent=4)
+        except Exception as e:
+            print(f"Error saving game data: {e}")
 
     def delete_player_data(self, user_id):
         data = self.load_game_data()
@@ -215,13 +222,19 @@ class rpg:
             del data["current_enemies"][user_id]
             self.save_game_data(data)
 
+    def is_player_in_game(self, user_id):
+        data = self.load_game_data()
+        return user_id in data["players"]
+
     async def start_game(self, interaction: discord.Interaction):
         user_id = str(interaction.user.id)
-        data = self.load_game_data()
-        if user_id in data["players"]:
-            await interaction.response.send_message("'/공격'으로 빨리 적을 공격하세요!")
+        guild = interaction.guild
+        user_nickname = get_user_nickname(guild, interaction.user.id)
+
+        if self.is_player_in_game(user_id):
+            await interaction.response.send_message(f"'/공격'으로 빨리 적을 공격하세요!")
             return
-        
+
         self.add_new_player(user_id)
         await interaction.response.send_message("용사여. 빛이 당신과 함께 합니다...\n",
                                                 "'/rpg_규칙'으로 게임 규칙을 볼 수 있습니다.\n",
