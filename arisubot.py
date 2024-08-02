@@ -228,18 +228,17 @@ class rpg:
 
     async def start_game(self, interaction: discord.Interaction):
         user_id = str(interaction.user.id)
-        guild = interaction.guild
-        user_nickname = get_user_nickname(guild, interaction.user.id)
-
         if self.is_player_in_game(user_id):
-            await interaction.response.send_message(f"'/공격'으로 빨리 적을 공격하세요!")
+            await interaction.response.send_message("'/공격'으로 빨리 적을 공격하세요!")
             return
 
         self.add_new_player(user_id)
-        await interaction.response.send_message("용사여. 빛이 당신과 함께 합니다...\n",
-                                                "'/rpg_규칙'으로 게임 규칙을 볼 수 있습니다.\n",
-                                                "앗, 방심한 사이에 쨈미몬이 나타났습니다. 어서 공격하세요!")
-
+        await interaction.response.send_message(
+        "용사여. 빛이 당신과 함께 합니다...\n"
+        "'/rpg_규칙'으로 게임 규칙을 볼 수 있습니다.\n"
+        "앗, 방심한 사이에 쨈미몬이 나타났습니다. 어서 공격하세요!"
+    )
+        
     async def attack(self, interaction: discord.Interaction, damage: int):
         user_id = str(interaction.user.id)
         data = self.load_game_data()
