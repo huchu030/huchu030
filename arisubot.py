@@ -285,7 +285,7 @@ class MyBot(commands.Bot):
         self.synced = False
         self.number_baseball = NumberBaseball()
         self.number_guessing = NumberGuessing()
-        self.rpg_game = RPGGame()
+        self.rpg_game = rpg()
         
     async def on_ready(self):
         print(f'봇이 로그인되었습니다: {self.user.name}')
