@@ -94,13 +94,13 @@ async def button_callback(interaction: discord.Interaction, user: discord.User):
     result = ""
     
     if user_choice == bot_choice:
-        result = f"비겼습니다. 한 판 더 해주세요. ( 당신 : {user_choice}, 토키 : {bot_choice} )"
+        result = f"비겼습니다. 한 판 더 해주세요. \n( 당신 : {user_choice}, 토키 : {bot_choice} )"
     elif (user_choice == '가위' and bot_choice == '보') or \
          (user_choice == '바위' and bot_choice == '가위') or \
          (user_choice == '보' and bot_choice == '바위'):
-        result = f"제가 졌습니다. \n... \n 딱히 승부욕을 느낀다거나, 그런 건 아닙니다만. ( 당신 : {user_choice}, 토키 : {bot_choice} )"
+        result = f"제가 졌습니다. \n... \n딱히 승부욕을 느낀다거나, 그런 건 아닙니다만. \n( 당신 : {user_choice}, 토키 : {bot_choice} )"
     else: 
-        result = f"제가 이겼어요. 얏호~ ( 당신 : {user_choice}, 토키 : {bot_choice} )"
+        result = f"제가 이겼어요. 얏호~ \n( 당신 : {user_choice}, 토키 : {bot_choice} )"
 
     await interaction.response.edit_message(content=result, view=None)
 
