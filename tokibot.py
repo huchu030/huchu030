@@ -83,9 +83,6 @@ async def 퍽(interaction: discord.Interaction):
 async def 쓰담(interaction: discord.Interaction):
     await interaction.response.send_message("엣. . 갑자기요? 저야 좋습니다만.", ephemeral=False)
 
-@bot.tree.command(name='테스트', description="테스트입니다")
-async def 테스트(interaction: discord.Interaction):
-    await interaction.response.send_message("테스트메시지", ephemeral=False)
 
 # Run the bot
 
