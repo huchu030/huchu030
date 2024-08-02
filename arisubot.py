@@ -254,9 +254,8 @@ class RPG:
         if user.id in self.game_in_progress:
             del self.game_in_progress[user.id]
             del self.enemies[user.id]
-            print(f"Ended game for user: {user.name} ({user.id})")
-
-
+            self.save_game_state()  # 게임이 종료될 때 상태를 저장
+            
     def save_game_state(self):
         print("Saving game state...")  # 디버그 로그
         data = {
@@ -304,10 +303,7 @@ class MyBot(commands.Bot):
         tracemalloc.start()
         self.rpg.load_game_state()
 
-    async def close(self):
-        # 봇이 종료될 때 게임 상태를 저장합니다.
-        self.rpg.save_game_state()
-        await super().close()
+
 
 bot = MyBot()
 
