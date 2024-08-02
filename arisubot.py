@@ -171,6 +171,7 @@ class NumberGuessing:
             await interaction.response.send_message(f"게임을 포기했습니다. 정답은 {game.secret_number}입니다! \n아리스랑 놀아주세요...")
 
 
+
 # RPG 게임
 
 class Player:
