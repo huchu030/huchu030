@@ -70,7 +70,7 @@ class MyBot(commands.Bot):
             "오늘의 행운의 색은 흰색입니다.",
             "회원님 오늘의 운(동계획)세(우기)는 상체입니다.",
             "회원님 오늘의 운(동계획)세(우기)는 상체입니다.",
-            "오늘은 서브웨이를 드셔보세요. '/서브웨이' 명령어를 사용해 레시피를 추천받을 수 있습니다."
+            "오늘은 서브웨이를 드셔보세요. '/서브웨이'로 레시피를 추천받을 수 있습니다."
         ]
 
     async def on_ready(self):
@@ -173,7 +173,9 @@ async def 안녕(interaction: discord.Interaction):
 
 @bot.tree.command(name='청소', description="토키가 청소를 합니다")
 async def 청소(interaction: discord.Interaction):
-    await interaction.response.send_message("쓱싹쓱싹..")
+    guild = interaction.guild
+    user_nickname = get_user_nickname(guild, interaction.user.id)
+    await interaction.response.send_message(f"쓱싹쓱싹.. {user_nickname}님, 보고 계신가요?")
 
 @bot.tree.command(name='퍽', description="토키를 때립니다")
 async def 퍽(interaction: discord.Interaction):

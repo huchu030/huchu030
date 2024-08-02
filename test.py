@@ -6,6 +6,6 @@ def get_user_nickname(guild, user_id):
 
 
 guild = interaction.guild
-user_nickname = get_user_nickname(guild, interaction.user.id)
+    user_nickname = get_user_nickname(guild, interaction.user.id)
 
 {user_nickname}
