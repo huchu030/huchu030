@@ -242,7 +242,7 @@ class rpg:
             return
 
         success_chance = random.randint(10, 90)  # 랜덤 성공 확률
-        actual_chance = random.randint(0, 100)
+        actual_chance = random.randint(10, 90)
         attack_success = actual_chance <= success_chance
         
         if attack_success:
@@ -257,7 +257,10 @@ class rpg:
                     player["exp"] = 0
                     result += f"\n \n레벨 업! 현재 레벨 : {player['level']}"
                 enemy["hp"] = 50 + 10 * player["level"]
-                result += "\n \n와아~ 쨈미몬이 쓰러졌습니다!"
+                result += ("\n \n와아~ 쨈미몬이 쓰러졌습니다!\n",
+                           "...\n",
+                           "\n 헉.. 쨈미몬이 더 강해져서 돌아왔어요!")
+                        
         else:
             player["hp"] -= damage
             result = (f"공격 실패! 쨈미몬이 반격해서 {damage}의 데미지를 입혔습니다. ( 성공 확률 : {actual_chance}% )\n"
