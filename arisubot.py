@@ -6,8 +6,9 @@ import tracemalloc
 import random
 import asyncio
 import os
+import requests
 import json
-
+import base64
 
 # 토큰, 채널 ID
 
@@ -19,6 +20,40 @@ MCHID = 1266916147639615639
 intents = discord.Intents.default()
 intents.message_content = True
 intents.members = True
+
+# 깃허브
+
+gTOKEN = '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'
+repo_owner = 'huchu030'
+repo_name = 'huchu030'
+file_path = 'game_state.json'
+api_url = f'https://api.github.com/repos/{repo_owner}/{repo_name}/contents/{file_path}'
+
+# GitHub 파일 업데이트 함수
+def update_github_file(game_state):
+    encoded_content = base64.b64encode(json.dumps(game_state).encode()).decode()
+    headers = {
+        'Authorization': f'token {gTOKEN}',
+        'Content-Type': 'application/json'
+    }
+    data = {
+        "message": "Updating game state",
+        "content": encoded_content
+    }
+    response = requests.put(api_url, headers=headers, data=json.dumps(data))
+    if response.status_code == 201:
+        print("File updated successfully.")
+    else:
+        print(f"Failed to update file: {response.status_code} - {response.text}")
+
+def save_game_state():
+    game_state = {
+        'players': {user_id: vars(player) for user_id, player in rpg.players.items()},
+        'game_in_progress': rpg.game_in_progress,
+        'enemies': {user_id: vars(enemy) for user_id, enemy in rpg.enemies.items()}
+    }
+    update_github_file(game_state)
+
 
 # 숫자야구
 
