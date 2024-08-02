@@ -233,7 +233,7 @@ class RPG:
 
     def generate_enemy(self, player_level):
         # 플레이어 레벨에 따라 적의 능력치 증가
-        name = "Goblin"
+        name = "쨈미몬"
         hp = 50 + (player_level * 10)
         attack = 5 + (player_level * 2)
         defense = 2 + player_level
@@ -458,14 +458,14 @@ async def rpg_공격(interaction: discord.Interaction):
         
         if level_up:
             await interaction.response.send_message(
-                f"{player_name}님이 {enemy.name}을(를) 공격하여 {player_damage}의 피해를 입혔습니다.\n"
+                f"{player_name}님이 {enemy.name}을 공격하여 {player_damage}의 피해를 입혔습니다.\n"
                 f"{enemy.name}가 쓰러졌습니다!\n"
                 f"레벨 업! {player_name}님의 레벨: {player.level}, 공격력: {player.attack}, 방어력: {player.defense}, HP: {player.hp}\n"
                 f"경험치 20을 획득하였습니다. 게임이 종료되었습니다."
             )
         else:
             await interaction.response.send_message(
-                f"{player_name}님이 {enemy.name}을(를) 공격하여 {player_damage}의 피해를 입혔습니다.\n"
+                f"{player_name}님이 {enemy.name}을 공격하여 {player_damage}의 피해를 입혔습니다.\n"
                 f"{enemy.name}가 쓰러졌습니다!\n"
                 f"{player_name}님의 공격력: {player.attack}, 방어력: {player.defense}, HP: {player.hp}\n"
                 f"경험치 20을 획득하였습니다. 게임이 종료되었습니다."
@@ -483,7 +483,7 @@ async def rpg_공격(interaction: discord.Interaction):
             await interaction.response.send_message(
                 f"{player_name}님이 {enemy.name}을(를) 공격하여 {player_damage}의 피해를 입혔습니다.\n"
                 f"{enemy.name}의 HP: {enemy.hp}\n"
-                f"{enemy.name}가 반격하여 {enemy_damage}의 피해를 입었습니다.\n"
+                f"{enemy.name}이 반격하여 {enemy_damage}의 피해를 입었습니다.\n"
                 f"{player_name}님이 사망하셔서 게임이 초기화되었습니다. 끄앙\n"
             )
         else:
@@ -494,7 +494,7 @@ async def rpg_공격(interaction: discord.Interaction):
             await interaction.response.send_message(
                 f"{player_name}님이 {enemy.name}을(를) 공격하여 {player_damage}의 피해를 입혔습니다.\n"
                 f"{enemy.name}의 HP: {enemy.hp}\n"
-                f"{enemy.name}가 반격하여 {enemy_damage}의 피해를 입었습니다.\n"
+                f"{enemy.name} 반격하여 {enemy_damage}의 피해를 입었습니다.\n"
                 f"{player_name}님의 공격력: {player.attack}, 방어력: {player.defense}, HP: {player.hp}"
             )
 
