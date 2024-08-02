@@ -174,7 +174,7 @@ class NumberGuessing:
 
 data_file = 'game_data.json'
 
-class RPGGame:
+class rpg:
     def __init__(self):
         self.initialize_game_data()
 
@@ -274,7 +274,7 @@ class RPGGame:
         if player_data:
             await interaction.response.send_message(f"[{user_nickname}님의 스탯] \n \n레벨 : {player_data['level']}, 체력 : {player_data['hp']}, 경험치 : {player_data['exp']}")
         else:
-            await interaction.response.send_message(f"{user_nickname}님의 데이터가 없습니다. 먼저 게임을 시작하세요.")
+            await interaction.response.send_message(f"{user_nickname}님의 데이터가 없습니다. '/rpg' 명령어를 사용해 게임을 시작해보세요!.")
 
 
 # 봇 클래스 정의
@@ -414,16 +414,16 @@ async def 숫자추측_포기(interaction: discord.Interaction):
 
 
 @bot.tree.command(name="rpg", description="아리스와 RPG 게임을 시작합니다")
-async def start_game(interaction: discord.Interaction):
-    await bot.start_game(interaction)
+async def rpg(interaction: discord.Interaction):
+    await bot.rpg.start_game(interaction)
 
 @bot.tree.command(name="공격", description="rpg - 적을 공격합니다")
-async def attack(interaction: discord.Interaction, damage: str):
-    await bot.attack(interaction, damage)
+async def 공격(interaction: discord.Interaction, damage: str):
+    await bot.rpg.attack(interaction, damage)
 
 @bot.tree.command(name="스탯", description="rpg - 자신의 스탯을 확인합니다")
-async def stats(interaction: discord.Interaction):
-    await bot.stats(interaction)
+async def 스탯(interaction: discord.Interaction):
+    await bot.rpg.stats(interaction)
 
 
 @bot.tree.command(name="로또", description="아리스가 로또 번호를 골라줍니다")
