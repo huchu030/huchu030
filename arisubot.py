@@ -118,7 +118,7 @@ class NumberGuessingGame:
             return f"{guess} : 더 낮아요!"
         else:
             self.game_active = False
-            return f"와아~ 정답이에요! 답은 {game.secret_number}! {self.attempts}회 만에 맞혔습니다!"
+            return f"와아~ 정답이에요! 답은 {self.secret_number}! {self.attempts}회 만에 맞혔습니다!"
 
 class NumberGuessing:
     def __init__(self):
@@ -144,6 +144,15 @@ class NumberGuessing:
         if not game.game_active:
             await interaction.response.send_message("진행 중인 게임이 없습니다. 아리스랑 같이 놀아요!")
         else:
+            if not guess.isdigit():
+                await interaction.response.send_message("숫자만 입력해주세요!")
+                return
+
+            guess_number = int(guess)
+            if guess_number < 1 or guess_number > 100:
+                await interaction.response.send_message("1부터 100까지의 숫자를 입력해주세요!")
+                return
+            
             result = game.make_guess(guess)
             await interaction.response.send_message(result)
 
