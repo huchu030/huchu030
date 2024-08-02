@@ -7,13 +7,17 @@ import random
 import asyncio
 
 # 봇 토큰과 채널 ID
+
 TOKEN = "MTI2NzEyNDUwNTY4MDI4MTYyMA.Gp_5nb.WpD1gpVbMCVCPrIHIb53jupN67qHj0ps58FE8k"
 MCHID = 1266916147639615639 
 
 # 인텐트 설정
+
 intents = discord.Intents.default()
 intents.message_content = True
 intents.members = True
+
+# 숫자야구
 
 class NumberBaseballGame:
     def __init__(self):
@@ -53,7 +57,6 @@ class NumberBaseballGame:
         balls = sum(1 for g in guess if g in self.secret_number) - strikes
         return strikes, balls
 
-
 class NumberBaseball:
     def __init__(self):
         self.games = {}
@@ -92,11 +95,13 @@ class NumberBaseball:
 
 
 # 봇 클래스 정의
+
 class MyBot(commands.Bot):
     def __init__(self, **kwargs):
         super().__init__(command_prefix='!', intents=intents, **kwargs)
         self.synced = False
         self.number_baseball = NumberBaseball()
+        self.number_guessing = NumberGuessing()
         
     async def on_ready(self):
         print(f'봇이 로그인되었습니다: {self.user.name}')
@@ -109,7 +114,8 @@ class MyBot(commands.Bot):
 
 bot = MyBot()
 
-# 채널에 메시지 전송
+# 환영 메시지
+
 @bot.event
 async def on_member_join(member):
     channel = bot.get_channel(MCHID)
@@ -119,6 +125,7 @@ async def on_member_join(member):
         print('채널을 찾을 수 없습니다.')
 
 # 알림 메시지
+
 schedule_times_messages = [
     ('19:00', '아리스랑 놀아주세요!'),
 ]
@@ -149,6 +156,68 @@ async def scheduled_task():
         except Exception as e:
             print(f'[ERROR] 오류 발생: {e}')
 
+# 숫자 맞히기
+
+class NumberGuessingGame:
+    def __init__(self):
+        self.reset_game()
+
+    def reset_game(self):
+        self.secret_number = None
+        self.attempts = 0
+        self.game_active = False
+
+    def start_game(self, min_number=1, max_number=100):
+        self.secret_number = random.randint(min_number, max_number)
+        self.attempts = 0
+        self.game_active = True
+
+    def make_guess(self, guess):
+        self.attempts += 1
+        guess = int(guess)
+        if guess < self.secret_number:
+            return "더 높은 숫자입니다!"
+        elif guess > self.secret_number:
+            return "더 낮은 숫자입니다!"
+        else:
+            self.game_active = False
+            return f"정답입니다! {self.attempts}회 만에 맞췄습니다!"
+
+class NumberGuessing:
+    def __init__(self):
+        self.games = {}  # 유저별 게임 상태를 저장하는 딕셔너리
+
+    def get_game(self, user):
+        if user.id not in self.games:
+            self.games[user.id] = NumberGuessingGame()
+        return self.games[user.id]
+
+    async def start_game_interaction(self, interaction: discord.Interaction):
+        user = interaction.user
+        game = self.get_game(user)
+        if game.game_active:
+            await interaction.response.send_message("이미 진행 중인 게임이 있습니다!")
+        else:
+            game.start_game()
+            await interaction.response.send_message("숫자 맞추기 게임이 시작되었습니다! 1부터 100까지의 숫자를 맞춰보세요. `/숫자추측_추측` 명령어를 사용해 숫자를 맞춰보세요.")
+
+    async def guess_number(self, interaction: discord.Interaction, guess: str):
+        user = interaction.user
+        game = self.get_game(user)
+        if not game.game_active:
+            await interaction.response.send_message("진행 중인 게임이 없습니다. `/숫자추측` 명령어로 게임을 시작하세요.")
+        else:
+            result = game.make_guess(guess)
+            await interaction.response.send_message(result)
+
+    async def give_up(self, interaction: discord.Interaction):
+        user = interaction.user
+        game = self.get_game(user)
+        if not game.game_active:
+            await interaction.response.send_message("진행 중인 게임이 없습니다.")
+        else:
+            game.game_active = False
+            await interaction.response.send_message(f"게임을 포기했습니다. 정답은 {game.secret_number}입니다.")
 
 # 가위바위보
 
@@ -166,11 +235,8 @@ async def rock_paper_scissors(interaction: discord.Interaction):
     await interaction.response.send_message("안 내면 집니다!", view=view)
 
 async def button_callback(interaction: discord.Interaction, user: discord.User):
-    # 봇의 선택
     options = ['가위', '바위', '보']
     bot_choice = random.choice(options)
-    
-    # 사용자 선택
     user_choice = interaction.data['custom_id']
     
     result = ""
@@ -186,9 +252,8 @@ async def button_callback(interaction: discord.Interaction, user: discord.User):
 
     await interaction.response.edit_message(content=result, view=None)
 
-            
+# 기본 명령어
 
-# Define slash commands
 @bot.tree.command(name='안녕', description="아리스에게 인사를 건넵니다")
 async def 안녕(interaction: discord.Interaction):
     await interaction.response.send_message("뽜밤뽜밤-!")
@@ -222,13 +287,26 @@ async def 숫자야구_추측(interaction: discord.Interaction, guess: str):
 async def 숫자야구_포기(interaction: discord.Interaction):
     await bot.number_baseball.give_up(interaction)
 
+@bot.tree.command(name="숫자게임", description="아리스와 숫자 맞히기 게임을 시작합니다")
+async def 숫자추측(interaction: discord.Interaction):
+    await bot.number_guessing.start_game_interaction(interaction)
+
+@bot.tree.command(name="숫자게임_추측", description="숫자게임 - 숫자를 추측합니다")
+async def 숫자추측_추측(interaction: discord.Interaction, guess: str):
+    await bot.number_guessing.guess_number(interaction, guess)
+
+@bot.tree.command(name="숫자게임_포기", description="숫자게임 - 게임을 포기합니다")
+async def 숫자추측_포기(interaction: discord.Interaction):
+    await bot.number_guessing.give_up(interaction)
+
 @bot.tree.command(name="로또", description="아리스가 로또 번호를 골라줍니다")
 async def 로또(interaction: discord.Interaction):
     numbers = random.sample(range(1, 46), 6)
     numbers.sort()
     await interaction.response.send_message(f"이번 주 로또 번호는~ [ {', '.join(map(str, numbers))} ] 입니다! 당첨되면 저도...")
 
-# Run the bot
+# 봇 실행
+
 async def main():
     async with bot:
         await bot.start(TOKEN)
