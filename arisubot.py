@@ -264,7 +264,7 @@ class RPG:
 async def get_member_nickname(guild, user_id):
     member = guild.get_member(user_id)
     if member:
-        return member.nick if member.nick else member.name  # 서버에서의 닉네임 또는 기본 사용자 이름
+        return member.display_name
     return "Unknown"
 
 
