@@ -228,7 +228,7 @@ class RPG:
         self.players = {}
         self.game_in_progress = {}
         self.enemies = {}
-        self.save_file = os.path.join(os.path.dirname(__file__), 'game_state.json')
+        self.save_file = 'https://github.com/huchu030/huchu030.git/game_state.json'
 
     def get_player(self, user):
         if user.id not in self.players:
