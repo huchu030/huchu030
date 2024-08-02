@@ -269,18 +269,34 @@ class RPG:
         print("Game state saved.")  # 디버그 로그
 
     def load_game_state(self):
+        rpg_instance = RPG()
+        rpg_instance.load_game_state()  # Correctly calling the method on an instance
+
         print(f"Loading game state from {self.save_file}...")
         if os.path.exists(self.save_file):
             with open(self.save_file, 'r') as f:
                 try:
                     data = json.load(f)
                     print(f"Loaded data: {data}")
-                    self.players = {int(user_id): Player(**player) for user_id, player in data.get('players', {}).items()}
+                    self.players = {}
+                    for user_id, player_data in data.get('players', {}).items():
+                        player = Player(
+                            name=player_data['name'],
+                            hp=player_data['hp'],
+                            attack=player_data['attack'],
+                            defense=player_data['defense'],
+                            level=player_data['level'],
+                            exp=player_data['exp']
+                        )
+                        self.players[int(user_id)] = player
                     self.game_in_progress = data.get('game_in_progress', {})
+                    print(f"Players loaded: {self.players}")
+                    print(f"Game in progress: {self.game_in_progress}")
                 except json.JSONDecodeError as e:
                     print(f"Error loading JSON data: {e}")
         else:
             print("Save file does not exist.")
+
 
 
 async def get_member_nickname(guild, user_id):
