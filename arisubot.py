@@ -24,7 +24,7 @@ intents.members = True
 
 # 깃허브
 
-gTOKEN = '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'
+gtoken = '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'
 repo_owner = 'huchu030'
 repo_name = 'huchu030'
 file_path = 'game_state.json'
@@ -35,7 +35,7 @@ api_url = f'https://api.github.com/repos/{repo_owner}/{repo_name}/contents/{file
 def update_github_file(game_state):
     encoded_content = base64.b64encode(json.dumps(game_state).encode()).decode()
     headers = {
-        'Authorization': f'token {gTOKEN}',
+        'Authorization': f'token {gtoken}',
         'Content-Type': 'application/json'
     }
     data = {
@@ -55,6 +55,28 @@ def save_game_state():
         'enemies': {user_id: vars(enemy) for user_id, enemy in rpg.enemies.items()}
     }
     update_github_file(game_state)
+
+
+import requests
+
+def fetch_file_from_github(owner, repo, file_path, gtoken):
+    url = f"https://api.github.com/repos/{owner}/{repo}/contents/{file_path}"
+    headers = {
+        "Authorization": f"token {gtoken}"
+    }
+    response = requests.get(url, headers=headers)
+
+    if response.status_code == 200:
+        print("File content:")
+        print(response.json())
+    elif response.status_code == 404:
+        print(f"File not found: {response.status_code} - {response.json()}")
+    else:
+        print(f"Failed to load file: {response.status_code} - {response.text}")
+
+# Replace with appropriate values and your personal access token
+fetch_file_from_github("huchu030", "huchu030", "game_state.json", "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")
+
 
 
 # 숫자야구
@@ -266,8 +288,7 @@ class Enemy:
 
 
 class RPG:
-    def __init__(self, save_file_path):
-        self.save_file = save_file_path
+    def __init__(self):
         self.players = {}
         self.game_in_progress = {}
         self.enemies = {}
