@@ -185,11 +185,6 @@ class Player:
         enemy.hp -= damage
         return damage
 
-    def attack_player(self, player):
-        damage = max(0, random.randint(0, 10) + self.attack - player.defense)
-        player.hp -= damage
-        return damage
-
     def gain_exp(self, amount):
         self.exp += amount
         if self.exp >= 100:  # 경험치가 100 이상일 때 레벨 업
@@ -479,15 +474,14 @@ async def rpg_공격(interaction: discord.Interaction):
                 f"경험치 20을 획득하였습니다. 게임이 종료되었습니다."
             )
     else:
-        enemy_damage = enemy.attack_player(player)
+        # 서버의 닉네임 가져오기
+            guild = interaction.guild
+            player_name = await get_member_nickname(guild, interaction.user.id)
+      
         if player.hp <= 0:
             player.reset()
             bot.rpg.end_game(interaction.user)
             bot.rpg.enemies[interaction.user.id] = None  # 적을 None으로 설정하여 초기화된 상태로
-            
-            # 서버의 닉네임 가져오기
-            guild = interaction.guild
-            player_name = await get_member_nickname(guild, interaction.user.id)
             
             await interaction.response.send_message(
                 f"{player_name}님이 {enemy.name}을(를) 공격하여 {player_damage}의 피해를 입혔습니다.\n"
@@ -496,10 +490,6 @@ async def rpg_공격(interaction: discord.Interaction):
                 f"{player_name}님이 사망하셔서 게임이 초기화되었습니다. 끄앙\n"
             )
         else:
-            # 서버의 닉네임 가져오기
-            guild = interaction.guild
-            player_name = await get_member_nickname(guild, interaction.user.id)
-            
             await interaction.response.send_message(
                 f"{player_name}님이 {enemy.name}을(를) 공격하여 {player_damage}의 피해를 입혔습니다.\n"
                 f"{enemy.name}의 HP: {enemy.hp}\n"
