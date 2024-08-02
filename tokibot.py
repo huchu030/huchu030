@@ -172,10 +172,10 @@ async def 운세(interaction: discord.Interaction):
     user_id = interaction.user.id
     if bot.fortune_manager.can_show_fortune(user_id):
         fortune = random.choice(bot.fortunes)  # 리스트에서 랜덤으로 메시지 선택
-        await interaction.response.send_message(f"{fortunes}")
+        await interaction.response.send_message(f"{fortune}")
         bot.fortune_manager.update_last_fortune_date(user_id)
     else:
-        await interaction.response.send_message(f"{fortunes}")
+        await interaction.response.send_message(f"{fortune}")
 
 
 # 봇 실행
