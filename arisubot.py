@@ -63,8 +63,8 @@ class NumberBaseball:
 
     def get_game(self, user):
         if user not in self.games:
-            self.games[user] = NumberBaseballGame()
-        return self.games[user]
+            self.games[user.id] = NumberBaseballGame()
+        return self.games[user.id]
 
     async def start_game_interaction(self, interaction: discord.Interaction):
         user = interaction.user
