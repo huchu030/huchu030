@@ -96,7 +96,7 @@ bot = MyBot()
 schedule_times_messages = [
     ('00:00', '잘 시간입니다. 좋은 꿈 꾸세요.'),
     ('08:00', '일어날 시간입니다. 아침밥도 드셔야 해요.'),
-    ('08:24', '..오늘은 늦잠을 자버렸습니다.'),
+    ('08:28', '..오늘은 늦잠을 자버렸습니다.'),
     ('12:00', '오늘의 점심은, 무엇인가요?'),
     ('16:00', '심심하지 않으신가요? 그럴 땐, 도박을 권장드립니다.'),
     ('22:00', '오늘도 수고하셨습니다. 물론 저도요. 뿅뿅'),
@@ -108,7 +108,7 @@ tz = pytz.timezone('Asia/Seoul')
 async def scheduled_task():
     async with lock:
         try:
-            now = datetime.datetime.now(tz)
+            now = datetime.now(tz)
             current_time = now.strftime('%H:%M')
             print(f'[DEBUG] 현재시각: {current_time}')
         
