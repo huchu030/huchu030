@@ -28,6 +28,7 @@ class MyBot(commands.Bot):
         print(f'봇이 로그인되었습니다: {self.user.name}')
         if not self.synced:
             await self.tree.sync()
+            print("슬래시 명령어가 동기화되었습니다.")
             self.synced = True
         scheduled_task.start()
         tracemalloc.start()

@@ -6,7 +6,7 @@ import tracemalloc
 import random
 import asyncio
 
-# 봇 토큰과 채널 ID
+# 토큰, 채널 ID
 
 TOKEN = "MTI2NzEyNDUwNTY4MDI4MTYyMA.Gp_5nb.WpD1gpVbMCVCPrIHIb53jupN67qHj0ps58FE8k"
 MCHID = 1266916147639615639 
