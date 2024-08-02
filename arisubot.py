@@ -47,7 +47,7 @@ class NumberBaseballGame:
 
         if guess == self.secret_number:
             self.game_active = False
-            return f"와아~ 정답이에요! 답은 {game.secret_number}! {self.attempts}회 만에 맞췄습니다!"
+            return f"와아~ 정답이에요! 답은 {game.secret_number}! {self.attempts}회 만에 맞혔습니다!"
         
         strikes, balls = self.calculate_strikes_and_balls(guess)
         return f"{guess} : {strikes}S {balls}B"
@@ -73,7 +73,7 @@ class NumberBaseball:
             await interaction.response.send_message("저와 이미 게임을 하고 있어요!")
         else:
             game.start_game()
-            await interaction.response.send_message("뽜밤뽜밤-! 숫자야구 게임이 시작되었습니다! \n`/숫자야구_추측` 명령어를 사용해 3자리 숫자를 맞춰보세요. \n`/숫자야구_규칙` 명령어로 게임 규칙을 볼 수 있습니다!")
+            await interaction.response.send_message("뽜밤뽜밤-! 숫자야구 게임이 시작되었습니다! \n`/숫자야구_추측` 명령어를 사용해 3자리 숫자를 맞혀보세요. \n`/숫자야구_규칙` 명령어로 게임 규칙을 볼 수 있습니다!")
 
     async def guess_number(self, interaction: discord.Interaction, guess: str):
         user = interaction.user
@@ -118,7 +118,7 @@ class NumberGuessingGame:
             return "더 낮아요!"
         else:
             self.game_active = False
-            return f"와아~ 정답이에요! 답은 {game.secret_number}! {self.attempts}회 만에 맞췄습니다!"
+            return f"와아~ 정답이에요! 답은 {game.secret_number}! {self.attempts}회 만에 맞혔습니다!"
 
 class NumberGuessing:
     def __init__(self):
@@ -136,7 +136,7 @@ class NumberGuessing:
             await interaction.response.send_message("저와 이미 게임을 하고 있어요!")
         else:
             game.start_game()
-            await interaction.response.send_message("뽜밤뽜밤-! 숫자 맞히기 게임이 시작되었습니다! \n`/숫자게임_추측` 명령어를 사용해 1부터 100까지의 숫자를 맞춰보세요.")
+            await interaction.response.send_message("뽜밤뽜밤-! 숫자 맞히기 게임이 시작되었습니다! \n`/숫자게임_추측` 명령어를 사용해 1부터 100까지의 숫자를 맞혀보세요.")
 
     async def guess_number(self, interaction: discord.Interaction, guess: str):
         user = interaction.user
