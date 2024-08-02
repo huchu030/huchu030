@@ -307,7 +307,10 @@ class MyBot(commands.Bot):
 
 def get_user_nickname(interaction: discord.Interaction):
     member = interaction.guild.get_member(interaction.user.id)
-    return member.nick if member.nick else interaction.user.name
+    if member:
+        return member.nick if member.nick else interaction.user.name
+    else:
+        return interaction.user.name  # 캐시에 멤버가 없는 경우
 
 
 bot = MyBot()
