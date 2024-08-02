@@ -6,9 +6,6 @@ import tracemalloc
 import random
 import asyncio
 import os
-import json
-import base64
-import aiofiles
 
 # 토큰, 채널 ID
 
@@ -20,7 +17,6 @@ MCHID = 1266916147639615639
 intents = discord.Intents.default()
 intents.message_content = True
 intents.members = True
-
 
 # 숫자야구
 
@@ -173,7 +169,6 @@ class NumberGuessing:
             await interaction.response.send_message(f"게임을 포기했습니다. 정답은 {game.secret_number}입니다! \n아리스랑 놀아주세요...")
 
 
-
 # RPG 게임
 
 class Player:
@@ -186,32 +181,30 @@ class Player:
         self.exp = exp
 
     def attack_enemy(self, enemy):
-        # Calculate damage to the enemy
         damage = max(0, random.randint(0, 10) + self.attack - enemy.defense)
         enemy.hp -= damage
-        enemy.hp = max(0, enemy.hp)  # Ensure HP does not go below 0
         return damage
 
     def gain_exp(self, amount):
         self.exp += amount
-        if self.exp >= 100:  # Level up when experience reaches 100
+        if self.exp >= 100:  # 경험치가 100 이상일 때 레벨 업
             self.level_up()
 
     def level_up(self):
         self.level += 1
         self.exp = 0
-        self.attack += 5  # Increase attack on level up
-        self.defense += 2  # Increase defense on level up
-        self.hp = 100  # Restore HP on level up
-        return True  # Return True to indicate level up
-
+        self.attack += 5  # 레벨 업 시 공격력 증가
+        self.defense += 2  # 레벨 업 시 방어력 증가
+        self.hp = 100  # 체력 회복
+        return True  # 레벨 업 시 True를 반환
+    
     def reset(self):
-        self.hp = 100  # Restore HP
-        self.attack = 10  # Reset attack
-        self.defense = 5  # Reset defense
-        self.exp = 0  # Reset experience
-        self.level = 1  # Reset level
-
+        self.hp = 100  # 체력 회복
+        self.attack = 10  # 초기 공격력
+        self.defense = 5  # 초기 방어력
+        self.exp = 0  # 경험치 초기화
+        self.level = 1  # 레벨 초기화
+    
 class Enemy:
     def __init__(self, name, hp, attack, defense):
         self.name = name
@@ -220,75 +213,59 @@ class Enemy:
         self.defense = defense
 
     def attack_player(self, player):
-        # Calculate damage to the player
         damage = max(0, random.randint(0, 10) + self.attack - player.defense)
         player.hp -= damage
-        player.hp = max(0, player.hp)  # Ensure HP does not go below 0
         return damage
 
-    def __repr__(self):
-        return f"Enemy(name={self.name}, hp={self.hp}, attack={self.attack}, defense={self.defense})"
-
-
 class RPG:
-    def __init__(self, save_file_path='game_state.json'):
-        self.save_file_path = save_file_path
-        self.game_state = self.load_game_state()
+    def __init__(self):
         self.players = {}
-        self.enemies = {}
         self.game_in_progress = {}
+        self.save_file = os.path.join(os.path.dirname(__file__), 'game_state.json')
+
 
     def get_player(self, user):
         if user.id not in self.players:
             self.players[user.id] = Player(user.name)
         return self.players[user.id]
 
+
     def generate_enemy(self, player_level):
         # 플레이어 레벨에 따라 적의 능력치 증가
         name = "쨈미몬"
-        hp = 40 + (player_level * 10)
+        hp = 50 + (player_level * 10)
         attack = 5 + (player_level * 2)
         defense = 2 + player_level
         return Enemy(name, hp, attack, defense)
 
     def start_game(self, user):
-        print(f"Starting game for user: {user.name} ({user.id})")
         self.game_in_progress[user.id] = True
-        if user.id not in self.enemies:
-            self.enemies[user.id] = self.generate_enemy(self.get_player(user).level)
-
-        print(f"Game started. Current games in progress: {self.game_in_progress}")
 
     def end_game(self, user):
         if user.id in self.game_in_progress:
             del self.game_in_progress[user.id]
-        if user.id in self.enemies:
-            del self.enemies[user.id]
-        self.save_game_state() # 게임이 종료될 때 상태를 저장
-            
-    async def save_game_state(self):
-        print("Saving game state...")  # 디버그 로그
+
+    def save_game_state(self):
         data = {
             'players': {user_id: vars(player) for user_id, player in self.players.items()},
-            'game_in_progress': self.game_in_progress,
-            'enemies': {user_id: vars(enemy) for user_id, enemy in self.enemies.items()}
+            'game_in_progress': self.game_in_progress
         }
-        async with aiofiles.open(self.save_file, 'w') as f:
-            await f.write(json.dumps(data))
-        print("Game state saved.")  # 디버그 로그
+        with open(self.save_file, 'w') as f:
+            json.dump(data, f)
 
     def load_game_state(self):
-        if os.path.exists(self.save_file_path):
-            with open(self.save_file_path, 'r') as file:
-                return json.load(file)
-        else:
-            return self.create_default_game_state()
+        if os.path.exists(self.save_file):
+            with open(self.save_file, 'r') as f:
+                data = json.load(f)
+                self.players = {int(user_id): Player(**player) for user_id, player in data['players'].items()}
+                self.game_in_progress = data['game_in_progress']
+
 
 
 async def get_member_nickname(guild, user_id):
     member = guild.get_member(user_id)
     if member:
-        return member.display_name
+        return member.nick if member.nick else member.name  # 서버에서의 닉네임 또는 기본 사용자 이름
     return "Unknown"
 
 
@@ -308,10 +285,14 @@ class MyBot(commands.Bot):
             await self.tree.sync()
             print("슬래시 명령어가 동기화되었습니다.")
             self.synced = True
+        scheduled_task.start()
         tracemalloc.start()
         self.rpg.load_game_state()
 
-
+    async def close(self):
+        # 봇이 종료될 때 게임 상태를 저장합니다.
+        self.rpg.save_game_state()
+        await super().close()
 
 bot = MyBot()
 
@@ -440,6 +421,9 @@ async def 숫자추측_포기(interaction: discord.Interaction):
 
 
 
+
+    
+
 @bot.tree.command(name='rpg', description="아리스와 RPG 게임을 합니다")
 async def rpg_start(interaction: discord.Interaction):
     player = bot.rpg.get_player(interaction.user)
@@ -450,9 +434,11 @@ async def rpg_start(interaction: discord.Interaction):
     guild = interaction.guild
     player_name = await get_member_nickname(guild, interaction.user.id)
     bot.rpg.start_game(interaction.user)
-    await interaction.response.send_message(f"뽜밤뽜밤-! RPG 게임을 시작합니다! \n"
+    await interaction.response.send_message(f"뽜밤뽜밤-! RPG 게임을 시작합니다!\n"
                                             f"HP: {player.hp}, 공격력: {player.attack}, 방어력: {player.defense}")
 
+
+    
 @bot.tree.command(name='rpg_공격', description="적을 공격합니다")
 async def rpg_공격(interaction: discord.Interaction):
     player = bot.rpg.get_player(interaction.user)
@@ -460,34 +446,27 @@ async def rpg_공격(interaction: discord.Interaction):
         await interaction.response.send_message("진행 중인 게임이 없습니다. 아리스랑 같이 놀아요!")
         return
 
-    enemy = bot.rpg.enemies.get(interaction.user.id)
-    if not enemy:
-        await interaction.response.send_message("오류 메시지 : 적이 도망갔습니다..?")
-        return
-
-    # 플레이어의 공격
+    enemy = bot.rpg.generate_enemy(player.level)  # 플레이어 레벨에 따라 적 생성
     player_damage = player.attack_enemy(enemy)
-    # 적의 반격
     enemy_damage = enemy.attack_player(player)
 
-    # 게임 승리
+    
     if enemy.hp <= 0:
         player.gain_exp(20)  # 적을 쓰러뜨리면 경험치 획득
         level_up = player.level_up()  # 레벨 업 시 True 반환
-
-        # 게임 상태 종료 및 적 제거
-        bot.rpg.end_game(interaction.user)
         
+        bot.rpg.end_game(interaction.user)
+
+    
         # 서버의 닉네임 가져오기
         guild = interaction.guild
         player_name = await get_member_nickname(guild, interaction.user.id)
-
-        # 응답 메시지 전송
+        
         if level_up:
             await interaction.response.send_message(
                 f"{player_name}님이 {enemy.name}을 공격하여 {player_damage}의 피해를 입혔습니다.\n"
                 f"{enemy.name}이 쓰러졌습니다!\n"
-                f"레벨 업! ( 레벨: {player.level}, 공격력: {player.attack}, 방어력: {player.defense}, HP: {player.hp} )\n"
+                f"레벨 업! {player_name}님의 레벨: {player.level}, 공격력: {player.attack}, 방어력: {player.defense}, HP: {player.hp}\n"
                 f"경험치 20을 획득하였습니다. 게임이 종료되었습니다."
             )
         else:
@@ -497,35 +476,32 @@ async def rpg_공격(interaction: discord.Interaction):
                 f"{player_name}님의 공격력: {player.attack}, 방어력: {player.defense}, HP: {player.hp}\n"
                 f"경험치 20을 획득하였습니다. 게임이 종료되었습니다."
             )
-        return  # 응답 후 추가 실행 방지
-
-    # 플레이어 사망 처리
-    if player.hp <= 0:
-        player.reset()
-        bot.rpg.end_game(interaction.user)
-        
-        # 서버의 닉네임 가져오기
-        guild = interaction.guild
-        player_name = await get_member_nickname(guild, interaction.user.id)
-        
-        await interaction.response.send_message(
-            f"{player_name}님이 {enemy.name}을 공격하여 {player_damage}의 피해를 입혔습니다.\n"
-            f"{enemy.name}의 HP: {enemy.hp}\n"
-            f"{enemy.name}이 반격하여 {enemy_damage}의 피해를 입었습니다.\n"
-            f"{player_name}님이 사망하셔서 게임이 초기화되었습니다. 끄앙\n"
-        )
-        return  # 응답 후 추가 실행 방지
-
-    # 일반 전투 상태
-    guild = interaction.guild
-    player_name = await get_member_nickname(guild, interaction.user.id)
-    
-    await interaction.response.send_message(
-        f"{player_name}님이 {enemy.name}을 공격하여 {player_damage}의 피해를 입혔습니다.\n"
-        f"{enemy.name}의 HP: {enemy.hp}\n"
-        f"{enemy.name}이 반격하여 {enemy_damage}의 피해를 입었습니다.\n"
-        f"{player_name}님의 HP: {player.hp}"
-    )
+    else:
+        if player.hp <= 0:
+            player.reset()
+            bot.rpg.end_game(interaction.user)
+            
+            # 서버의 닉네임 가져오기
+            guild = interaction.guild
+            player_name = await get_member_nickname(guild, interaction.user.id)
+            
+            await interaction.response.send_message(
+                f"{player_name}님이 {enemy.name}을(를) 공격하여 {player_damage}의 피해를 입혔습니다.\n"
+                f"{enemy.name}의 HP: {enemy.hp}\n"
+                f"{enemy.name}이 반격하여 {enemy_damage}의 피해를 입었습니다.\n"
+                f"{player_name}님이 사망하셔서 게임이 초기화되었습니다. 끄앙\n"
+            )
+        else:
+            # 서버의 닉네임 가져오기
+            guild = interaction.guild
+            player_name = await get_member_nickname(guild, interaction.user.id)
+            
+            await interaction.response.send_message(
+                f"{player_name}님이 {enemy.name}을(를) 공격하여 {player_damage}의 피해를 입혔습니다.\n"
+                f"{enemy.name}의 HP: {enemy.hp}\n"
+                f"{enemy.name}이 반격하여 {enemy_damage}의 피해를 입었습니다.\n"
+                f"{player_name}님의 HP: {player.hp}"
+            )
 
 
 @bot.tree.command(name="로또", description="아리스가 로또 번호를 골라줍니다")
