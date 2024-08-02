@@ -6,6 +6,8 @@ import tracemalloc
 import random
 import asyncio
 import os
+import json
+
 
 # 토큰, 채널 ID
 
