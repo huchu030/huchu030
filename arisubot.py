@@ -466,8 +466,7 @@ async def rpg_공격(interaction: discord.Interaction):
             player_name = await get_member_nickname(guild, interaction.user.id)
             
             await interaction.response.send_message(
-                f"{player_name}님이 {enemy.name}을(를) 공격하여 {player_damage}의 피해를 입혔습니다. \n{enemy.name}의 HP: {enemy.hp}"
-                f"{enemy.name}이(가) 반격하여 {enemy_damage}의 피해를 입었습니다. \n{self.name}님이 사망하여 게임이 초기화되었습니다. 끄앙 \n현재 레벨: {self.level}, 공격력: {self.attack}, 방어력: {self.defense}, HP: {player.hp}"
+                f"{player_name}님이 {enemy.name}을(를) 공격하여 {player_damage}의 피해를 입혔습니다. \n{enemy.name}의 HP: {enemy.hp} \n{enemy.name}이(가) 반격하여 {enemy_damage}의 피해를 입었습니다. \n \n{self.name}님이 사망하여 게임이 초기화되었습니다. 끄앙 \n현재 레벨: {self.level}, 공격력: {self.attack}, 방어력: {self.defense}, HP: {player.hp}"
             )
         else:
             # 서버의 닉네임 가져오기
@@ -475,8 +474,7 @@ async def rpg_공격(interaction: discord.Interaction):
             player_name = await get_member_nickname(guild, interaction.user.id)
             
             await interaction.response.send_message(
-                f"{player_name}님이 {enemy.name}을(를) 공격하여 {player_damage}의 피해를 입혔습니다. \n{enemy.name}의 HP: {enemy.hp}"
-                f"{enemy.name}이(가) 반격하여 {enemy_damage}의 피해를 입었습니다. \n{player_name}님의 HP: {player.hp}"
+                f"{player_name}님이 {enemy.name}을(를) 공격하여 {player_damage}의 피해를 입혔습니다. \n{enemy.name}의 HP: {enemy.hp} \n{enemy.name}이(가) 반격하여 {enemy_damage}의 피해를 입었습니다. \n{player_name}님의 HP: {player.hp}"
             )
 
 
