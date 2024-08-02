@@ -222,7 +222,7 @@ class rpg:
     async def attack(self, interaction: discord.Interaction, damage: int):
         user_id = str(interaction.user.id)
         data = self.load_game_data()
-        user_nickname = get_user_nickname(guild, interaction.user.id)
+        user_nickname = get_user_nickname(interaction.guild, interaction.user.id)
 
         if user_id not in data["players"]:
             await interaction.response.send_message("진행 중인 게임이 없습니다. 아리스랑 같이 놀아요!")
@@ -256,8 +256,8 @@ class rpg:
                     player["exp"] = 0
                     result += f"\n \n레벨 업! 현재 레벨 : {player['level']}"
                 enemy["hp"] = 50 + 10 * player["level"]
-                result += ("\n \n와아~ 쨈미몬이 쓰러졌습니다!\n",
-                           "...\n",
+                result += ("\n \n와아~ 쨈미몬이 쓰러졌습니다!\n"
+                           "...\n"
                            "\n 헉.. 쨈미몬이 더 강해져서 돌아왔어요!")
                         
         else:
@@ -276,7 +276,7 @@ class rpg:
     async def stats(self, interaction: discord.Interaction):
         user_id = str(interaction.user.id)
         data = self.load_game_data()
-        user_nickname = get_user_nickname(guild, interaction.user.id)
+        user_nickname = get_user_nickname(interaction.guild, interaction.user.id)
         player_data = data.get("players", {}).get(user_id, None)
         
         if player_data:
