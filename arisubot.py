@@ -240,13 +240,17 @@ class RPG:
         return Enemy(name, hp, attack, defense)
 
     def start_game(self, user):
+        print(f"Starting game for user: {user.name} ({user.id})")
         self.game_in_progress[user.id] = True
         self.enemies[user.id] = self.generate_enemy(self.get_player(user).level)
+        print(f"Game started. Current games in progress: {self.game_in_progress}")
 
     def end_game(self, user):
         if user.id in self.game_in_progress:
             del self.game_in_progress[user.id]
             del self.enemies[user.id]
+            print(f"Ended game for user: {user.name} ({user.id})")
+
 
     def save_game_state(self):
         print("Saving game state...")  # 디버그 로그
