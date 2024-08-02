@@ -169,7 +169,7 @@ async def button_callback(interaction: discord.Interaction, user: discord.User):
 async def 안녕(interaction: discord.Interaction):
     guild = interaction.guild
     user_nickname = get_user_nickname(guild, interaction.user.id)
-    await interaction.response.send_message("앗 {user_nickname}님, 안녕하세요.")
+    await interaction.response.send_message(f"앗 {user_nickname}님, 안녕하세요.")
 
 @bot.tree.command(name='청소', description="토키가 청소를 합니다")
 async def 청소(interaction: discord.Interaction):
