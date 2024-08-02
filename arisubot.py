@@ -233,12 +233,12 @@ class rpg:
         enemy = data["current_enemies"][user_id]
         
         if not damage.isdigit():
-            await interaction.response.send_message("체력 이하의 숫자를 입력해주세요!")
+            await interaction.response.send_message("체력 이하의 숫자를 입력해주세요! \n'/스탯'으로 현재 체력을 확인할 수 있습니다.")
             return
-
+ 
         damage = int(damage)
         if damage < 1 or damage > player["hp"]:
-            await interaction.response.send_message("체력 이하의 숫자를 입력해주세요!")
+            await interaction.response.send_message("체력 이하의 숫자를 입력해주세요! \n'/스탯'으로 현재 체력을 확인할 수 있습니다.")
             return
 
         success_chance = random.randint(10, 90)  # 랜덤 성공 확률
