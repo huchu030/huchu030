@@ -188,9 +188,6 @@ async def 운세(interaction: discord.Interaction):
         else:
             await interaction.response.send_message("운세 메시지를 불러올 수 없습니다. 다시 시도해 주세요.")
 
-
-
-
 # 봇 실행
 
 async def main():
