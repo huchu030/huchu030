@@ -211,7 +211,6 @@ class rpg:
     async def start_game(self, interaction: discord.Interaction):
         user_id = str(interaction.user.id)
         data = self.load_game_data()
-        user_nickname = get_user_nickname(interaction)
         if user_id in data["players"]:
             await interaction.response.send_message("저와 이미 게임을 하고 있어요!")
             return
@@ -223,7 +222,7 @@ class rpg:
     async def attack(self, interaction: discord.Interaction, damage: int):
         user_id = str(interaction.user.id)
         data = self.load_game_data()
-        user_nickname = get_user_nickname(interaction)
+        user_nickname = get_user_nickname(guild, interaction.user.id)
 
         if user_id not in data["players"]:
             await interaction.response.send_message("진행 중인 게임이 없습니다. 아리스랑 같이 놀아요!")
@@ -277,7 +276,7 @@ class rpg:
     async def stats(self, interaction: discord.Interaction):
         user_id = str(interaction.user.id)
         data = self.load_game_data()
-        user_nickname = get_user_nickname(interaction)
+        user_nickname = get_user_nickname(guild, interaction.user.id)
         player_data = data.get("players", {}).get(user_id, None)
         
         if player_data:
