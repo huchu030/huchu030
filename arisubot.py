@@ -299,15 +299,15 @@ class RPG:
         self.save_game_state() # 게임이 종료될 때 상태를 저장
             
     async def save_game_state(self):
-    print("Saving game state...")  # 디버그 로그
-    data = {
-        'players': {user_id: vars(player) for user_id, player in self.players.items()},
-        'game_in_progress': self.game_in_progress,
-        'enemies': {user_id: vars(enemy) for user_id, enemy in self.enemies.items()}
-    }
-    async with aiofiles.open(self.save_file, 'w') as f:
-        await f.write(json.dumps(data))
-    print("Game state saved.")  # 디버그 로그
+        print("Saving game state...")  # 디버그 로그
+        data = {
+            'players': {user_id: vars(player) for user_id, player in self.players.items()},
+            'game_in_progress': self.game_in_progress,
+            'enemies': {user_id: vars(enemy) for user_id, enemy in self.enemies.items()}
+        }
+        async with aiofiles.open(self.save_file, 'w') as f:
+            await f.write(json.dumps(data))
+        print("Game state saved.")  # 디버그 로그
 
     def load_game_state(self):
         print(f"Loading game state from {API_URL}...")
