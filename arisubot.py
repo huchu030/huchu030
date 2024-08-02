@@ -62,7 +62,7 @@ class NumberBaseball:
         self.games = {}
 
     def get_game(self, user):
-        if user not in self.games:
+        if user.id not in self.games:
             self.games[user.id] = NumberBaseballGame()
         return self.games[user.id]
 
