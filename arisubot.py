@@ -268,7 +268,6 @@ class RPG:
         self.players = {}
         self.game_in_progress = {}
         self.enemies = {}
-        self.save_file = 'https://github.com/huchu030/huchu030.git/game_state.json'
 
     def get_player(self, user):
         if user.id not in self.players:
@@ -299,44 +298,69 @@ class RPG:
         self.save_game_state() # 게임이 종료될 때 상태를 저장
             
     def save_game_state(self):
-        print("Saving game state...")  # 디버그 로그
+        print("Saving game state...")
         data = {
             'players': {user_id: vars(player) for user_id, player in self.players.items()},
             'game_in_progress': self.game_in_progress,
             'enemies': {user_id: vars(enemy) for user_id, enemy in self.enemies.items()}
         }
-        with open(self.save_file, 'w') as f:
-            json.dump(data, f)
-        print("Game state saved.")  # 디버그 로그
+        encoded_content = base64.b64encode(json.dumps(data).encode()).decode()
+        headers = {
+            'Authorization': f'token {GITHUB_TOKEN}',
+            'Content-Type': 'application/json'
+        }
+        # Fetch the current file information to get the SHA for updating
+        response = requests.get(API_URL, headers=headers)
+        if response.status_code == 200:
+            file_info = response.json()
+            sha = file_info['sha']
+            update_data = {
+                "message": "Updating game state",
+                "content": encoded_content,
+                "sha": sha
+            }
+            response = requests.put(API_URL, headers=headers, data=json.dumps(update_data))
+            if response.status_code == 200:
+                print("File updated successfully.")
+            else:
+                print(f"Failed to update file: {response.status_code} - {response.text}")
+        else:
+            print(f"Failed to fetch file info: {response.status_code} - {response.text}")
+
 
     def load_game_state(self):
-        rpg_instance = RPG()
-        rpg_instance.load_game_state()  # Correctly calling the method on an instance
-
-        print(f"Loading game state from {self.save_file}...")
-        if os.path.exists(self.save_file):
-            with open(self.save_file, 'r') as f:
-                try:
-                    data = json.load(f)
-                    print(f"Loaded data: {data}")
-                    self.players = {}
-                    for user_id, player_data in data.get('players', {}).items():
-                        player = Player(
-                            name=player_data['name'],
-                            hp=player_data['hp'],
-                            attack=player_data['attack'],
-                            defense=player_data['defense'],
-                            level=player_data['level'],
-                            exp=player_data['exp']
-                        )
-                        self.players[int(user_id)] = player
-                    self.game_in_progress = data.get('game_in_progress', {})
-                    print(f"Players loaded: {self.players}")
-                    print(f"Game in progress: {self.game_in_progress}")
-                except json.JSONDecodeError as e:
-                    print(f"Error loading JSON data: {e}")
+        print(f"Loading game state from {API_URL}...")
+        response = requests.get(API_URL)
+        if response.status_code == 200:
+            file_info = response.json()
+            content = base64.b64decode(file_info['content']).decode()
+            data = json.loads(content)
+            self.players = {}
+            for user_id, player_data in data.get('players', {}).items():
+                player = Player(
+                    name=player_data['name'],
+                    hp=player_data['hp'],
+                    attack=player_data['attack'],
+                    defense=player_data['defense'],
+                    level=player_data['level'],
+                    exp=player_data['exp']
+                )
+                self.players[int(user_id)] = player
+            self.game_in_progress = data.get('game_in_progress', {})
+            self.enemies = {}
+            for user_id, enemy_data in data.get('enemies', {}).items():
+                enemy = Enemy(
+                    name=enemy_data['name'],
+                    hp=enemy_data['hp'],
+                    attack=enemy_data['attack'],
+                    defense=enemy_data['defense']
+                )
+                self.enemies[int(user_id)] = enemy
+            print(f"Players loaded: {self.players}")
+            print(f"Game in progress: {self.game_in_progress}")
         else:
-            print("Save file does not exist.")
+            print(f"Failed to load file: {response.status_code} - {response.text}")
+
 
 
 
@@ -520,7 +544,7 @@ async def rpg_공격(interaction: discord.Interaction):
     if not enemy:
         await interaction.response.send_message("오류 메시지 : 적이 도망갔습니다..?")
         return
-    
+
     # 플레이어의 공격
     player_damage = player.attack_enemy(enemy)
     # 적의 반격
@@ -551,7 +575,6 @@ async def rpg_공격(interaction: discord.Interaction):
                 f"{player_name}님의 공격력: {player.attack}, 방어력: {player.defense}, HP: {player.hp}\n"
                 f"경험치 20을 획득하였습니다. 게임이 종료되었습니다."
             )
-
     else:
         if player.hp <= 0:
             player.reset()
@@ -562,7 +585,7 @@ async def rpg_공격(interaction: discord.Interaction):
             player_name = await get_member_nickname(guild, interaction.user.id)
             
             await interaction.response.send_message(
-                f"{player_name}님이 {enemy.name}을(를) 공격하여 {player_damage}의 피해를 입혔습니다.\n"
+                f"{player_name}님이 {enemy.name}을 공격하여 {player_damage}의 피해를 입혔습니다.\n"
                 f"{enemy.name}의 HP: {enemy.hp}\n"
                 f"{enemy.name}이 반격하여 {enemy_damage}의 피해를 입었습니다.\n"
                 f"{player_name}님이 사망하셔서 게임이 초기화되었습니다. 끄앙\n"
@@ -573,11 +596,12 @@ async def rpg_공격(interaction: discord.Interaction):
             player_name = await get_member_nickname(guild, interaction.user.id)
             
             await interaction.response.send_message(
-                f"{player_name}님이 {enemy.name}을(를) 공격하여 {player_damage}의 피해를 입혔습니다.\n"
+                f"{player_name}님이 {enemy.name}을 공격하여 {player_damage}의 피해를 입혔습니다.\n"
                 f"{enemy.name}의 HP: {enemy.hp}\n"
                 f"{enemy.name}이 반격하여 {enemy_damage}의 피해를 입었습니다.\n"
                 f"{player_name}님의 HP: {player.hp}"
             )
+
 
 
 @bot.tree.command(name="로또", description="아리스가 로또 번호를 골라줍니다")
