@@ -305,13 +305,11 @@ class MyBot(commands.Bot):
         scheduled_task.start()
         tracemalloc.start()
 
-def get_user_nickname(interaction: discord.Interaction):
-    member = interaction.guild.get_member(interaction.user.id)
+def get_member_nickname(guild, user_id):
+    member = guild.get_member(user_id)
     if member:
-        return member.nick if member.nick else interaction.user.name
-    else:
-        return interaction.user.name  # 캐시에 멤버가 없는 경우
-
+        return member.display_name
+    return "Unknown"
 
 bot = MyBot()
 
