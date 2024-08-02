@@ -184,29 +184,31 @@ class Player:
         self.exp = exp
 
     def attack_enemy(self, enemy):
+        # Calculate damage to the enemy
         damage = max(0, random.randint(0, 10) + self.attack - enemy.defense)
         enemy.hp -= damage
+        enemy.hp = max(0, enemy.hp)  # Ensure HP does not go below 0
         return damage
 
     def gain_exp(self, amount):
         self.exp += amount
-        if self.exp >= 100:  # 경험치가 100 이상일 때 레벨 업
+        if self.exp >= 100:  # Level up when experience reaches 100
             self.level_up()
 
     def level_up(self):
         self.level += 1
         self.exp = 0
-        self.attack += 5  # 레벨 업 시 공격력 증가
-        self.defense += 2  # 레벨 업 시 방어력 증가
-        self.hp = 100  # 체력 회복
-        return True  # 레벨 업 시 True를 반환
-    
+        self.attack += 5  # Increase attack on level up
+        self.defense += 2  # Increase defense on level up
+        self.hp = 100  # Restore HP on level up
+        return True  # Return True to indicate level up
+
     def reset(self):
-        self.hp = 100  # 체력 회복
-        self.attack = 10  # 초기 공격력
-        self.defense = 5  # 초기 방어력
-        self.exp = 0  # 경험치 초기화
-        self.level = 1  # 레벨 초기화
+        self.hp = 100  # Restore HP
+        self.attack = 10  # Reset attack
+        self.defense = 5  # Reset defense
+        self.exp = 0  # Reset experience
+        self.level = 1  # Reset level
 
 class Enemy:
     def __init__(self, name, hp, attack, defense):
@@ -216,12 +218,15 @@ class Enemy:
         self.defense = defense
 
     def attack_player(self, player):
+        # Calculate damage to the player
         damage = max(0, random.randint(0, 10) + self.attack - player.defense)
         player.hp -= damage
+        player.hp = max(0, player.hp)  # Ensure HP does not go below 0
         return damage
 
     def __repr__(self):
         return f"Enemy(name={self.name}, hp={self.hp}, attack={self.attack}, defense={self.defense})"
+
 
 class RPG:
     def __init__(self):
