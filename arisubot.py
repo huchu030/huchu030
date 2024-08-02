@@ -6,7 +6,6 @@ import tracemalloc
 import random
 import asyncio
 import os
-import requests
 import json
 import base64
 import aiofiles
@@ -21,62 +20,6 @@ MCHID = 1266916147639615639
 intents = discord.Intents.default()
 intents.message_content = True
 intents.members = True
-
-# 깃허브
-
-gtoken = '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'
-repo_owner = 'huchu030'
-repo_name = 'huchu030'
-file_path = 'game_state.json'
-api_url = f'https://api.github.com/repos/{repo_owner}/{repo_name}/contents/{file_path}'
-
-# GitHub 파일 업데이트 함수
-
-def update_github_file(game_state):
-    encoded_content = base64.b64encode(json.dumps(game_state).encode()).decode()
-    headers = {
-        'Authorization': f'token {gtoken}',
-        'Content-Type': 'application/json'
-    }
-    data = {
-        "message": "Updating game state",
-        "content": encoded_content
-    }
-    response = requests.put(api_url, headers=headers, data=json.dumps(data))
-    if response.status_code == 201:
-        print("File updated successfully.")
-    else:
-        print(f"Failed to update file: {response.status_code} - {response.text}")
-
-def save_game_state():
-    game_state = {
-        'players': {user_id: vars(player) for user_id, player in rpg.players.items()},
-        'game_in_progress': rpg.game_in_progress,
-        'enemies': {user_id: vars(enemy) for user_id, enemy in rpg.enemies.items()}
-    }
-    update_github_file(game_state)
-
-
-import requests
-
-def fetch_file_from_github(owner, repo, file_path, gtoken):
-    url = f"https://api.github.com/repos/{owner}/{repo}/contents/{file_path}"
-    headers = {
-        "Authorization": f"token {gtoken}"
-    }
-    response = requests.get(url, headers=headers)
-
-    if response.status_code == 200:
-        print("File content:")
-        print(response.json())
-    elif response.status_code == 404:
-        print(f"File not found: {response.status_code} - {response.json()}")
-    else:
-        print(f"Failed to load file: {response.status_code} - {response.text}")
-
-# Replace with appropriate values and your personal access token
-fetch_file_from_github("huchu030", "huchu030", "game_state.json", "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")
-
 
 
 # 숫자야구
@@ -288,10 +231,12 @@ class Enemy:
 
 
 class RPG:
-    def __init__(self):
+    def __init__(self, save_file_path='game_state.json'):
+        self.save_file_path = save_file_path
+        self.game_state = self.load_game_state()
         self.players = {}
-        self.game_in_progress = {}
         self.enemies = {}
+        self.game_in_progress = {}
 
     def get_player(self, user):
         if user.id not in self.players:
@@ -333,39 +278,11 @@ class RPG:
         print("Game state saved.")  # 디버그 로그
 
     def load_game_state(self):
-        print(f"Loading game state from {api_url}...")
-        response = requests.get(api_url)
-        if response.status_code == 200:
-            file_info = response.json()
-            content = base64.b64decode(file_info['content']).decode()
-            data = json.loads(content)
-            self.players = {}
-            for user_id, player_data in data.get('players', {}).items():
-                player = Player(
-                    name=player_data['name'],
-                    hp=player_data['hp'],
-                    attack=player_data['attack'],
-                    defense=player_data['defense'],
-                    level=player_data['level'],
-                    exp=player_data['exp']
-                )
-                self.players[int(user_id)] = player
-            self.game_in_progress = data.get('game_in_progress', {})
-            self.enemies = {}
-            for user_id, enemy_data in data.get('enemies', {}).items():
-                enemy = Enemy(
-                    name=enemy_data['name'],
-                    hp=enemy_data['hp'],
-                    attack=enemy_data['attack'],
-                    defense=enemy_data['defense']
-                )
-                self.enemies[int(user_id)] = enemy
-            print(f"Players loaded: {self.players}")
-            print(f"Game in progress: {self.game_in_progress}")
+        if os.path.exists(self.save_file_path):
+            with open(self.save_file_path, 'r') as file:
+                return json.load(file)
         else:
-            print(f"Failed to load file: {response.status_code} - {response.text}")
-
-
+            return self.create_default_game_state()
 
 
 async def get_member_nickname(guild, user_id):
