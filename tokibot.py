@@ -205,7 +205,7 @@ async def 운세(interaction: discord.Interaction):
     else:
         last_fortune = bot.fortune_manager.get_last_fortune(user_id)
         if last_fortune:
-            await interaction.response.send_message(f"[오늘의 {user_nickname}님의 운세]\n"
+            await interaction.response.send_message(f"[{user_nickname}님의 오늘의 운세]\n"
                                                     "\n"
                                                     f"{last_fortune}")                               
         else:
