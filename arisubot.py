@@ -246,7 +246,7 @@ class RPG:
         print(f"Starting game for user: {user.name} ({user.id})")
         self.game_in_progress[user.id] = True
         if user.id not in self.enemies:
-        self.enemies[user.id] = self.generate_enemy(self.get_player(user).level)
+            self.enemies[user.id] = self.generate_enemy(self.get_player(user).level)
 
         print(f"Game started. Current games in progress: {self.game_in_progress}")
 
