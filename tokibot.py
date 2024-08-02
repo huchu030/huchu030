@@ -40,7 +40,7 @@ class MyBot(commands.Bot):
         super().__init__(command_prefix='!', intents=intents, **kwargs)
         self.synced = False
         self.fortune_manager = FortuneManager()
-        self.fortune = [  # 운세 메시지 리스트
+        self.fortunes = [  # 운세 메시지 리스트
             "오늘은 행운이 가득한 날입니다.",
             "조금 더 노력하면 큰 성과를 얻을 수 있을 것입니다.",
             "누군가가 당신에게 도움을 줄 것입니다.",
@@ -172,10 +172,10 @@ async def 운세(interaction: discord.Interaction):
     user_id = interaction.user.id
     if bot.fortune_manager.can_show_fortune(user_id):
         fortune = random.choice(bot.fortunes)  # 리스트에서 랜덤으로 메시지 선택
-        await interaction.response.send_message(f"{fortune}")
+        await interaction.response.send_message(f"{fortunes}")
         bot.fortune_manager.update_last_fortune_date(user_id)
     else:
-        await interaction.response.send_message(f"{fortune}")
+        await interaction.response.send_message(f"{fortunes}")
 
 
 # 봇 실행
