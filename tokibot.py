@@ -62,7 +62,6 @@ class MyBot(commands.Bot):
             "오늘의 행운의 색은 파란색입니다.",
             "오늘의 행운의 색은 흰색입니다.",
             "오늘은 서브웨이를 드셔보세요. '/서브웨이' 명령어를 사용해 레시피를 추천받을 수 있습니다."
-            
         ]
 
     async def on_ready(self):
@@ -175,7 +174,13 @@ async def 운세(interaction: discord.Interaction):
         await interaction.response.send_message(f"{fortune}")
         bot.fortune_manager.update_last_fortune_date(user_id)
     else:
-        await interaction.response.send_message(f"{fortune}")
+        last_fortune = bot.fortune_manager.get_last_fortune(user_id)
+        if last_fortune:
+            await interaction.response.send_message(f"오늘의 운세: {last_fortune}")
+        else:
+            await interaction.response.send_message("운세 메시지를 불러올 수 없습니다. 다시 시도해 주세요.")
+
+
 
 
 # 봇 실행
