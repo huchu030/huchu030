@@ -185,6 +185,11 @@ class Player:
         enemy.hp -= damage
         return damage
 
+    def attack_player(self, player):
+        damage = max(0, random.randint(0, 10) + self.attack - player.defense)
+        player.hp -= damage
+        return damage
+
     def gain_exp(self, amount):
         self.exp += amount
         if self.exp >= 100:  # 경험치가 100 이상일 때 레벨 업
@@ -443,7 +448,9 @@ async def rpg_공격(interaction: discord.Interaction):
         await interaction.response.send_message("오류 메시지입니다. 게임을 다시 시작해주세요!")
         return
     
+    # 플레이어의 공격
     player_damage = player.attack_enemy(enemy)
+    # 적의 반격
     enemy_damage = enemy.attack_player(player)
 
     if enemy.hp <= 0:
