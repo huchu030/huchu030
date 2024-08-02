@@ -249,6 +249,7 @@ class RPG:
             del self.enemies[user.id]
 
     def save_game_state(self):
+        print("Saving game state...")  # 디버그 로그
         data = {
             'players': {user_id: vars(player) for user_id, player in self.players.items()},
             'game_in_progress': self.game_in_progress,
@@ -256,16 +257,19 @@ class RPG:
         }
         with open(self.save_file, 'w') as f:
             json.dump(data, f)
-        print("게임 상태가 저장되었습니다.")  # 디버그 로그
+        print("Game state saved.")  # 디버그 로그
 
     def load_game_state(self):
+        print("Loading game state...")  # 디버그 로그
         if os.path.exists(self.save_file):
             with open(self.save_file, 'r') as f:
                 data = json.load(f)
                 self.players = {int(user_id): Player(**player) for user_id, player in data['players'].items()}
                 self.game_in_progress = data['game_in_progress']
                 self.enemies = {int(user_id): Enemy(**enemy) for user_id, enemy in data['enemies'].items()}
-            print("게임 상태가 로드되었습니다.")  # 디버그 로그
+            print("Game state loaded.")  # 디버그 로그
+        else:
+            print("Save file does not exist.")  # 디버그 로그
 
 async def get_member_nickname(guild, user_id):
     member = guild.get_member(user_id)
@@ -487,7 +491,6 @@ async def rpg_공격(interaction: discord.Interaction):
         if player.hp <= 0:
             player.reset()
             bot.rpg.end_game(interaction.user)
-            bot.rpg.enemies[interaction.user.id] = None  # 적을 None으로 설정하여 초기화된 상태로
             
             await interaction.response.send_message(
                 f"{player_name}님이 {enemy.name}을 공격하여 {player_damage}의 피해를 입혔습니다.\n"
