@@ -235,7 +235,7 @@ class RPG:
         # 플레이어 레벨에 따라 적의 능력치 증가
         name = "쨈미몬"
         hp = 50 + (player_level * 10)
-        attack = 5 + (player_level * 2)
+        attack = 5 + (player_level * 2) 
         defense = 2 + player_level
         return Enemy(name, hp, attack, defense)
 
