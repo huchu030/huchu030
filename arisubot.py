@@ -512,7 +512,6 @@ async def rpg_공격(interaction: discord.Interaction):
             )
 
 
-
 @bot.tree.command(name="로또", description="아리스가 로또 번호를 골라줍니다")
 async def 로또(interaction: discord.Interaction):
     numbers = random.sample(range(1, 46), 6)
