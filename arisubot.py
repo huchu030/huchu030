@@ -183,8 +183,8 @@ class Player:
         self.exp = 0
 
     def attack_enemy(self, enemy):
-        damage = random.randint(0, 10) + self.attack  # 랜덤한 피해 + 공격력
-        enemy.hp -= max(0, damage - enemy.defense)
+        damage = max(0, random.randint(0, 10) + self.attack - enemy.defense)
+        enemy.hp -= damage
         return damage
 
     def gain_exp(self, amount):
@@ -215,8 +215,8 @@ class Enemy:
         self.defense = defense
 
     def attack_player(self, player):
-        damage = random.randint(0, 10) + self.attack  # 랜덤한 피해 + 공격력
-        player.hp -= max(0, damage - player.defense)
+        damage = max(0, random.randint(0, 10) + self.attack - player.defense)
+        player.hp -= damage
         return damage
 
 class RPG:
@@ -446,12 +446,16 @@ async def rpg_공격(interaction: discord.Interaction):
 
     enemy = bot.rpg.generate_enemy(player.level)  # 플레이어 레벨에 따라 적 생성
     player_damage = player.attack_enemy(enemy)
+    enemy_damage = enemy.attack_player(player)
+
+    
     if enemy.hp <= 0:
         player.gain_exp(20)  # 적을 쓰러뜨리면 경험치 획득
         level_up = player.level_up()  # 레벨 업 시 True 반환
         
         bot.rpg.end_game(interaction.user)
-        
+
+    
         # 서버의 닉네임 가져오기
         guild = interaction.guild
         player_name = await get_member_nickname(guild, interaction.user.id)
@@ -494,8 +498,8 @@ async def rpg_공격(interaction: discord.Interaction):
             await interaction.response.send_message(
                 f"{player_name}님이 {enemy.name}을(를) 공격하여 {player_damage}의 피해를 입혔습니다.\n"
                 f"{enemy.name}의 HP: {enemy.hp}\n"
-                f"{enemy.name} 반격하여 {enemy_damage}의 피해를 입었습니다.\n"
-                f"{player_name}님의 공격력: {player.attack}, 방어력: {player.defense}, HP: {player.hp}"
+                f"{enemy.name}이 반격하여 {enemy_damage}의 피해를 입었습니다.\n"
+                f"{player_name}님의 HP: {player.hp}"
             )
 
 
