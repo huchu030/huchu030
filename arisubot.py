@@ -251,10 +251,12 @@ class RPG:
     def save_game_state(self):
         data = {
             'players': {user_id: vars(player) for user_id, player in self.players.items()},
-            'game_in_progress': self.game_in_progress
+            'game_in_progress': self.game_in_progress,
+            'enemies': {user_id: vars(enemy) for user_id, enemy in self.enemies.items()}
         }
         with open(self.save_file, 'w') as f:
             json.dump(data, f)
+        print("게임 상태가 저장되었습니다.")  # 디버그 로그
 
     def load_game_state(self):
         if os.path.exists(self.save_file):
@@ -262,6 +264,8 @@ class RPG:
                 data = json.load(f)
                 self.players = {int(user_id): Player(**player) for user_id, player in data['players'].items()}
                 self.game_in_progress = data['game_in_progress']
+                self.enemies = {int(user_id): Enemy(**enemy) for user_id, enemy in data['enemies'].items()}
+            print("게임 상태가 로드되었습니다.")  # 디버그 로그
 
 async def get_member_nickname(guild, user_id):
     member = guild.get_member(user_id)
@@ -465,7 +469,7 @@ async def rpg_공격(interaction: discord.Interaction):
             await interaction.response.send_message(
                 f"{player_name}님이 {enemy.name}을 공격하여 {player_damage}의 피해를 입혔습니다.\n"
                 f"{enemy.name}이 쓰러졌습니다!\n"
-                f"레벨 업! {player_name}님의 레벨: {player.level}, 공격력: {player.attack}, 방어력: {player.defense}, HP: {player.hp}\n"
+                f"레벨 업! ( 레벨: {player.level}, 공격력: {player.attack}, 방어력: {player.defense}, HP: {player.hp} )\n"
                 f"경험치 20을 획득하였습니다. 게임이 종료되었습니다."
             )
         else:
@@ -486,14 +490,14 @@ async def rpg_공격(interaction: discord.Interaction):
             bot.rpg.enemies[interaction.user.id] = None  # 적을 None으로 설정하여 초기화된 상태로
             
             await interaction.response.send_message(
-                f"{player_name}님이 {enemy.name}을(를) 공격하여 {player_damage}의 피해를 입혔습니다.\n"
+                f"{player_name}님이 {enemy.name}을 공격하여 {player_damage}의 피해를 입혔습니다.\n"
                 f"{enemy.name}의 HP: {enemy.hp}\n"
                 f"{enemy.name}이 반격하여 {enemy_damage}의 피해를 입었습니다.\n"
                 f"{player_name}님이 사망하셔서 게임이 초기화되었습니다. 끄앙\n"
             )
         else:
             await interaction.response.send_message(
-                f"{player_name}님이 {enemy.name}을(를) 공격하여 {player_damage}의 피해를 입혔습니다.\n"
+                f"{player_name}님이 {enemy.name}을 공격하여 {player_damage}의 피해를 입혔습니다.\n"
                 f"{enemy.name}의 HP: {enemy.hp}\n"
                 f"{enemy.name}이 반격하여 {enemy_damage}의 피해를 입었습니다.\n"
                 f"{player_name}님의 HP: {player.hp}"
