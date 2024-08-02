@@ -40,7 +40,7 @@ class MyBot(commands.Bot):
         super().__init__(command_prefix='!', intents=intents, **kwargs)
         self.synced = False
         self.fortune_manager = FortuneManager()
-        self.fortunes = [  # 운세 메시지 리스트
+        self.fortune = [  # 운세 메시지 리스트
             "오늘은 행운이 가득한 날입니다.",
             "조금 더 노력하면 큰 성과를 얻을 수 있을 것입니다.",
             "누군가가 당신에게 도움을 줄 것입니다.",
@@ -176,8 +176,6 @@ async def 운세(interaction: discord.Interaction):
         bot.fortune_manager.update_last_fortune_date(user_id)
     else:
         await interaction.response.send_message(f"{fortune}")
-
-
 
 
 # 봇 실행
