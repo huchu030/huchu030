@@ -97,7 +97,7 @@ class MyBot(commands.Bot):
     def __init__(self, **kwargs):
         super().__init__(command_prefix='!', intents=intents, **kwargs)
         self.synced = False
-        self.number_baseball = NumberBaseballGame()
+        self.number_baseball = NumberBaseball()
         
     async def on_ready(self):
         print(f'봇이 로그인되었습니다: {self.user.name}')
