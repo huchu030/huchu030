@@ -47,7 +47,7 @@ class NumberBaseballGame:
 
         if guess == self.secret_number:
             self.game_active = False
-            return f"와아~ 정답이에요! 답은 {game.secret_number}! \n{self.attempts}회 만에 맞혔어요~"
+            return f"와아~ 정답이에요! 답은 {self.secret_number}! \n{self.attempts}회 만에 맞혔어요~"
         
         strikes, balls = self.calculate_strikes_and_balls(guess)
         return f"{guess} : {strikes}S {balls}B"
