@@ -9,7 +9,7 @@ import pytz
 # 토큰, 채널 ID
 
 TOKEN = 'MTI2NzEyNTczMzk2MTEwOTUxNA.GBqLjK.Jpd9QwikmgDKEjQh48jRbAEnS0ioP4WKOZogxg'
-mchid = 1266916147639615639
+MCHID = 1266916147639615639
 
 # 인텐트 설정
 
