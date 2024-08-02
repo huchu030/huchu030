@@ -178,7 +178,6 @@ class MyBot(commands.Bot):
         self.synced = False
         self.number_baseball = NumberBaseball()
         self.number_guessing = NumberGuessing()
-        self.rpg = RPG()
         
     async def on_ready(self):
         print(f'봇이 로그인되었습니다: {self.user.name}')
@@ -188,7 +187,6 @@ class MyBot(commands.Bot):
             self.synced = True
         scheduled_task.start()
         tracemalloc.start()
-        self.rpg.load_game_state()
 
     async def close(self):
         # 봇이 종료될 때 게임 상태를 저장합니다.
