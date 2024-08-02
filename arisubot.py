@@ -231,14 +231,20 @@ class rpg:
         
         player = data["players"][user_id]
         enemy = data["current_enemies"][user_id]
-
-        if not isinstance(damage, int) or damage < 1 or damage > player["hp"]:
+        
+        if not damage.isdigit():
             await interaction.response.send_message("체력 이하의 숫자를 입력해주세요!")
             return
 
-        success_chance = random.randint(0, 100)
-        attack_success = success_chance <= random.randint(10, 90)  # 랜덤 성공 확률
+        damage = int(damage)
+        if damage < 1 or damage > player["hp"]:
+            await interaction.response.send_message("체력 이하의 숫자를 입력해주세요!")
+            return
 
+        success_chance = random.randint(10, 90)  # 랜덤 성공 확률
+        actual_chance = random.randint(0, 100)
+        attack_success = actual_chance <= success_chance
+        
         if attack_success:
             enemy["hp"] -= damage
             result = (f"공격 성공! 쨈미몬이 {damage}의 데미지를 입었습니다. ( 성공 확률 : {actual_chance}% )\n"
@@ -257,7 +263,7 @@ class rpg:
             result = (f"공격 실패! 쨈미몬이 반격해서 {damage}의 데미지를 입혔습니다. ( 성공 확률 : {actual_chance}% )\n"
                       f"{user_nickname}님의 체력 : {player['hp']}, 쨈미몬의 체력 : {enemy['hp']}")
             if player["hp"] <= 0:
-                result += "\n \n{user_nickname}님의 체력이 0이 되어 사망했습니다. 끄앙"
+                result += f"\n \n{user_nickname}님의 체력이 0이 되어 사망했습니다. 끄앙"
                 self.initialize_game_data()  # 게임 데이터 초기화
                 await interaction.response.send_message(result)
                 return
