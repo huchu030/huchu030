@@ -292,6 +292,8 @@ class MyBot(commands.Bot):
     def __init__(self, **kwargs):
         super().__init__(command_prefix='!', intents=intents, **kwargs)
         self.synced = False
+        self.number_baseball = NumberBaseball()
+        self.number_guessing = NumberGuessing()
         self.rpg = RPG()
         
     async def on_ready(self):
