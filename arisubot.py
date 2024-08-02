@@ -16,8 +16,7 @@ intents.message_content = True
 intents.members = True
 
 class NumberBaseballGame:
-    def __init__(self, bot):
-        self.bot = bot
+    def __init__(self):
         self.reset_game()
 
     def generate_secret_number(self):
@@ -98,7 +97,7 @@ class MyBot(commands.Bot):
     def __init__(self, **kwargs):
         super().__init__(command_prefix='!', intents=intents, **kwargs)
         self.synced = False
-        self.number_baseball = NumberBaseball(self)
+        self.number_baseball = NumberBaseballGame()
         
     async def on_ready(self):
         print(f'봇이 로그인되었습니다: {self.user.name}')
