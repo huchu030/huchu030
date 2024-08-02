@@ -1,1 +1,4 @@
+<<<<<<< HEAD
 {"players": {"1112776976994930842": {"name": "huchu030", "hp": 100, "attack": 15, "defense": 7, "level": 2, "exp": 0}}, "game_in_progress": {"1112776976994930842": true, "1112776976994930842": true}, "enemies": {"1112776976994930842": {"name": "\uca08\ubbf8\ubaac", "hp": 60, "attack": 9, "defense": 4}}}
+=======
+>>>>>>> ab28f148801bf81fd63dfe2ae31e624ce681f6ff
