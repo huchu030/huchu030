@@ -172,7 +172,7 @@ class NumberGuessing:
 # RPG 게임
 
 class Player:
-    def __init__(self, name, hp=100, attack=10, defense=5, level=1, exp=0):
+    def __init__(self, name, hp=70, attack=10, defense=5, level=1, exp=0):
         self.name = name
         self.hp = hp
         self.attack = attack
@@ -232,7 +232,7 @@ class RPG:
     def generate_enemy(self, player_level):
         # 플레이어 레벨에 따라 적의 능력치 증가
         name = "쨈미몬"
-        hp = 50 + (player_level * 10)
+        hp = 40 + (player_level * 10)
         attack = 5 + (player_level * 2)
         defense = 2 + player_level
         return Enemy(name, hp, attack, defense)
