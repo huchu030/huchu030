@@ -83,8 +83,8 @@ class NumberBaseball:
         else:
             game.start_game()
             await interaction.response.send_message("뽜밤뽜밤-! 숫자야구 게임을 시작합니다! \n"
-                                                    "'/숫자야구_추측'으로 3자리 숫자를 맞혀보세요. \n"
-                                                    "'/숫자야구_규칙'으로 게임 규칙을 볼 수 있습니다!")
+                                                    "`/숫자야구_추측`으로 3자리 숫자를 맞혀보세요. \n"
+                                                    "`/숫자야구_규칙`으로 게임 규칙을 볼 수 있습니다!")
 
     async def guess_number(self, interaction: discord.Interaction, guess: str):
         user = interaction.user
@@ -149,7 +149,7 @@ class NumberGuessing:
             await interaction.response.send_message("저와 이미 게임을 하고 있어요!")
         else:
             game.start_game()
-            await interaction.response.send_message("뽜밤뽜밤-! 숫자 맞히기 게임을 시작합니다! \n'/숫자게임_추측'으로 1부터 100까지의 숫자를 맞혀보세요.")
+            await interaction.response.send_message("뽜밤뽜밤-! 숫자 맞히기 게임을 시작합니다! \n`/숫자게임_추측`으로 1부터 100까지의 숫자를 맞혀보세요.")
 
     async def guess_number(self, interaction: discord.Interaction, guess: str):
         user = interaction.user
@@ -237,7 +237,7 @@ class rpg:
     async def start_game(self, interaction: discord.Interaction):
         user_id = str(interaction.user.id)
         if self.is_player_in_game(user_id):
-            await interaction.response.send_message("'/공격'으로 빨리 적을 공격하세요!")
+            await interaction.response.send_message("`/공격`으로 빨리 적을 공격하세요!")
             return
 
         self.add_new_player(user_id)
@@ -276,7 +276,7 @@ class rpg:
         if attack_success:
             enemy["hp"] -= damage
             result = (f"공격 성공! 쨈미몬이 {damage}의 데미지를 입었습니다. ( 성공 확률 : {actual_chance}% )\n"
-                      f"{user_nickname}님의 체력 : {player['hp']}, 쨈미몬의 체력 : {enemy['hp']}")
+                      f"레벨 : {player['level']}, {user_nickname}님의 체력 : {player['hp']}, 쨈미몬의 체력 : {enemy['hp']}")
             if enemy["hp"] <= 0:
                 exp_gain = random.randint(10, 20)
                 player["exp"] += exp_gain
@@ -293,7 +293,7 @@ class rpg:
         else:
             player["hp"] -= damage
             result = (f"공격 실패! 쨈미몬이 반격해서 {damage}의 데미지를 입혔습니다. ( 성공 확률 : {actual_chance}% )\n"
-                      f"{user_nickname}님의 체력 : {player['hp']}, 쨈미몬의 체력 : {enemy['hp']}")
+                      f"레벨 : {player['level']}, {user_nickname}님의 체력 : {player['hp']}, 쨈미몬의 체력 : {enemy['hp']}")
             if player["hp"] <= 0:
                 result += f"\n \n{user_nickname}님의 체력이 0이 되어 사망했습니다. 끄앙"
                 self.delete_player_data(user_id)
