@@ -269,7 +269,7 @@ class rpg:
             await interaction.response.send_message("체력 이하의 숫자를 입력해주세요! \n`/스탯`으로 현재 체력을 확인할 수 있습니다.")
             return
 
-        success_chance = 50  # 랜덤 성공 확률
+        success_chance = random.randint(10, 90)  # 랜덤 성공 확률
         actual_chance = random.randint(10, 90)
         attack_success = actual_chance <= success_chance
         
