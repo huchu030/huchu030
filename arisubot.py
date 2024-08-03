@@ -243,7 +243,7 @@ class rpg:
         self.add_new_player(user_id)
         await interaction.response.send_message(
         "용사여. 빛이 당신과 함께 합니다...\n"
-        "'/rpg_규칙'으로 게임 규칙을 볼 수 있습니다.\n"
+        "`/rpg_규칙`으로 게임 규칙을 볼 수 있습니다.\n"
         "앗, 방심한 사이에 쨈미몬이 나타났습니다. 어서 공격하세요!"
     )
         
@@ -261,12 +261,12 @@ class rpg:
         enemy = data["current_enemies"][user_id]
         
         if not damage.isdigit():
-            await interaction.response.send_message("체력 이하의 숫자를 입력해주세요! \n'/스탯'으로 현재 체력을 확인할 수 있습니다.")
+            await interaction.response.send_message("체력 이하의 숫자를 입력해주세요! \n`/스탯`으로 현재 체력을 확인할 수 있습니다.")
             return
  
         damage = int(damage)
         if damage < 1 or damage > player["hp"]:
-            await interaction.response.send_message("체력 이하의 숫자를 입력해주세요! \n'/스탯'으로 현재 체력을 확인할 수 있습니다.")
+            await interaction.response.send_message("체력 이하의 숫자를 입력해주세요! \n`/스탯`으로 현재 체력을 확인할 수 있습니다.")
             return
 
         success_chance = random.randint(10, 90)  # 랜덤 성공 확률
@@ -313,7 +313,7 @@ class rpg:
         if player_data:
             await interaction.response.send_message(f"[{user_nickname}님의 스탯] \n \n레벨 : {player_data['level']}, 체력 : {player_data['hp']}, 경험치 : {player_data['exp']}")
         else:
-            await interaction.response.send_message(f"{user_nickname}님의 데이터가 없습니다. '/rpg'로 게임을 시작해보세요!.")
+            await interaction.response.send_message(f"{user_nickname}님의 데이터가 없습니다. `/rpg`로 게임을 시작해보세요!.")
 
 
 # 봇 클래스 정의
@@ -475,9 +475,10 @@ async def rpg_규칙(interaction: discord.Interaction):
         f"{user_nickname}님의 체력은 100, 쨈미몬의 체력은 50으로 시작하며 레벨이 올라갈수록 쨈미몬이 강해집니다.\n"
         "쨈미몬을 쓰러뜨릴 때마다 랜덤한 경험치가 쌓이고, 일정 수치를 넘기면 레벨업을 합니다.\n"
         " \n"
-        f"'/공격'으로 {user_nickname}님의 체력 이하의 숫자를 입력하면 공격을 시도할 수 있습니다.\n"
+        f"`/공격`으로 {user_nickname}님의 체력 이하의 숫자를 입력하면 공격을 시도할 수 있습니다.\n"
         "공격은 랜덤한 확률로 성공하며, 성공시 쨈미몬에게 입력한 숫자만큼의 데미지를 입힙니다.\n"
         f"그러나 실패시 쨈미몬이 반격해 {user_nickname}님이 그만큼의 데미지를 입습니다!\n"
+        " \n"
         "체력이 0이 되면 사망하여 게임이 초기화되니 부디 조심하세요.\n"
         "그럼 저는 이만...")
         
