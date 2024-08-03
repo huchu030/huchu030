@@ -50,6 +50,9 @@ class FortuneManager:
             "오늘은 서브웨이를 드셔보세요. `/서브웨이`로 레시피를 추천받을 수 있습니다."
         ]
 
+    def get_random_fortune(self):
+        return random.choice(self.fortunes)
+
     def can_show_fortune(self, user_id):
         today = datetime.now().date()
         if user_id in self.user_last_fortune_date:
@@ -140,6 +143,7 @@ async def rock_paper_scissors(interaction: discord.Interaction):
         button = discord.ui.Button(label=option, style=discord.ButtonStyle.primary, custom_id=option)
         button.callback = lambda i: button_callback(i, interaction.user)
         view.add_item(button)
+        
     await interaction.response.send_message("준비되시면, 말씀해 주세요.", view=view)
 
 async def button_callback(interaction: discord.Interaction, user: discord.User):

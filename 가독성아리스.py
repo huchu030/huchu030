@@ -432,7 +432,6 @@ async def rock_paper_scissors(interaction: discord.Interaction):
         button = discord.ui.Button(label=option, style=discord.ButtonStyle.primary, custom_id=option)
         button.callback = lambda i: button_callback(i, interaction.user)
         view.add_item(button)
-        
     await interaction.response.send_message("안 내면 집니다!", view=view)
 
 async def button_callback(interaction: discord.Interaction, user: discord.User):
