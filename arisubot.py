@@ -291,14 +291,25 @@ class rpg:
             if enemy["hp"] <= 0:
                 exp_gain = random.randint(30, 40)
                 player["exp"] += exp_gain
+
                 if player["exp"] >= player["level"] * 100:
+                    player["hp"] = 100
                     player["level"] += 1
-                    result += (f"\n \n레벨 업! 현재 레벨 : {player['level']}")
-                enemy["hp"] = 40 + 10 * player["level"]
-                player["hp"] = 100
-                result += ("\n \n와아~ 쨈미몬이 쓰러졌습니다!\n"
-                           "...\n"
-                           "\n 헉.. 쨈미몬이 더 강해져서 돌아왔어요!")
+                    enemy["hp"] = 40 + 10 * player["level"]
+                    
+                    result += (f"\n \n레벨 업! 현재 레벨 : {player['level']}"
+                               "\n \n와아~ 쨈미몬이 쓰러졌습니다!\n"
+                               "...\n"
+                               "\n 헉.. 쨈미몬이 더 강해져서 돌아왔어요!"
+                               f"현재 쨈미몬의 체력 : {enemy['hp']}")
+                else:
+                    player["hp"] = 100
+                    enemy["hp"] = 40 + 10 * player["level"]
+                    player["hp"] = 100
+                    result += ("\n \n와아~ 쨈미몬이 쓰러졌습니다!\n"
+                               "...\n"
+                               "\n 헉.. 쨈미몬이 다시 깨어났어요!")
+                
                         
         else:
             player["hp"] -= damage
