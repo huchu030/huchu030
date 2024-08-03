@@ -269,7 +269,7 @@ class rpg:
             await interaction.response.send_message("체력 이하의 숫자를 입력해주세요! \n`/스탯`으로 현재 체력을 확인할 수 있습니다.")
             return
 
-        success_chance = random.randint(10, 90)  # 랜덤 성공 확률
+        success_chance = 50  # 랜덤 성공 확률
         actual_chance = random.randint(10, 90)
         attack_success = actual_chance <= success_chance
         
@@ -283,7 +283,8 @@ class rpg:
                 if player["exp"] >= player["level"] * 100:  # 레벨업 기준 예시
                     player["level"] += 1
                     player["exp"] = 0
-                    result += f"\n \n레벨 업! 현재 레벨 : {player['level']}"
+                    result += (f"\n \n레벨 업! 현재 레벨 : {player['level']}\n"
+                               f"{user_nickname}님의 체력 : {player['hp']}, 쨈미몬의 체력 : {enemy['hp']}")
                 enemy["hp"] = 50 + 10 * player["level"]
                 player["hp"] = 100
                 result += ("\n \n와아~ 쨈미몬이 쓰러졌습니다!\n"
