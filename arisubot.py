@@ -56,7 +56,7 @@ class NumberBaseballGame:
 
         if self.attempts >= self.max_attempts:
             self.game_active = False
-            return f"기회를 모두 소진했습니다. 끄앙 \n정답은 {self.secret_number}입니다! 다시 도전해 볼까요?"
+            return f"{guess} : 기회를 모두 소진했습니다. 끄앙 \n정답은 {self.secret_number}입니다! 다시 도전해 볼까요?"
 
         strikes, balls = self.calculate_strikes_and_balls(guess)
         return f"{guess} : {strikes}S {balls}B"
