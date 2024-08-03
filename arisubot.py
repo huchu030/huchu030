@@ -241,6 +241,9 @@ class rpg:
         data = self.load_game_data()
         return user_id in data["players"]
 
+    def calculate_next_level_exp(self, level):
+        return level * 100
+
     async def start_game(self, interaction: discord.Interaction):
         user_id = str(interaction.user.id)
         if self.is_player_in_game(user_id):
@@ -291,7 +294,7 @@ class rpg:
                 next_level_exp = self.calculate_next_level_exp(player["level"])
                 if player["exp"] >= player["level"] * 100:
                     player["level"] += 1
-                    player["exp"] = 0
+                    player["exp"] -= next_level_exp
                     result += (f"\n \n레벨 업! 현재 레벨 : {player['level']}")
                 enemy["hp"] = 40 + 10 * player["level"]
                 player["hp"] = 100
