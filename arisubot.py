@@ -189,8 +189,6 @@ class NumberGuessing:
 data_file = 'game_data.json'
 
 class rpg:
-    guild = interaction.guild
-    user_nickname = get_user_nickname(guild, interaction.user.id)
 
     def __init__(self):
         self.initialize_game_data()
@@ -257,6 +255,9 @@ class rpg:
     async def attack(self, interaction: discord.Interaction, damage: int):
         user_id = str(interaction.user.id)
         data = self.load_game_data()
+        guild = interaction.guild
+        user_nickname = get_user_nickname(guild, interaction.user.id)
+
 
         if user_id not in data["players"]:
             await interaction.response.send_message("진행 중인 게임이 없습니다. 아리스랑 같이 놀아요!")
@@ -314,6 +315,8 @@ class rpg:
     async def stats(self, interaction: discord.Interaction):
         user_id = str(interaction.user.id)
         data = self.load_game_data()
+        guild = interaction.guild
+        user_nickname = get_user_nickname(guild, interaction.user.id)
         player_data = data.get("players", {}).get(user_id, None)
         enemy_data = data.get("current_enemies", {}).get(user_id, None)
         
@@ -327,6 +330,8 @@ class rpg:
 
     async def leaderboard(self, interaction: discord.Interaction):
         data = self.load_game_data()
+        guild = interaction.guild
+        user_nickname = get_user_nickname(guild, interaction.user.id)
         sorted_players = sorted(
             [(user_id, player) for user_id, player in data["players"].items()],
             key=lambda x: x[1]["exp"], reverse=True
