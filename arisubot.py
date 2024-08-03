@@ -82,7 +82,7 @@ class NumberBaseball:
             await interaction.response.send_message("저와 이미 게임을 하고 있어요!")
         else:
             game.start_game()
-            await interaction.response.send_message("뽜밤뽜밤-! 숫자야구 게임을 시작합니다! \n`/숫자야구_추측'으로 3자리 숫자를 맞혀보세요. \n`/숫자야구_규칙`으로 게임 규칙을 볼 수 있습니다!")
+            await interaction.response.send_message("뽜밤뽜밤-! 숫자야구 게임을 시작합니다! \n'/숫자야구_추측'으로 3자리 숫자를 맞혀보세요. \n'/숫자야구_규칙'으로 게임 규칙을 볼 수 있습니다!")
 
     async def guess_number(self, interaction: discord.Interaction, guess: str):
         user = interaction.user
@@ -147,7 +147,7 @@ class NumberGuessing:
             await interaction.response.send_message("저와 이미 게임을 하고 있어요!")
         else:
             game.start_game()
-            await interaction.response.send_message("뽜밤뽜밤-! 숫자 맞히기 게임을 시작합니다! \n`/숫자게임_추측'으로 1부터 100까지의 숫자를 맞혀보세요.")
+            await interaction.response.send_message("뽜밤뽜밤-! 숫자 맞히기 게임을 시작합니다! \n'/숫자게임_추측'으로 1부터 100까지의 숫자를 맞혀보세요.")
 
     async def guess_number(self, interaction: discord.Interaction, guess: str):
         user = interaction.user
