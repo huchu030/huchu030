@@ -17,7 +17,7 @@ MCHID = 1266916147639615639
 
 # 인텐트 설정
 
-intents = discord.Intents.default()
+intents = discord.Intents.all()
 intents.message_content = True
 intents.members = True
 
@@ -241,6 +241,9 @@ class rpg:
         data = self.load_game_data()
         return user_id in data["players"]
 
+    def calculate_next_level_exp(self, level):
+        return level * 100
+
     async def start_game(self, interaction: discord.Interaction):
         user_id = str(interaction.user.id)
         if self.is_player_in_game(user_id):
@@ -283,25 +286,35 @@ class rpg:
         
         if attack_success:
             enemy["hp"] -= damage
-            result = (f"공격 성공! 쨈미몬이 {damage}의 데미지를 입었습니다. ( 성공 확률 : {actual_chance}% )\n"
+            result = (f"공격 성공! 쨈미몬이 {damage}의 데미지를 입었습니다. ( 성공 확률 : {success_chance}% )\n"
                       f"레벨 : {player['level']}, {user_nickname}님의 체력 : {player['hp']}, 쨈미몬의 체력 : {enemy['hp']}")
             if enemy["hp"] <= 0:
                 exp_gain = random.randint(30, 40)
                 player["exp"] += exp_gain
-                next_level_exp = self.calculate_next_level_exp(player["level"])
+
                 if player["exp"] >= player["level"] * 100:
+                    player["hp"] = 100
                     player["level"] += 1
-                    player["exp"] = 0
-                    result += (f"\n \n레벨 업! 현재 레벨 : {player['level']}")
-                enemy["hp"] = 40 + 10 * player["level"]
-                player["hp"] = 100
-                result += ("\n \n와아~ 쨈미몬이 쓰러졌습니다!\n"
-                           "...\n"
-                           "\n 헉.. 쨈미몬이 더 강해져서 돌아왔어요!")
+                    enemy["hp"] = 40 + 10 * player["level"]
+                    
+                    result += (f"\n \n레벨 업! 현재 레벨 : {player['level']}"
+                               "\n \n와아~ 쨈미몬이 쓰러졌습니다!\n"
+                               "...\n"
+                               "\n 헉.. 쨈미몬이 더 강해져서 돌아왔어요!"
+                               f"현재 쨈미몬의 체력 : {enemy['hp']}")
+                else:
+                    player["hp"] = 100
+                    enemy["hp"] = 40 + 10 * player["level"]
+                    player["hp"] = 100
+                    result += ("\n \n와아~ 쨈미몬이 쓰러졌습니다!\n"
+                               "...\n"
+                               "\n 헉.. 쨈미몬이 다시 깨어났어요!"
+                               f"현재 쨈미몬의 체력 : {enemy['hp']}")
+                
                         
         else:
             player["hp"] -= damage
-            result = (f"공격 실패! 쨈미몬이 반격해서 {damage}의 데미지를 입혔습니다. ( 성공 확률 : {actual_chance}% )\n"
+            result = (f"공격 실패! 쨈미몬이 반격해서 {damage}의 데미지를 입혔습니다. ( 성공 확률 : {success_chance}% )\n"
                       f"레벨 : {player['level']}, {user_nickname}님의 체력 : {player['hp']}, 쨈미몬의 체력 : {enemy['hp']}")
             if player["hp"] <= 0:
                 result += f"\n \n{user_nickname}님의 체력이 0이 되어 사망했습니다. 끄앙"
