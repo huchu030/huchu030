@@ -48,7 +48,7 @@ class FortuneManager:
             "회원님 오늘의 운(동계획)세(우기)는 상체입니다.",
             "회원님 오늘의 운(동계획)세(우기)는 상체입니다.",
             "오늘은 서브웨이를 드셔보세요. `/서브웨이`로 레시피를 추천받을 수 있습니다."
-        ]
+            ]
 
     def get_random_fortune(self):
         return random.choice(self.fortunes)
