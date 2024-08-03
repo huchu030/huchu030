@@ -35,6 +35,7 @@ class NumberBaseballGame:
         self.guesses = []
         self.game_active = False
         self.attempts = 0
+        self.max_attempts = 9
 
     def start_game(self):
         self.secret_number = self.generate_secret_number()
