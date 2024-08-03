@@ -56,7 +56,8 @@ class NumberBaseballGame:
 
         if self.attempts >= self.max_attempts:
             self.game_active = False
-            return f"{guess} : 기회를 모두 소진했습니다. 끄앙 \n정답은 {self.secret_number}입니다! 다시 도전해 볼까요?"
+            return (f"{guess} : 기회를 모두 소진했어요. 끄앙 \n"
+                    f"정답은 {self.secret_number}입니다! 다시 도전해 볼까요?")
 
         strikes, balls = self.calculate_strikes_and_balls(guess)
         return f"{guess} : {strikes}S {balls}B"
@@ -84,7 +85,8 @@ class NumberBaseball:
             game.start_game()
             await interaction.response.send_message("뽜밤뽜밤-! 숫자야구 게임을 시작합니다! \n"
                                                     "`/숫자야구_추측`으로 3자리 숫자를 맞혀보세요. \n"
-                                                    "`/숫자야구_규칙`으로 게임 규칙을 볼 수 있습니다!")
+                                                    "`/숫자야구_규칙`으로 게임 규칙을 볼 수 있습니다!"
+                                                    )
 
     async def guess_number(self, interaction: discord.Interaction, guess: str):
         user = interaction.user
@@ -102,7 +104,8 @@ class NumberBaseball:
             await interaction.response.send_message("진행 중인 게임이 없습니다. 도전부터 해야 포기도 하는 법!")
         else:
             game.game_active = False
-            await interaction.response.send_message(f"게임을 포기했습니다. 정답은 {game.secret_number}입니다! \n아리스랑 놀아주세요...")
+            await interaction.response.send_message(f"게임을 포기했습니다. 정답은 {game.secret_number}입니다! \n"
+                                                    "아리스랑 놀아주세요...")
 
 
 
@@ -131,7 +134,8 @@ class NumberGuessingGame:
             return f"{guess} : 더 낮아요!"
         else:
             self.game_active = False
-            return f"와아~ 정답이에요! 답은 {self.secret_number}! \n{self.attempts}회 만에 맞혔어요~"
+            return (f"와아~ 정답이에요! 답은 {self.secret_number}! \n"
+                    f"{self.attempts}회 만에 맞혔어요~")
 
 class NumberGuessing:
     def __init__(self):
@@ -149,7 +153,8 @@ class NumberGuessing:
             await interaction.response.send_message("저와 이미 게임을 하고 있어요!")
         else:
             game.start_game()
-            await interaction.response.send_message("뽜밤뽜밤-! 숫자 맞히기 게임을 시작합니다! \n`/숫자게임_추측`으로 1부터 100까지의 숫자를 맞혀보세요.")
+            await interaction.response.send_message("뽜밤뽜밤-! 숫자 맞히기 게임을 시작합니다! \n"
+                                                    "`/숫자게임_추측`으로 1부터 100까지의 숫자를 맞혀보세요.")
 
     async def guess_number(self, interaction: discord.Interaction, guess: str):
         user = interaction.user
@@ -176,13 +181,17 @@ class NumberGuessing:
             await interaction.response.send_message("진행 중인 게임이 없습니다. 도전부터 해야 포기도 하는 법!")
         else:
             game.game_active = False
-            await interaction.response.send_message(f"게임을 포기했습니다. 정답은 {game.secret_number}입니다! \n아리스랑 놀아주세요...")
+            await interaction.response.send_message(f"게임을 포기했습니다. 정답은 {game.secret_number}입니다! \n"
+                                                    "아리스랑 놀아주세요...")
 
 # RPG 게임
 
 data_file = 'game_data.json'
 
 class rpg:
+    guild = interaction.guild
+    user_nickname = get_user_nickname(guild, interaction.user.id)
+
     def __init__(self):
         self.initialize_game_data()
 
@@ -243,13 +252,11 @@ class rpg:
         self.add_new_player(user_id)
         await interaction.response.send_message("용사여. 빛이 당신과 함께 합니다...\n"
                                                 "`/rpg_규칙`으로 게임 규칙을 볼 수 있습니다.\n"
-                                                "앗, 방심한 사이에 쨈미몬이 나타났습니다. 어서 공격하세요!"
-                                                )
+                                                "앗, 방심한 사이에 쨈미몬이 나타났습니다. 어서 공격하세요!")
+        
     async def attack(self, interaction: discord.Interaction, damage: int):
         user_id = str(interaction.user.id)
         data = self.load_game_data()
-        guild = interaction.guild
-        user_nickname = get_user_nickname(guild, interaction.user.id)
 
         if user_id not in data["players"]:
             await interaction.response.send_message("진행 중인 게임이 없습니다. 아리스랑 같이 놀아요!")
@@ -259,12 +266,14 @@ class rpg:
         enemy = data["current_enemies"][user_id]
         
         if not damage.isdigit():
-            await interaction.response.send_message("체력 이하의 숫자를 입력해주세요! \n`/스탯`으로 현재 체력을 확인할 수 있습니다.")
+            await interaction.response.send_message("체력 이하의 숫자를 입력해주세요! \n"
+                                                    "`/스탯`으로 현재 체력을 확인할 수 있습니다.")
             return
  
         damage = int(damage)
         if damage < 1 or damage > player["hp"]:
-            await interaction.response.send_message("체력 이하의 숫자를 입력해주세요! \n`/스탯`으로 현재 체력을 확인할 수 있습니다.")
+            await interaction.response.send_message("체력 이하의 숫자를 입력해주세요! \n"
+                                                    "`/스탯`으로 현재 체력을 확인할 수 있습니다.")
             return
 
         success_chance = random.randint(10, 90)  # 랜덤 성공 확률
@@ -305,18 +314,30 @@ class rpg:
     async def stats(self, interaction: discord.Interaction):
         user_id = str(interaction.user.id)
         data = self.load_game_data()
-        guild = interaction.guild
-        user_nickname = get_user_nickname(guild, interaction.user.id)
         player_data = data.get("players", {}).get(user_id, None)
         enemy_data = data.get("current_enemies", {}).get(user_id, None)
         
         if player_data:
             await interaction.response.send_message(f"[{user_nickname}님의 스탯] \n"
                                                     f"\n레벨 : {player_data['level']}, 체력 : {player_data['hp']}, 경험치 : {player_data['exp']}\n"
-                                                    f"현재 쨈미몬의 체력 : {enemy_data['hp']})"
+                                                    f"현재 쨈미몬의 체력 : {enemy_data['hp']}"
                                                     )
         else:
             await interaction.response.send_message(f"{user_nickname}님의 데이터가 없습니다. `/rpg`로 게임을 시작해보세요!.")
+
+    async def leaderboard(self, interaction: discord.Interaction):
+        data = self.load_game_data()
+        sorted_players = sorted(
+            [(user_id, player) for user_id, player in data["players"].items()],
+            key=lambda x: x[1]["exp"], reverse=True
+        )
+
+        leaderboard_message = "RPG 게임 경험치 순위:\n"
+        for rank, (user_id, player) in enumerate(sorted_players, start=1):
+            user_nickname = get_user_nickname(guild, int(user_id))
+            leaderboard_message += f"{rank}. {user_nickname} - 레벨: {player['level']}, 경험치: {player['exp']}\n"
+
+        await interaction.response.send_message(leaderboard_message)
 
 
 # 봇 클래스 정의
@@ -468,6 +489,10 @@ async def 공격(interaction: discord.Interaction, damage: str):
 @bot.tree.command(name="스탯", description="rpg - 자신의 스탯을 확인합니다")
 async def 스탯(interaction: discord.Interaction):
     await bot.rpg.stats(interaction)
+
+@bot.tree.command(name="순위", description="rpg - 유저들의 순위를 확인합니다")
+async def 순위(interaction: discord.Interaction):
+    await bot.rpg.leaderboard(interaction)
 
 @bot.tree.command(name='rpg_규칙', description="아리스가 RPG게임의 규칙을 설명해줍니다")
 async def rpg_규칙(interaction: discord.Interaction):
