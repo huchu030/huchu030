@@ -44,7 +44,7 @@ class NumberBaseballGame:
 
     def make_guess(self, guess):
         if len(guess) != 3 or len(set(guess)) != 3 or not guess.isdigit():
-            return "3자리 숫자를 입력해야 합니다!"
+            return "3자리의 서로 다른 숫자를 입력해야 합니다!"
 
         self.guesses.append(guess)
         self.attempts += 1
