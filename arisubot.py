@@ -270,7 +270,7 @@ class rpg:
             return
 
         success_chance = 50  # 랜덤 성공 확률
-        actual_chance = random.randint(30, 40)
+        actual_chance = random.randint(10, 90)
         attack_success = actual_chance <= success_chance
         
         if attack_success:
