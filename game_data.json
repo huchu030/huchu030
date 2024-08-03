@@ -1,14 +1,4 @@
 {
-<<<<<<< HEAD
-    "players": {
-        "1112776976994930842": {
-            "level": 1,
-            "hp": 50,
-            "exp": 0
-        }
-    },
-    "current_enemies": {
-        "1112776976994930842": {
-            "hp": 50
-        }
-    }
+    "players": {},
+    "current_enemies": {}
+}
