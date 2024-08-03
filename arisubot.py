@@ -466,12 +466,13 @@ async def 공격(interaction: discord.Interaction, damage: str):
 async def 스탯(interaction: discord.Interaction):
     await bot.rpg.stats(interaction)
 
-@bot.tree.command(name='rpg_규칙', description="아리스가 rpg게임의 규칙을 설명해줍니다")
+@bot.tree.command(name='rpg_규칙', description="아리스가 RPG게임의 규칙을 설명해줍니다")
 async def rpg_규칙(interaction: discord.Interaction):
     guild = interaction.guild
     user_nickname = get_user_nickname(guild, interaction.user.id)
     await interaction.response.send_message(
         f"{user_nickname}님은 사악한 어둠의 쨈미몬을 물리치기 위해 모험을 떠난 용사입니다!\n"
+        " \n"
         f"{user_nickname}님의 체력은 100, 쨈미몬의 체력은 50으로 시작하며 레벨이 올라갈수록 쨈미몬이 강해집니다.\n"
         "쨈미몬을 쓰러뜨릴 때마다 체력이 회복되고 랜덤한 경험치가 쌓이며 일정 수치를 넘기면 레벨업을 합니다.\n"
         " \n"
