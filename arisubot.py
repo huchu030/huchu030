@@ -287,6 +287,7 @@ class rpg:
         if attack_success:
             enemy["hp"] -= damage
             result = (f"공격 성공! 쨈미몬이 {damage}의 데미지를 입었습니다. ( 성공 확률 : {success_chance}% )\n"
+                      "( 쨈미몬 : 으앙 )\n"
                       f"레벨 : {player['level']}, {user_nickname}님의 체력 : {player['hp']}, 쨈미몬의 체력 : {enemy['hp']}")
             if enemy["hp"] <= 0:
                 exp_gain = random.randint(30, 40)
