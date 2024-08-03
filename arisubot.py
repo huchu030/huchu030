@@ -17,7 +17,7 @@ MCHID = 1266916147639615639
 
 # 인텐트 설정
 
-intents = discord.Intents.default()
+intents = discord.Intents.all()
 intents.message_content = True
 intents.members = True
 
