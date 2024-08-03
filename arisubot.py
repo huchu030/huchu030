@@ -212,7 +212,7 @@ class rpg:
                 "exp": 0
             }
             data["current_enemies"][user_id] = {
-                "hp": 40
+                "hp": 50
             }
             self.save_game_data(data)
             
@@ -241,12 +241,10 @@ class rpg:
             return
 
         self.add_new_player(user_id)
-        await interaction.response.send_message(
-        "용사여. 빛이 당신과 함께 합니다...\n"
-        "`/rpg_규칙`으로 게임 규칙을 볼 수 있습니다.\n"
-        "앗, 방심한 사이에 쨈미몬이 나타났습니다. 어서 공격하세요!"
-    )
-        
+        await interaction.response.send_message("용사여. 빛이 당신과 함께 합니다...\n"
+                                                "`/rpg_규칙`으로 게임 규칙을 볼 수 있습니다.\n"
+                                                "앗, 방심한 사이에 쨈미몬이 나타났습니다. 어서 공격하세요!"
+                                                )
     async def attack(self, interaction: discord.Interaction, damage: int):
         user_id = str(interaction.user.id)
         data = self.load_game_data()
@@ -280,7 +278,8 @@ class rpg:
             if enemy["hp"] <= 0:
                 exp_gain = random.randint(30, 40)
                 player["exp"] += exp_gain
-                if player["exp"] >= player["level"] * 100:  # 레벨업 기준 예시
+                next_level_exp = self.calculate_next_level_exp(player["level"])
+                if player["exp"] >= player["level"] * 100:
                     player["level"] += 1
                     player["exp"] = 0
                     result += (f"\n \n레벨 업! 현재 레벨 : {player['level']}")
@@ -309,9 +308,13 @@ class rpg:
         guild = interaction.guild
         user_nickname = get_user_nickname(guild, interaction.user.id)
         player_data = data.get("players", {}).get(user_id, None)
+        enemy_data = data.get("current_enemies", {}).get(user_id, None)
         
         if player_data:
-            await interaction.response.send_message(f"[{user_nickname}님의 스탯] \n \n레벨 : {player_data['level']}, 체력 : {player_data['hp']}, 경험치 : {player_data['exp']}")
+            await interaction.response.send_message(f"[{user_nickname}님의 스탯] \n"
+                                                    f"\n레벨 : {player_data['level']}, 체력 : {player_data['hp']}, 경험치 : {player_data['exp']}\n"
+                                                    f"현재 쨈미몬의 체력 : {enemy_data['hp']})"
+                                                    )
         else:
             await interaction.response.send_message(f"{user_nickname}님의 데이터가 없습니다. `/rpg`로 게임을 시작해보세요!.")
 
