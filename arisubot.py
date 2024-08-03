@@ -85,8 +85,7 @@ class NumberBaseball:
             game.start_game()
             await interaction.response.send_message("뽜밤뽜밤-! 숫자야구 게임을 시작합니다! \n"
                                                     "`/숫자야구_추측`으로 3자리 숫자를 맞혀보세요. \n"
-                                                    "`/숫자야구_규칙`으로 게임 규칙을 볼 수 있습니다!"
-                                                    )
+                                                    "`/숫자야구_규칙`으로 게임 규칙을 볼 수 있습니다!")
 
     async def guess_number(self, interaction: discord.Interaction, guess: str):
         user = interaction.user
@@ -106,10 +105,7 @@ class NumberBaseball:
             game.game_active = False
             await interaction.response.send_message(f"게임을 포기했습니다. 정답은 {game.secret_number}입니다! \n"
                                                     "아리스랑 놀아주세요...")
-
-
-
-# 숫자 맞히기
+# 숫자게임
 
 class NumberGuessingGame:
     def __init__(self):
@@ -183,7 +179,6 @@ class NumberGuessing:
             game.game_active = False
             await interaction.response.send_message(f"게임을 포기했습니다. 정답은 {game.secret_number}입니다! \n"
                                                     "아리스랑 놀아주세요...")
-
 # RPG 게임
 
 data_file = 'game_data.json'
@@ -256,11 +251,10 @@ class rpg:
                                                 "앗, 방심한 사이에 쨈미몬이 나타났습니다. 어서 공격하세요!")
         
     async def attack(self, interaction: discord.Interaction, damage: int):
-        user_id = str(interaction.user.id)
         data = self.load_game_data()
         guild = interaction.guild
         user_nickname = get_user_nickname(guild, interaction.user.id)
-
+        user_id = str(interaction.user.id)
 
         if user_id not in data["players"]:
             await interaction.response.send_message("진행 중인 게임이 없습니다. 아리스랑 같이 놀아요!")
@@ -289,6 +283,7 @@ class rpg:
             result = (f"공격 성공! 쨈미몬이 {damage}의 데미지를 입었습니다. ( 성공 확률 : {success_chance}% )\n"
                       "( 쨈미몬 : 으앙 )\n"
                       f"레벨 : {player['level']}, {user_nickname}님의 체력 : {player['hp']}, 쨈미몬의 체력 : {enemy['hp']}")
+            
             if enemy["hp"] <= 0:
                 exp_gain = random.randint(30, 40)
                 player["exp"] += exp_gain
@@ -310,9 +305,7 @@ class rpg:
                     result += ("\n \n와아~ 쨈미몬이 쓰러졌습니다!\n"
                                "...\n"
                                "헉.. 쨈미몬이 다시 깨어났어요!\n"
-                               f"현재 쨈미몬의 체력 : {enemy['hp']}")
-                
-                        
+                               f"현재 쨈미몬의 체력 : {enemy['hp']}")          
         else:
             player["hp"] -= damage
             result = (f"공격 실패! 쨈미몬이 반격해 {damage}의 데미지를 입혔습니다. ( 성공 확률 : {success_chance}% )\n"
@@ -327,29 +320,28 @@ class rpg:
         await interaction.response.send_message(result)
 
     async def stats(self, interaction: discord.Interaction):
-        user_id = str(interaction.user.id)
         data = self.load_game_data()
         guild = interaction.guild
         user_nickname = get_user_nickname(guild, interaction.user.id)
+        user_id = str(interaction.user.id)
+        
         player_data = data.get("players", {}).get(user_id, None)
         enemy_data = data.get("current_enemies", {}).get(user_id, None)
         
         if player_data:
             await interaction.response.send_message(f"[{user_nickname}님의 스탯] \n"
                                                     f"\n레벨 : {player_data['level']}, 체력 : {player_data['hp']}, 경험치 : {player_data['exp']}\n"
-                                                    f"현재 쨈미몬의 체력 : {enemy_data['hp']}"
-                                                    )
+                                                    f"현재 쨈미몬의 체력 : {enemy_data['hp']}")
         else:
             await interaction.response.send_message(f"{user_nickname}님의 데이터가 없습니다. `/rpg`로 게임을 시작해보세요!.")
 
     async def leaderboard(self, interaction: discord.Interaction):
-        data = self.load_game_data()
         guild = interaction.guild
         user_nickname = get_user_nickname(guild, interaction.user.id)
+        data = self.load_game_data()
         sorted_players = sorted(
             [(user_id, player) for user_id, player in data["players"].items()],
-            key=lambda x: x[1]["exp"], reverse=True
-        )
+            key=lambda x: x[1]["exp"], reverse=True)
 
         leaderboard_message = "RPG 게임 순위:\n"
         for rank, (user_id, player) in enumerate(sorted_players, start=1):
@@ -358,8 +350,7 @@ class rpg:
 
         await interaction.response.send_message(leaderboard_message)
 
-
-# 봇 클래스 정의
+# 봇
 
 class MyBot(commands.Bot):
     def __init__(self, **kwargs):
@@ -378,14 +369,15 @@ class MyBot(commands.Bot):
         scheduled_task.start()
         tracemalloc.start()
 
+bot = MyBot()
+
+# 사용자 서버 닉네임 출력 함수
+
 def get_user_nickname(guild, user_id):
     member = guild.get_member(user_id)
     if member:
         return member.display_name
     return "Unknown"
-
-bot = MyBot()
-
 
 # 환영 메시지
 
@@ -400,12 +392,12 @@ async def on_member_join(member):
 # 알림 메시지
 
 schedule_times_messages = [
-    ('19:00', '아리스랑 놀아주세요!'),
-]
+    ('19:00', '아리스랑 놀아주세요!')
+    ]
 lock = asyncio.Lock()
 tz = pytz.timezone('Asia/Seoul')
 
-@tasks.loop(minutes=1)
+@tasks.loop(hours=1)
 async def scheduled_task():
     async with lock:
         try:
@@ -415,17 +407,17 @@ async def scheduled_task():
         
             for time_str, message in schedule_times_messages:
                 if current_time == time_str:
-                    print('[DEBUG] 지정시각이당')
+                    print('[DEBUG] 지정시각입니다')
                     channel = bot.get_channel(MCHID)
                 
                     if channel:
                         await channel.send(message)
                         print(f'[DEBUG] 성공')
                     else:
-                        print(f'[ERROR] 채널없어')
+                        print(f'[ERROR] 채널이 없습니다')
                     break
             else:
-                print('[DEBUG] 지정시각아니야')
+                print('[DEBUG] 지정시각이 아닙니다.')
         except Exception as e:
             print(f'[ERROR] 오류 발생: {e}')
 
@@ -434,8 +426,6 @@ async def scheduled_task():
 @bot.tree.command(name="가위바위보", description="아리스와 가위바위보를 합니다")
 async def rock_paper_scissors(interaction: discord.Interaction):
     options = ['가위', '바위', '보']
-
-    # 버튼 생성
     view = discord.ui.View()
     
     for option in options:
@@ -445,31 +435,47 @@ async def rock_paper_scissors(interaction: discord.Interaction):
     await interaction.response.send_message("안 내면 집니다!", view=view)
 
 async def button_callback(interaction: discord.Interaction, user: discord.User):
+    guild = interaction.guild
+    user_nickname = get_user_nickname(guild, interaction.user.id)
+    
     options = ['가위', '바위', '보']
     bot_choice = random.choice(options)
     user_choice = interaction.data['custom_id']
-    guild = interaction.guild
-    user_nickname = get_user_nickname(guild, interaction.user.id)
     result = ""
     
     if user_choice == bot_choice:
-        result = f"비겼습니다. 한 판 더 해요! \n( {user_nickname} : {user_choice}, 아리스 : {bot_choice} )"
+        result = ("비겼습니다. 한 판 더 해요! \n"
+                  f"( {user_nickname} : {user_choice}, 아리스 : {bot_choice} )")
+        
     elif (user_choice == '가위' and bot_choice == '보') or \
          (user_choice == '바위' and bot_choice == '가위') or \
          (user_choice == '보' and bot_choice == '바위'):
-        result = f"아리스가 졌어요. 끄앙 \n( {user_nickname} : {user_choice}, 아리스 : {bot_choice} )"
+        result = ("아리스가 졌어요. 끄앙 \n"
+                  f"( {user_nickname} : {user_choice}, 아리스 : {bot_choice} )")
+        
     else: 
-        result = f"아리스가 이겼습니다!! \n( {user_nickname} : {user_choice}, 아리스 : {bot_choice} )"
+        result = ("아리스가 이겼습니다!! \n"
+                  f"( {user_nickname} : {user_choice}, 아리스 : {bot_choice} )")
 
     await interaction.response.edit_message(content=result, view=None)
 
-
-# 띠용 명령
+# 숫자야구 명령어
 
 @bot.tree.command(name='숫자야구_규칙', description="아리스가 숫자야구의 규칙을 설명해줍니다")
 async def 숫자야구_규칙(interaction: discord.Interaction):
     await interaction.response.send_message(
-        "[숫자야구 룰]\n \n아리스가 정한 3자리 숫자를 맞히는 게임입니다! \n숫자는 0부터 9까지의 서로 다른 숫자 3개이며 \n숫자와 위치가 전부 맞으면 S (스트라이크), \n숫자와 위치가 틀리면 B (볼) 입니다. \n \n예시를 들어볼까요? 제가 정한 숫자가 ‘123’이면\n456 : 0S 0B\n781 : 0S 1B\n130 : 1S 1B\n132 : 1S 2B\n123 : 3S 0B 입니다! \n \n아리스랑 같이 놀아요 끄앙")
+        "[숫자야구 룰]\n"
+        "\n아리스가 정한 3자리 숫자를 맞히는 게임입니다!\n"
+        "숫자는 0부터 9까지의 서로 다른 숫자 3개이며\n"
+        "숫자와 위치가 전부 맞으면 S (스트라이크),\n"
+        "숫자와 위치가 틀리면 B (볼) 입니다. \n"
+        "\n예시를 들어볼까요? 제가 정한 숫자가 ‘123’이면\n"
+        "456 : 0S 0B\n"
+        "781 : 0S 1B\n"
+        "130 : 1S 1B\n"
+        "132 : 1S 2B\n"
+        "123 : 3S 0B 입니다! \n"
+        "\n아리스랑 같이 놀아요 끄앙")
 
 @bot.tree.command(name="숫자야구", description="아리스와 숫자야구 게임을 시작합니다")
 async def 숫자야구(interaction: discord.Interaction):
@@ -483,6 +489,7 @@ async def 숫자야구_추측(interaction: discord.Interaction, guess: str):
 async def 숫자야구_포기(interaction: discord.Interaction):
     await bot.number_baseball.give_up(interaction)
 
+# 숫자게임 명령어
 
 @bot.tree.command(name="숫자게임", description="아리스와 숫자 맞히기 게임을 시작합니다")
 async def 숫자추측(interaction: discord.Interaction):
@@ -496,6 +503,7 @@ async def 숫자추측_추측(interaction: discord.Interaction, guess: str):
 async def 숫자추측_포기(interaction: discord.Interaction):
     await bot.number_guessing.give_up(interaction)
 
+# RPG게임 명령어
 
 @bot.tree.command(name="rpg", description="아리스와 RPG 게임을 시작합니다")
 async def rpg(interaction: discord.Interaction):
@@ -527,18 +535,17 @@ async def rpg_규칙(interaction: discord.Interaction):
         "\n체력이 0이 되면 사망하여 게임이 초기화되니 부디 조심하세요.\n"
         "그럼 저는 이만...")
         
-                                                        
+# 로또                                                     
 
 @bot.tree.command(name="로또", description="아리스가 로또 번호를 골라줍니다")
 async def 로또(interaction: discord.Interaction):
-    numbers = random.sample(range(1, 46), 6)
-    numbers.sort()
     guild = interaction.guild
     user_nickname = get_user_nickname(guild, interaction.user.id)
+    
+    numbers = random.sample(range(1, 46), 6)
+    numbers.sort()
     await interaction.response.send_message(f"{user_nickname}님의 이번 주 로또 번호는~ \n"
                                             f"[ {', '.join(map(str, numbers))} ] 입니다! 당첨되면 저도...")
-
-
 # 기본 명령어
 
 @bot.tree.command(name='안녕', description="아리스에게 인사를 건넵니다")
@@ -558,7 +565,6 @@ async def 쓰담(interaction: discord.Interaction):
     guild = interaction.guild
     user_nickname = get_user_nickname(guild, interaction.user.id)
     await interaction.response.send_message(f"{user_nickname}님, 아리스는 행복합니다..")
-
 
 # 봇 실행
 

@@ -13,7 +13,7 @@ import os
 # 토큰, 채널 ID
 
 TOKEN = "MTI2NzEyNDUwNTY4MDI4MTYyMA.Gp_5nb.WpD1gpVbMCVCPrIHIb53jupN67qHj0ps58FE8k"
-MCHID = 1266916147639615639 # 메인 채널 아이디
+MCHID = 1266916147639615639 
 
 # 인텐트 설정
 
@@ -286,23 +286,36 @@ class rpg:
         
         if attack_success:
             enemy["hp"] -= damage
-            result = (f"공격 성공! 쨈미몬이 {damage}의 데미지를 입었습니다. ( 성공 확률 : {actual_chance}% )\n"
+            result = (f"공격 성공! 쨈미몬이 {damage}의 데미지를 입었습니다. ( 성공 확률 : {success_chance}% )\n"
+                      "( 쨈미몬 : 으앙 )\n"
                       f"레벨 : {player['level']}, {user_nickname}님의 체력 : {player['hp']}, 쨈미몬의 체력 : {enemy['hp']}")
             if enemy["hp"] <= 0:
                 exp_gain = random.randint(30, 40)
                 player["exp"] += exp_gain
+
                 if player["exp"] >= player["level"] * 100:
+                    player["hp"] = 100
                     player["level"] += 1
-                    result += (f"\n \n레벨 업! 현재 레벨 : {player['level']}")
-                enemy["hp"] = 40 + 10 * player["level"]
-                player["hp"] = 100
-                result += ("\n \n와아~ 쨈미몬이 쓰러졌습니다!\n"
-                           "...\n"
-                           "\n 헉.. 쨈미몬이 더 강해져서 돌아왔어요!")
+                    enemy["hp"] = 40 + 10 * player["level"]
+                    
+                    result += (f"\n \n레벨 업! 현재 레벨 : {player['level']}"
+                               "\n \n와아~ 쨈미몬이 쓰러졌습니다!\n"
+                               "...\n"
+                               "헉.. 쨈미몬이 더 강해져서 돌아왔어요! 끄앙\n"
+                               f"현재 쨈미몬의 체력 : {enemy['hp']}")
+                else:
+                    player["hp"] = 100
+                    enemy["hp"] = 40 + 10 * player["level"]
+                    player["hp"] = 100
+                    result += ("\n \n와아~ 쨈미몬이 쓰러졌습니다!\n"
+                               "...\n"
+                               "헉.. 쨈미몬이 다시 깨어났어요!\n"
+                               f"현재 쨈미몬의 체력 : {enemy['hp']}")
+                
                         
         else:
             player["hp"] -= damage
-            result = (f"공격 실패! 쨈미몬이 반격해서 {damage}의 데미지를 입혔습니다. ( 성공 확률 : {success_chancee}% )\n"
+            result = (f"공격 실패! 쨈미몬이 반격해 {damage}의 데미지를 입혔습니다. ( 성공 확률 : {success_chance}% )\n"
                       f"레벨 : {player['level']}, {user_nickname}님의 체력 : {player['hp']}, 쨈미몬의 체력 : {enemy['hp']}")
             if player["hp"] <= 0:
                 result += f"\n \n{user_nickname}님의 체력이 0이 되어 사망했습니다. 끄앙"
@@ -338,7 +351,7 @@ class rpg:
             key=lambda x: x[1]["exp"], reverse=True
         )
 
-        leaderboard_message = "RPG 게임 경험치 순위:\n"
+        leaderboard_message = "RPG 게임 순위:\n"
         for rank, (user_id, player) in enumerate(sorted_players, start=1):
             user_nickname = get_user_nickname(guild, int(user_id))
             leaderboard_message += f"{rank}. {user_nickname} - 레벨: {player['level']}, 경험치: {player['exp']}\n"
@@ -506,15 +519,12 @@ async def rpg_규칙(interaction: discord.Interaction):
     user_nickname = get_user_nickname(guild, interaction.user.id)
     await interaction.response.send_message(
         f"{user_nickname}님은 사악한 어둠의 쨈미몬을 물리치기 위해 모험을 떠난 용사입니다!\n"
-        " \n"
-        f"{user_nickname}님의 체력은 100, 쨈미몬의 체력은 50으로 시작하며 레벨이 올라갈수록 쨈미몬이 강해집니다.\n"
-        "쨈미몬을 쓰러뜨릴 때마다 체력이 회복되고 랜덤한 경험치가 쌓이며 일정 수치를 넘기면 레벨업을 합니다.\n"
-        " \n"
-        f"`/공격`으로 {user_nickname}님의 체력 이하의 숫자를 입력하면 공격을 시도할 수 있습니다.\n"
+        f"\n{user_nickname}님의 체력은 100, 쨈미몬의 체력은 50으로 시작하며 레벨이 올라갈수록 쨈미몬이 강해집니다.\n"
+        "쨈미몬을 쓰러뜨릴 때마다 체력이 회복되고 랜덤한 경험치가 쌓이며 100 단위를 넘기면 레벨업을 합니다.\n"
+        f"\n`/공격`으로 {user_nickname}님의 체력 이하의 숫자를 입력하면 공격을 시도할 수 있습니다.\n"
         "공격은 랜덤한 확률로 성공하며, 성공시 쨈미몬에게 입력한 숫자만큼의 데미지를 입힙니다.\n"
         f"그러나 실패시 쨈미몬이 반격해 {user_nickname}님이 그만큼의 데미지를 입습니다!\n"
-        " \n"
-        "체력이 0이 되면 사망하여 게임이 초기화되니 부디 조심하세요.\n"
+        "\n체력이 0이 되면 사망하여 게임이 초기화되니 부디 조심하세요.\n"
         "그럼 저는 이만...")
         
                                                         

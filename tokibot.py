@@ -22,33 +22,9 @@ intents.members = True
 
 class FortuneManager:
     def __init__(self):
-        self.user_last_fortune_date = {}  # 유저별 마지막 운세 조회 날짜 저장
+        self.user_last_fortune_date = {}
         self.user_last_fortune = {}
-
-    def can_show_fortune(self, user_id):
-        today = datetime.now().date()
-        if user_id in self.user_last_fortune_date:
-            last_date = self.user_last_fortune_date[user_id]
-            return last_date < today
-        return True
-
-    def update_last_fortune_date(self, user_id):
-        self.user_last_fortune_date[user_id] = datetime.now().date()
-
-    def get_last_fortune(self, user_id):
-        return self.user_last_fortune.get(user_id, None)
-
-    def set_last_fortune(self, user_id, fortune):
-        self.user_last_fortune[user_id] = fortune
-
-# 봇 클래스 정의
-
-class MyBot(commands.Bot):
-    def __init__(self, **kwargs):
-        super().__init__(command_prefix='!', intents=intents, **kwargs)
-        self.synced = False
-        self.fortune_manager = FortuneManager()
-        self.fortunes = [  # 운세 메시지 리스트
+        self.fortunes = [
             "오늘은 행운이 가득한 날입니다.",
             "조금 더 노력하면 큰 성과를 얻을 수 있을 것입니다.",
             "누군가가 당신에게 도움을 줄 것입니다.",
@@ -74,6 +50,30 @@ class MyBot(commands.Bot):
             "오늘은 서브웨이를 드셔보세요. `/서브웨이`로 레시피를 추천받을 수 있습니다."
         ]
 
+    def can_show_fortune(self, user_id):
+        today = datetime.now().date()
+        if user_id in self.user_last_fortune_date:
+            last_date = self.user_last_fortune_date[user_id]
+            return last_date < today
+        return True
+
+    def update_last_fortune_date(self, user_id):
+        self.user_last_fortune_date[user_id] = datetime.now().date()
+
+    def get_last_fortune(self, user_id):
+        return self.user_last_fortune.get(user_id, None)
+
+    def set_last_fortune(self, user_id, fortune):
+        self.user_last_fortune[user_id] = fortune
+
+# 봇
+
+class MyBot(commands.Bot):
+    def __init__(self, **kwargs):
+        super().__init__(command_prefix='!', intents=intents, **kwargs)
+        self.synced = False
+        self.fortune_manager = FortuneManager()
+        
     async def on_ready(self):
         print(f'봇이 로그인되었습니다: {self.user.name}')
         if not self.synced:
@@ -83,13 +83,15 @@ class MyBot(commands.Bot):
         scheduled_task.start()
         tracemalloc.start()
 
+bot = MyBot()
+
+# 사용자 서버 닉네임 출력 함수        
+
 def get_user_nickname(guild, user_id):
     member = guild.get_member(user_id)
     if member:
         return member.display_name
     return "Unknown"
-
-bot = MyBot()
 
 # 알림 메시지
 
@@ -98,12 +100,12 @@ schedule_times_messages = [
     ('08:00', '일어날 시간입니다. 아침밥도 드셔야 해요.'),
     ('12:00', '오늘의 점심은, 무엇인가요?'),
     ('16:00', "심심하지 않으신가요? 그럴 땐, `/도박`을 권장드립니다."),
-    ('22:00', '오늘도 수고하셨습니다. 물론 저도요. 뿅뿅'),
-]
+    ('22:00', '오늘도 수고하셨습니다. 물론 저도요. 뿅뿅')
+    ]
 lock = asyncio.Lock()
 tz = pytz.timezone('Asia/Seoul')
 
-@tasks.loop(minutes=1)
+@tasks.loop(hours=1)
 async def scheduled_task():
     async with lock:
         try:
@@ -113,17 +115,17 @@ async def scheduled_task():
         
             for time_str, message in schedule_times_messages:
                 if current_time == time_str:
-                    print('[DEBUG] 지정시각이당')
+                    print('[DEBUG] 지정시각입니다')
                     channel = bot.get_channel(MCHID)
                 
                     if channel:
                         await channel.send(message)
                         print(f'[DEBUG] 성공')
                     else:
-                        print(f'[ERROR] 채널없어')
+                        print(f'[ERROR] 채널이 없습니다')
                     break
             else:
-                print('[DEBUG] 지정시각아니야')
+                print('[DEBUG] 지정시각이 아닙니다.')
         except Exception as e:
             print(f'[ERROR] 오류 발생: {e}')
 
@@ -132,8 +134,6 @@ async def scheduled_task():
 @bot.tree.command(name="가위바위보", description="토키와 가위바위보를 합니다")
 async def rock_paper_scissors(interaction: discord.Interaction):
     options = ['가위', '바위', '보']
-
-    # 버튼 생성
     view = discord.ui.View()
     
     for option in options:
@@ -148,23 +148,46 @@ async def button_callback(interaction: discord.Interaction, user: discord.User):
     user_choice = interaction.data['custom_id']
     guild = interaction.guild
     user_nickname = get_user_nickname(guild, interaction.user.id)
-
     result = ""
     
     if user_choice == bot_choice:
-        result = f"비겼습니다. 한 판 더 해주세요. \n( {user_nickname} : {user_choice}, 토키 : {bot_choice} )"
+        result = ("비겼습니다. 한 판 더 해주세요. \n"
+                  f"( {user_nickname} : {user_choice}, 토키 : {bot_choice} )")
+        
     elif (user_choice == '가위' and bot_choice == '보') or \
          (user_choice == '바위' and bot_choice == '가위') or \
          (user_choice == '보' and bot_choice == '바위'):
-        result = f"제가 졌습니다. \n... \n딱히 승부욕을 느낀다거나, 그런 건 아닙니다만. \n( {user_nickname} : {user_choice}, 토키 : {bot_choice} )"
+        result = ("제가 졌습니다. \n"
+                  "... \n딱히 승부욕을 느낀다거나, 그런 건 아닙니다만. \n"
+                  f"( {user_nickname} : {user_choice}, 토키 : {bot_choice} )")
     else: 
-        result = f"제가 이겼어요. 얏호~ \n( {user_nickname} : {user_choice}, 토키 : {bot_choice} )"
+        result = ("제가 이겼어요. 얏호~ \n"
+                  f"( {user_nickname} : {user_choice}, 토키 : {bot_choice} )")
 
     await interaction.response.edit_message(content=result, view=None)
 
+# 운세 명령어
+
+@bot.tree.command(name="운세", description="토키가 오늘의 운세를 알려줍니다")
+async def 운세(interaction: discord.Interaction):
+    guild = interaction.guild
+    user_nickname = get_user_nickname(guild, interaction.user.id)
+    user_id = interaction.user.id
+    if bot.fortune_manager.can_show_fortune(user_id):
+        fortune = bot.fortune_manager.get_random_fortune()
+        bot.fortune_manager.set_last_fortune(user_id, fortune)
+        bot.fortune_manager.update_last_fortune_date(user_id)
+        await interaction.response.send_message(f"[오늘의 {user_nickname}님의 운세]\n"
+                                                f"\n{fortune}")
+    else:
+        last_fortune = bot.fortune_manager.get_last_fortune(user_id)
+        if last_fortune:
+            await interaction.response.send_message(f"[{user_nickname}님의 오늘의 운세]\n"
+                                                    f"\n{last_fortune}")                               
+        else:
+            await interaction.response.send_message("운세 메시지를 불러올 수 없습니다. 다시 시도해 주세요.")
+   
 # 기본 명령어
-
-
 
 @bot.tree.command(name='안녕', description="토키에게 인사를 건넵니다")
 async def 안녕(interaction: discord.Interaction):
@@ -189,28 +212,6 @@ async def 쓰담(interaction: discord.Interaction):
 @bot.tree.command(name='서브웨이', description="토키가 서브웨이 레시피를 추천해줍니다")
 async def 서브웨이(interaction: discord.Interaction):
     await interaction.response.send_message("[메뉴] \n클럽 / 이탈리안 비엠티 + 에그마요 / 쉬림프 + 에그마요 / k바비큐 + 에그마요 \n \n[빵] \n화이트 / 파마산 / 플랫브레드 \n \n[치즈] \n모짜렐라 \n \n[야채] \n알아서 \n \n[소스] \n스위트칠리 + 어니언 / 랜치 + 스위트칠리 / 스위트어니언 + 치폴레 / 스모크바비큐 + 스위트칠리 \n \n[팁] \n소스에 소금/후추를 추가해보세요. \n오븐에 토스팅하기 전에 피망/양파를 추가해서 같이 토스팅해보세요. \n일일히 고르는 게 귀찮으시다면, 내용물이 고정되어있는 썹픽이나 랩을 주문하는 것도 추천드립니다.")
-
-@bot.tree.command(name="운세", description="토키가 오늘의 운세를 알려줍니다")
-async def 운세(interaction: discord.Interaction):
-    user_id = interaction.user.id
-    guild = interaction.guild
-    user_nickname = get_user_nickname(guild, interaction.user.id)
-    if bot.fortune_manager.can_show_fortune(user_id):
-        fortune = random.choice(bot.fortunes)  # 리스트에서 랜덤으로 메시지 선택
-        bot.fortune_manager.set_last_fortune(user_id, fortune)
-        bot.fortune_manager.update_last_fortune_date(user_id)
-        await interaction.response.send_message(f"[오늘의 {user_nickname}님의 운세]\n"
-                                                "\n"
-                                                f"{fortune}")
-    else:
-        last_fortune = bot.fortune_manager.get_last_fortune(user_id)
-        if last_fortune:
-            await interaction.response.send_message(f"[{user_nickname}님의 오늘의 운세]\n"
-                                                    "\n"
-                                                    f"{last_fortune}")                               
-        else:
-            await interaction.response.send_message("운세 메시지를 불러올 수 없습니다. 다시 시도해 주세요.")
-   
 
 # 봇 실행
 
