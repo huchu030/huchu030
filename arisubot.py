@@ -291,10 +291,8 @@ class rpg:
             if enemy["hp"] <= 0:
                 exp_gain = random.randint(30, 40)
                 player["exp"] += exp_gain
-                next_level_exp = self.calculate_next_level_exp(player["level"])
                 if player["exp"] >= player["level"] * 100:
                     player["level"] += 1
-                    player["exp"] -= next_level_exp
                     result += (f"\n \n레벨 업! 현재 레벨 : {player['level']}")
                 enemy["hp"] = 40 + 10 * player["level"]
                 player["hp"] = 100
