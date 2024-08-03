@@ -283,8 +283,7 @@ class rpg:
                 if player["exp"] >= player["level"] * 100:  # 레벨업 기준 예시
                     player["level"] += 1
                     player["exp"] = 0
-                    result += (f"\n \n레벨 업! 현재 레벨 : {player['level']}\n"
-                               f"{user_nickname}님의 체력 : {player['hp']}, 쨈미몬의 체력 : {enemy['hp']}")
+                    result += (f"\n \n레벨 업! 현재 레벨 : {player['level']}")
                 enemy["hp"] = 50 + 10 * player["level"]
                 player["hp"] = 100
                 result += ("\n \n와아~ 쨈미몬이 쓰러졌습니다!\n"
@@ -474,7 +473,7 @@ async def rpg_규칙(interaction: discord.Interaction):
     await interaction.response.send_message(
         f"{user_nickname}님은 사악한 어둠의 쨈미몬을 물리치기 위해 모험을 떠난 용사입니다!\n"
         f"{user_nickname}님의 체력은 100, 쨈미몬의 체력은 50으로 시작하며 레벨이 올라갈수록 쨈미몬이 강해집니다.\n"
-        "쨈미몬을 쓰러뜨릴 때마다 랜덤한 경험치가 쌓이고, 일정 수치를 넘기면 레벨업을 합니다.\n"
+        "쨈미몬을 쓰러뜨릴 때마다 체력이 회복되고 랜덤한 경험치가 쌓이며 일정 수치를 넘기면 레벨업을 합니다.\n"
         " \n"
         f"`/공격`으로 {user_nickname}님의 체력 이하의 숫자를 입력하면 공격을 시도할 수 있습니다.\n"
         "공격은 랜덤한 확률로 성공하며, 성공시 쨈미몬에게 입력한 숫자만큼의 데미지를 입힙니다.\n"
