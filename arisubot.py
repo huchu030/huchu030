@@ -278,6 +278,7 @@ class rpg:
                     player["exp"] = 0
                     result += f"\n \n레벨 업! 현재 레벨 : {player['level']}"
                 enemy["hp"] = 50 + 10 * player["level"]
+                player["hp"] = 100
                 result += ("\n \n와아~ 쨈미몬이 쓰러졌습니다!\n"
                            "...\n"
                            "\n 헉.. 쨈미몬이 더 강해져서 돌아왔어요!")
