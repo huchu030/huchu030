@@ -286,7 +286,7 @@ class rpg:
         
         if attack_success:
             enemy["hp"] -= damage
-            result = (f"공격 성공! 쨈미몬이 {damage}의 데미지를 입었습니다. ( 성공 확률 : {actual_chance}% )\n"
+            result = (f"공격 성공! 쨈미몬이 {damage}의 데미지를 입었습니다. ( 성공 확률 : {success_chance}% )\n"
                       f"레벨 : {player['level']}, {user_nickname}님의 체력 : {player['hp']}, 쨈미몬의 체력 : {enemy['hp']}")
             if enemy["hp"] <= 0:
                 exp_gain = random.randint(30, 40)
@@ -313,7 +313,7 @@ class rpg:
                         
         else:
             player["hp"] -= damage
-            result = (f"공격 실패! 쨈미몬이 반격해서 {damage}의 데미지를 입혔습니다. ( 성공 확률 : {success_chancee}% )\n"
+            result = (f"공격 실패! 쨈미몬이 반격해서 {damage}의 데미지를 입혔습니다. ( 성공 확률 : {success_chance}% )\n"
                       f"레벨 : {player['level']}, {user_nickname}님의 체력 : {player['hp']}, 쨈미몬의 체력 : {enemy['hp']}")
             if player["hp"] <= 0:
                 result += f"\n \n{user_nickname}님의 체력이 0이 되어 사망했습니다. 끄앙"
