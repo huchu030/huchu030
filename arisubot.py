@@ -212,7 +212,7 @@ class rpg:
                 "exp": 0
             }
             data["current_enemies"][user_id] = {
-                "hp": 50
+                "hp": 40
             }
             self.save_game_data(data)
             
