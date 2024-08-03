@@ -278,7 +278,7 @@ class rpg:
             result = (f"공격 성공! 쨈미몬이 {damage}의 데미지를 입었습니다. ( 성공 확률 : {actual_chance}% )\n"
                       f"레벨 : {player['level']}, {user_nickname}님의 체력 : {player['hp']}, 쨈미몬의 체력 : {enemy['hp']}")
             if enemy["hp"] <= 0:
-                exp_gain = random.randint(10, 20)
+                exp_gain = random.randint(30, 40)
                 player["exp"] += exp_gain
                 if player["exp"] >= player["level"] * 100:  # 레벨업 기준 예시
                     player["level"] += 1
