@@ -158,13 +158,8 @@ class NumberGuessing:
         if not game.game_active:
             await interaction.response.send_message("진행 중인 게임이 없습니다. 아리스랑 같이 놀아요!")
         else:
-            if not guess.isdigit():
-                await interaction.response.send_message("숫자만 입력해주세요!")
-                return
-
-            guess_number = int(guess)
-            if guess_number < 1 or guess_number > 100:
-                await interaction.response.send_message("1부터 100까지의 숫자를 입력해주세요!")
+            if not guess.isdigit() or not (1 <= int(guess) <= 100):
+                await interaction.response.send_message("1부터 100까지의 숫자만 입력해주세요!")
                 return
             
             result = game.make_guess(guess)
@@ -202,7 +197,7 @@ class rpg:
             with open(data_file, 'r') as f:
                 return json.load(f)
         except Exception as e:
-            print(f"Error loading game data: {e}")
+            print(f"[ERROR] Error loading game data: {e}")
             return {"players": {}, "current_enemies": {}}
 
     def add_new_player(self, user_id):
@@ -223,7 +218,7 @@ class rpg:
             with open(data_file, 'w') as f:
                 json.dump(data, f, indent=4)
         except Exception as e:
-            print(f"Error saving game data: {e}")
+            print(f"[ERROR] Error saving game data: {e}")
 
     def delete_player_data(self, user_id):
         data = self.load_game_data()
@@ -263,18 +258,12 @@ class rpg:
         player = data["players"][user_id]
         enemy = data["current_enemies"][user_id]
         
-        if not damage.isdigit():
-            await interaction.response.send_message("체력 이하의 숫자를 입력해주세요! \n"
-                                                    "`/스탯`으로 현재 체력을 확인할 수 있습니다.")
-            return
- 
-        damage = int(damage)
-        if damage < 1 or damage > player["hp"]:
+        if not damage.isdigit() or not (1 <= int(damage) <= player["hp"]):
             await interaction.response.send_message("체력 이하의 숫자를 입력해주세요! \n"
                                                     "`/스탯`으로 현재 체력을 확인할 수 있습니다.")
             return
 
-        success_chance = random.randint(10, 90)  # 랜덤 성공 확률
+        success_chance = random.randint(10, 90)
         actual_chance = random.randint(10, 90)
         attack_success = actual_chance <= success_chance
         
@@ -350,7 +339,7 @@ class rpg:
 
         await interaction.response.send_message(leaderboard_message)
 
-# 봇
+# 봇 설정
 
 class MyBot(commands.Bot):
     def __init__(self, **kwargs):
@@ -387,7 +376,7 @@ async def on_member_join(member):
     if channel:
         await channel.send('인간이 이곳에 온 것은 수천 년 만이군...')
     else:
-        print('채널을 찾을 수 없습니다.')
+        print('[ERROR] 채널을 찾을 수 없습니다.')
 
 # 알림 메시지
 
@@ -427,7 +416,6 @@ async def scheduled_task():
 async def rock_paper_scissors(interaction: discord.Interaction):
     options = ['가위', '바위', '보']
     view = discord.ui.View()
-    
     for option in options:
         button = discord.ui.Button(label=option, style=discord.ButtonStyle.primary, custom_id=option)
         button.callback = lambda i: button_callback(i, interaction.user)
