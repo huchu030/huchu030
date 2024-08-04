@@ -393,6 +393,9 @@ class rpg:
         await interaction.response.send_message(leaderboard_message)
 
     async def shop(self, interaction: discord.Interaction):
+        if user_id not in data["players"]:
+            await interaction.response.send_message("진행 중인 게임이 없습니다. 아리스랑 같이 놀아요!")
+            return
         shop_message = ("상점에 오신 것을 환영합니다! 다음 아이템을 구매할 수 있습니다:\n"
                         "\n1. 버섯 : 쨈미몬이 싫어합니다. 공격력이 증가합니다. ( 100 coins )\n"
                         "2. 고양이 : 쨈미몬이 좋아합니다. 방어력이 증가합니다. ( 100 coins )\n"
