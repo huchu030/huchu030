@@ -374,6 +374,7 @@ class rpg:
                                                     f"회피 아이템 개수 : {evasion_item_count}\n"
                                                     f"코인 : {player_data['coins']}\n"
                                                     f"\n현재 쨈미몬의 체력 : {enemy_data['hp']}")
+
         else:
             await interaction.response.send_message(f"{user_nickname}님의 데이터가 없습니다. `/rpg`로 게임을 시작해보세요!")
 
@@ -422,14 +423,40 @@ class rpg:
             
         await interaction.response.send_message(shop_message, view=view)
 
+    @discord.ui.button(label="버섯", style=discord.ButtonStyle.primary, custom_id="shop_attack")
+    async def shop_attack(self, button: discord.ui.Button, interaction: discord.Interaction):
+        await self.purchase_item(interaction, "shop_attack")
+
+    @discord.ui.button(label="고양이", style=discord.ButtonStyle.primary, custom_id="shop_defense")
+    async def shop_defense(self, button: discord.ui.Button, interaction: discord.Interaction):
+        await self.purchase_item(interaction, "shop_defense")
+
+    @discord.ui.button(label="네잎클로버", style=discord.ButtonStyle.primary, custom_id="shop_evasion")
+    async def shop_evasion(self, button: discord.ui.Button, interaction: discord.Interaction):
+        await self.purchase_item(interaction, "shop_evasion")
+
+    @discord.ui.button(label="안경", style=discord.ButtonStyle.primary, custom_id="shop_critical")
+    async def shop_critical(self, button: discord.ui.Button, interaction: discord.Interaction):
+        await self.purchase_item(interaction, "shop_critical")
+
+    @discord.ui.button(label="민트초코", style=discord.ButtonStyle.primary, custom_id="shop_critical_damage")
+    async def shop_critical_damage(self, button: discord.ui.Button, interaction: discord.Interaction):
+        await self.purchase_item(interaction, "shop_critical_damage")
+
+    @discord.ui.button(label="수학의 정석", style=discord.ButtonStyle.primary, custom_id="shop_evasion_item")
+    async def shop_evasion_item(self, button: discord.ui.Button, interaction: discord.Interaction):
+        await self.purchase_item(interaction, "shop_evasion_item")
+
     async def purchase_item(self, interaction: discord.Interaction, item: str):
         result = ""
         data = self.load_game_data()
         user_id = str(interaction.user.id)
 
         if user_id not in data["players"]:
-            result = ("진행 중인 게임이 없습니다. 아리스랑 같이 놀아요!")
+            await interaction.response.send_message("진행 중인 게임이 없습니다. 아리스랑 같이 놀아요!")
             return
+
+        player = data["players"][user_id]
 
         item_prices = {
             "shop_attack": 100,
@@ -449,6 +476,7 @@ class rpg:
 
         if player["coins"] < item_price:
             result = (f"코인이 부족합니다. 필요한 코인: {item_price}")
+            await interaction.response.send_message(result)
             return
 
         player["coins"] -= item_price
@@ -472,7 +500,7 @@ class rpg:
                 player["critical_damage"] += 0.01
             result = (f"{item} 아이템을 구매하였습니다.")
 
-        
+           
         self.save_game_data(data)
         await interaction.response.send_message(result)
 
