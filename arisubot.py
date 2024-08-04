@@ -214,7 +214,14 @@ class rpg:
 
     def add_new_player(self, user_id):
         data = self.load_game_data()
+    
+        # 디버깅: 현재 로드된 데이터 출력
+        print(f"Loaded data: {data}")
+
         if user_id not in data["players"]:
+            # 디버깅: 추가할 데이터 출력
+            print(f"Adding new player with ID {user_id}")
+
             data["players"][user_id] = {
                 "level": 1,
                 "hp": 100,
@@ -225,13 +232,19 @@ class rpg:
                 "critical_chance": 0,
                 "critical_damage": 0.5,
                 "coins": 0,
-                "evasion_items" : 0
+                "evasion_items": 0
             }
             data["current_enemies"][user_id] = {
                 "hp": 50
             }
+
+            # 디버깅: 저장할 데이터 출력
+            print(f"Saving data: {data}")
+
             self.save_game_data(data)
-            
+        else:
+            print(f"Player with ID {user_id} already exists.")
+   
     
     def delete_player_data(self, user_id):
         data = self.load_game_data()
