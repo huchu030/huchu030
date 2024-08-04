@@ -214,13 +214,12 @@ class rpg:
 
     def add_new_player(self, user_id):
         data = self.load_game_data()
-    
-        # 디버깅: 현재 로드된 데이터 출력
-        print(f"Loaded data: {data}")
+
+        print(f"[DEBUG] Loaded data: {data}")
 
         if user_id not in data["players"]:
-            # 디버깅: 추가할 데이터 출력
-            print(f"Adding new player with ID {user_id}")
+
+            print(f"[DEBUG] Adding new player with ID {user_id}")
 
             data["players"][user_id] = {
                 "level": 1,
@@ -238,14 +237,12 @@ class rpg:
                 "hp": 50
             }
 
-            # 디버깅: 저장할 데이터 출력
-            print(f"Saving data: {data}")
+            print(f"[DEBUG] Saving data: {data}")
 
             self.save_game_data(data)
         else:
-            print(f"Player with ID {user_id} already exists.")
+            print(f"[DEBUG] Player with ID {user_id} already exists.")
    
-    
     def delete_player_data(self, user_id):
         data = self.load_game_data()
         if user_id in data["players"]:
@@ -372,25 +369,33 @@ class rpg:
         await interaction.response.send_message(result)
 
     async def stats(self, interaction: discord.Interaction):
-        data = self.load_game_data()
-        guild = interaction.guild
-        user_nickname = get_user_nickname(guild, interaction.user.id)
-        user_id = str(interaction.user.id)
+        try:
+            data = self.load_game_data()
+            guild = interaction.guild
+            user_nickname = get_user_nickname(guild, interaction.user.id)
+            user_id = str(interaction.user.id)
         
-        player_data = data.get("players", {}).get(user_id, None)
-        enemy_data = data.get("current_enemies", {}).get(user_id, None)
+            player_data = data.get("players", {}).get(user_id, None)
+            enemy_data = data.get("current_enemies", {}).get(user_id, None)
         
-        if player_data:
-            await interaction.response.send_message(f"[{user_nickname}님의 스탯] \n"
-                                                    f"\n레벨 : {player_data['level']}, 체력 : {player_data['hp']}, 경험치 : {player_data['exp']}\n"
-                                                    f"공격력 : {player_data['attack']}, 방어력 : {player_data['defense']}, 회피 확률 : {player_data['evasion']}%\n"
-                                                    f"크리티컬 확률 : {player_data['critical_chance']}%, 크리티컬 데미지 : {player_data['critical_damage']*100}%\n"
-                                                    f"네잎클로버 : {player_data['evasion_items']}개\n"
-                                                    f"코인 : {player_data['coins']}\n"
-                                                    f"\n현재 쨈미몬의 체력 : {enemy_data['hp']}")
+            if player_data:
+            # 응답 지연
+                await interaction.response.defer()
+            
+            # 실제 응답을 보냅니다
+                await interaction.followup.send(f"[{user_nickname}님의 스탯] \n"
+                                                f"\n레벨 : {player_data['level']}, 체력 : {player_data['hp']}, 경험치 : {player_data['exp']}\n"
+                                                f"공격력 : {player_data['attack']}, 방어력 : {player_data['defense']}, 회피 확률 : {player_data['evasion']}%\n"
+                                                f"크리티컬 확률 : {player_data['critical_chance']}%, 크리티컬 데미지 : {player_data['critical_damage']*100}%\n"
+                                                f"네잎클로버 : {player_data['evasion_items']}개\n"
+                                                f"코인 : {player_data['coins']}\n"
+                                                f"\n현재 쨈미몬의 체력 : {enemy_data['hp']}")
+            else:
+                await interaction.response.send_message(f"{user_nickname}님의 데이터가 없습니다. `/rpg`로 게임을 시작해보세요!")
+        except Exception as e:
+        # 예외 처리
+            await interaction.response.send_message(f"오류가 발생했습니다: {e}")
 
-        else:
-            await interaction.response.send_message(f"{user_nickname}님의 데이터가 없습니다. `/rpg`로 게임을 시작해보세요!")
 
     async def leaderboard(self, interaction: discord.Interaction):
         guild = interaction.guild
@@ -504,13 +509,20 @@ class MyBot(commands.Bot):
         tracemalloc.start()
 
     async def on_interaction(self, interaction: discord.Interaction):
-        if interaction.type == discord.InteractionType.component:
-            if interaction.data['custom_id'] in [
-                'shop_attack', 'shop_defense', 'shop_evasion', 
-                'shop_critical', 'shop_critical_damage', 'shop_evasion_item'
-            ]:
-                await self.rpg.handle_purchase(interaction, interaction.data['custom_id'])
+        print(f"Interaction data: {interaction.data}")
 
+        if interaction.data['custom_id'] in [
+            'shop_attack', 'shop_defense', 'shop_evasion', 
+            'shop_critical', 'shop_critical_damage', 'shop_evasion_item'
+        ]:
+            await self.handle_purchase(interaction, interaction.data['custom_id'])
+        else:
+            await interaction.response.send_message("Invalid interaction.", ephemeral=True)
+
+    async def handle_purchase(self, interaction: discord.Interaction, item: str):
+        pass
+
+    
 bot = MyBot()
 
 # 사용자 서버 닉네임 출력 함수
