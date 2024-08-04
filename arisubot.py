@@ -526,6 +526,7 @@ class MyBot(commands.Bot):
             self.synced = True
         scheduled_task.start()
         tracemalloc.start()
+        await self.add_cog(RPG(self))
 
 bot = MyBot()
 
