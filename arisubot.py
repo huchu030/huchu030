@@ -194,6 +194,11 @@ class rpg:
 
     def load_game_data(self):
         try:
+            if os.path.exists(data_file) and os.path.getsize(data_file) > 0:
+                with open(data_file, 'r') as f:
+                    return json.load(f)
+            else:
+                return {"players": {}, "current_enemies": {}}
             with open(data_file, 'r') as f:
                 return json.load(f)
         except Exception as e:
@@ -446,7 +451,7 @@ class rpg:
             await interaction.response.send_message("게임을 시작해야 상점으로 들어갈 수 있습니다. 아리스랑 같이 놀아요!")
             return
 
-        shop_message = ("상점에 오신 것을 환영합니다! 다음 아이템을 구매할 수 있습니다:\n"
+        shop_message = ("상점에 오신 것을 환영합니다! 다음 아이템을 구매할 수 있습니다\n"
                         "\n1. 버섯 : 쨈미몬이 싫어합니다. 공격력이 증가합니다. ( 100 coins )\n"
                         "2. 고양이 : 쨈미몬이 좋아합니다. 방어력이 증가합니다. ( 100 coins )\n"
                         "3. 네잎클로버 : 행운이 가득합니다. 회피 확률이 증가합니다. ( 100 coins )\n"
