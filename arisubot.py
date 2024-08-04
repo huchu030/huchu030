@@ -395,30 +395,28 @@ class rpg:
     async def shop(self, interaction: discord.Interaction):
         if user_id not in data["players"]:
             await interaction.response.send_message("진행 중인 게임이 없습니다. 아리스랑 같이 놀아요!")
-            return
+        return
+        shop_message = ("상점에 오신 것을 환영합니다! 다음 아이템을 구매할 수 있습니다:\n"
+                        "\n1. 버섯 : 쨈미몬이 싫어합니다. 공격력이 증가합니다. ( 100 coins )\n"
+                        "2. 고양이 : 쨈미몬이 좋아합니다. 방어력이 증가합니다. ( 100 coins )\n"
+                        "3. 네잎클로버 : 행운이 가득합니다. 회피 확률이 증가합니다. ( 100 coins )\n"
+                        "4. 안경 : 앞이 잘 보입니다. 크리티컬 확률이 증가합니다. ( 150 coins )\n"
+                        "5. 민트초코 : 쨈미몬이 극혐합니다. 크리티컬 데미지가 증가합니다. ( 150 coins )\n"
+                        "6. 수학의 정석 : 책이 공격을 대신 받아줍니다. 찢어지면 다시 쓸 수 없으며, 여러 개 구매할 수 있습니다. ( 200 coins )")
+        buttons = [
+            discord.ui.Button(label="버섯", style=discord.ButtonStyle.primary, custom_id="shop_attack"),
+            discord.ui.Button(label="고양이", style=discord.ButtonStyle.primary, custom_id="shop_defense"),
+            discord.ui.Button(label="네잎클로버", style=discord.ButtonStyle.primary, custom_id="shop_evasion"),
+            discord.ui.Button(label="안경", style=discord.ButtonStyle.primary, custom_id="shop_critical"),
+            discord.ui.Button(label="민트초코", style=discord.ButtonStyle.primary, custom_id="shop_critical_damage"),
+            discord.ui.Button(label="수학의 정석", style=discord.ButtonStyle.primary, custom_id="shop_evasion_item")
+        ]
 
-        else:
-            shop_message = ("상점에 오신 것을 환영합니다! 다음 아이템을 구매할 수 있습니다:\n"
-                            "\n1. 버섯 : 쨈미몬이 싫어합니다. 공격력이 증가합니다. ( 100 coins )\n"
-                            "2. 고양이 : 쨈미몬이 좋아합니다. 방어력이 증가합니다. ( 100 coins )\n"
-                            "3. 네잎클로버 : 행운이 가득합니다. 회피 확률이 증가합니다. ( 100 coins )\n"
-                            "4. 안경 : 앞이 잘 보입니다. 크리티컬 확률이 증가합니다. ( 150 coins )\n"
-                            "5. 민트초코 : 쨈미몬이 극혐합니다. 크리티컬 데미지가 증가합니다. ( 150 coins )\n"
-                            "6. 수학의 정석 : 책이 공격을 대신 받아줍니다. 찢어지면 다시 쓸 수 없으며, 여러 개 구매할 수 있습니다. ( 200 coins )")
-            buttons = [
-                discord.ui.Button(label="버섯", style=discord.ButtonStyle.primary, custom_id="shop_attack"),
-                discord.ui.Button(label="고양이", style=discord.ButtonStyle.primary, custom_id="shop_defense"),
-                discord.ui.Button(label="네잎클로버", style=discord.ButtonStyle.primary, custom_id="shop_evasion"),
-                discord.ui.Button(label="안경", style=discord.ButtonStyle.primary, custom_id="shop_critical"),
-                discord.ui.Button(label="민트초코", style=discord.ButtonStyle.primary, custom_id="shop_critical_damage"),
-                discord.ui.Button(label="수학의 정석", style=discord.ButtonStyle.primary, custom_id="shop_evasion_item")
-            ]
-
-            view = discord.ui.View()
-            for button in buttons:
-                view.add_item(button)
+        view = discord.ui.View()
+        for button in buttons:
+            view.add_item(button)
             
-            await interaction.response.send_message(shop_message, view=view)
+        await interaction.response.send_message(shop_message, view=view)
 
     async def purchase_item(self, interaction: discord.Interaction, item: str):
         result = ""
