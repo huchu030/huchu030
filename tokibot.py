@@ -99,7 +99,7 @@ def get_user_nickname(guild, user_id):
 # 알림 메시지
 
 schedule_times_messages = [
-    ('02:31', '잘 시간입니다. 좋은 꿈 꾸세요.'),
+    ('02:36', '잘 시간입니다. 좋은 꿈 꾸세요.'),
     ('08:00', '일어날 시간입니다. 아침밥도 드셔야 해요.'),
     ('12:00', '오늘의 점심은, 무엇인가요?'),
     ('16:00', "심심하지 않으신가요? 그럴 땐, `/도박`을 권장드립니다."),
@@ -108,7 +108,7 @@ schedule_times_messages = [
 lock = asyncio.Lock()
 tz = pytz.timezone('Asia/Seoul')
 
-@tasks.loop(hours=1)
+@tasks.loop(minutes=1)
 async def scheduled_task():
     async with lock:
         try:
