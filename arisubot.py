@@ -365,7 +365,7 @@ class rpg:
         player_data = data.get("players", {}).get(user_id, None)
         enemy_data = data.get("current_enemies", {}).get(user_id, None)
         
-        if player_data:
+        if user_id in data["players"]:
             evasion_item_count = player_data.get("evasion_items", 0)
             await interaction.response.send_message(f"[{user_nickname}님의 스탯] \n"
                                                     f"\n레벨 : {player_data['level']}, 체력 : {player_data['hp']}, 경험치 : {player_data['exp']}\n"
@@ -393,6 +393,7 @@ class rpg:
         await interaction.response.send_message(leaderboard_message)
 
     async def shop(self, interaction: discord.Interaction):
+        data = self.load_game_data()
         if user_id not in data["players"]:
             await interaction.response.send_message("진행 중인 게임이 없습니다. 아리스랑 같이 놀아요!")
         return
