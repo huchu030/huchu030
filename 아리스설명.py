@@ -349,6 +349,7 @@ class rpg:
                 exp_gain = random.randint(30, 40)
                 player["exp"] += exp_gain
 
+                # 레벨업 했을 때
                 if player["exp"] >= player["level"] * 100:
                     player["hp"] = 100
                     player["level"] += 1
@@ -359,11 +360,10 @@ class rpg:
                                "...\n"
                                "헉.. 쨈미몬이 더 강해져서 돌아왔어요! 끄앙\n"
                                f"현재 쨈미몬의 체력 : {enemy['hp']}")
-            # 적이 쓰러지지 않았을 때
+                # 레벨업 하지 않았을 때
                 else:
                     player["hp"] = 100
                     enemy["hp"] = 40 + 10 * player["level"]
-                    player["hp"] = 100
                     result += ("\n \n와아~ 쨈미몬이 쓰러졌습니다!\n"
                                "...\n"
                                "헉.. 쨈미몬이 다시 깨어났어요!\n"

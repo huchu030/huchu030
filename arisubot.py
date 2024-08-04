@@ -290,7 +290,6 @@ class rpg:
                 else:
                     player["hp"] = 100
                     enemy["hp"] = 40 + 10 * player["level"]
-                    player["hp"] = 100
                     result += ("\n \n와아~ 쨈미몬이 쓰러졌습니다!\n"
                                "...\n"
                                "헉.. 쨈미몬이 다시 깨어났어요!\n"
