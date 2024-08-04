@@ -362,10 +362,7 @@ class rpg:
         user_nickname = get_user_nickname(guild, interaction.user.id)
         user_id = str(interaction.user.id)
         
-        player_data = data.get("players", {}).get(user_id, None)
-        enemy_data = data.get("current_enemies", {}).get(user_id, None)
-        
-        if player_data:
+        if user_id in data["players"]:
             evasion_item_count = player_data.get("evasion_items", 0)
             await interaction.response.send_message(f"[{user_nickname}님의 스탯] \n"
                                                     f"\n레벨 : {player_data['level']}, 체력 : {player_data['hp']}, 경험치 : {player_data['exp']}\n"
@@ -393,10 +390,13 @@ class rpg:
         await interaction.response.send_message(leaderboard_message)
 
     async def shop(self, interaction: discord.Interaction):
+        user_id = str(interaction.user.id)
         data = self.load_game_data()
+        
         if user_id not in data["players"]:
             await interaction.response.send_message("진행 중인 게임이 없습니다. 아리스랑 같이 놀아요!")
-        return
+            return
+        
         shop_message = ("상점에 오신 것을 환영합니다! 다음 아이템을 구매할 수 있습니다:\n"
                         "\n1. 버섯 : 쨈미몬이 싫어합니다. 공격력이 증가합니다. ( 100 coins )\n"
                         "2. 고양이 : 쨈미몬이 좋아합니다. 방어력이 증가합니다. ( 100 coins )\n"
