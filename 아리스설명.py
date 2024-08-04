@@ -332,6 +332,8 @@ class rpg:
                                                     "`/스탯`으로 현재 체력을 확인할 수 있습니다.")
             return
 
+        damage = int(damage)
+
         # 랜덤 성공 확률
         success_chance = random.randint(10, 90)  
         actual_chance = random.randint(10, 90)
