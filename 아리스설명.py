@@ -257,6 +257,14 @@ class rpg:
             print(f"[ERROR] Error loading game data: {e}")
             return {"players": {}, "current_enemies": {}}
 
+    # 게임 데이터 저장     
+    def save_game_data(self, data):
+        try:
+            with open(data_file, 'w') as f:
+                json.dump(data, f, indent=4)
+        except Exception as e:
+            print(f"[ERROR] Error saving game data: {e}")
+
     # 새로운 사용자 추가
     def add_new_player(self, user_id):
         data = self.load_game_data()
@@ -270,14 +278,6 @@ class rpg:
                 "hp": 50
             }
             self.save_game_data(data)
-
-    # 게임 데이터 저장     
-    def save_game_data(self, data):
-        try:
-            with open(data_file, 'w') as f:
-                json.dump(data, f, indent=4)
-        except Exception as e:
-            print(f"[ERROR] Error saving game data: {e}")
 
     # 유저 게임 데이터 초기화
     def delete_player_data(self, user_id):
