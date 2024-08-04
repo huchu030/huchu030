@@ -521,8 +521,9 @@ class MyBot(commands.Bot):
         else:
             await interaction.response.send_message("Invalid interaction.", ephemeral=True)
 
+
     async def handle_purchase(self, interaction: discord.Interaction, item: str):
-        pass
+        await self.rpg.handle_purchase(interaction, item)
 
     
 bot = MyBot()
