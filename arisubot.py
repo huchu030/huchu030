@@ -194,11 +194,6 @@ class rpg:
 
     def load_game_data(self):
         try:
-            if os.path.exists(data_file) and os.path.getsize(data_file) > 0:
-                with open(data_file, 'r') as f:
-                    return json.load(f)
-            else:
-                return {"players": {}, "current_enemies": {}}
             with open(data_file, 'r') as f:
                 return json.load(f)
         except Exception as e:
@@ -214,35 +209,17 @@ class rpg:
 
     def add_new_player(self, user_id):
         data = self.load_game_data()
-
-        print(f"[DEBUG] Loaded data: {data}")
-
         if user_id not in data["players"]:
-
-            print(f"[DEBUG] Adding new player with ID {user_id}")
-
             data["players"][user_id] = {
                 "level": 1,
                 "hp": 100,
-                "exp": 0,
-                "attack": 0,
-                "defense": 0,
-                "evasion_chance": 0,
-                "critical_chance": 0,
-                "critical_damage": 0.5,
-                "coins": 0,
-                "evasion_items": 0
+                "exp": 0
             }
             data["current_enemies"][user_id] = {
                 "hp": 50
             }
-
-            print(f"[DEBUG] Saving data: {data}")
-
             self.save_game_data(data)
-        else:
-            print(f"[DEBUG] Player with ID {user_id} already exists.")
-   
+            
     def delete_player_data(self, user_id):
         data = self.load_game_data()
         if user_id in data["players"]:
@@ -268,7 +245,7 @@ class rpg:
                                                 "`/rpg_규칙`으로 게임 규칙을 볼 수 있습니다.\n"
                                                 "앗, 방심한 사이에 쨈미몬이 나타났습니다. 어서 공격하세요!")
         
-    async def attack(self, interaction: discord.Interaction, damage: str):
+    async def attack(self, interaction: discord.Interaction, damage: int):
         data = self.load_game_data()
         guild = interaction.guild
         user_nickname = get_user_nickname(guild, interaction.user.id)
@@ -293,111 +270,60 @@ class rpg:
         attack_success = actual_chance <= success_chance
         
         if attack_success:
-            critical_hit = random.randint(1, 100) <= player["critical_chance"]
-            total_damage = damage + player["attack"]
-            
-            if critical_hit:
-                critical_bonus = damage * player["critical_damage"]
-                total_damage += round(critical_bonus)
-                result = "\n크리티컬!!!!!"
-            
-            enemy["hp"] -= total_damage
-            result += (f"\n 공격 성공! 쨈미몬이 {damage}의 데미지를 입었습니다. ( 성공 확률 : {success_chance}% )\n"
+            enemy["hp"] -= damage
+            result = (f"공격 성공! 쨈미몬이 {damage}의 데미지를 입었습니다. ( 성공 확률 : {success_chance}% )\n"
                       "( 쨈미몬 : 으앙 )\n"
                       f"레벨 : {player['level']}, {user_nickname}님의 체력 : {player['hp']}, 쨈미몬의 체력 : {enemy['hp']}")
-
+            
             if enemy["hp"] <= 0:
                 exp_gain = random.randint(30, 40)
-                coin_gain = random.randint(10, 20)
                 player["exp"] += exp_gain
-                player["coins"] += coin_gain
-                result += ("\n\n와아~ 쨈미몬이 쓰러졌습니다.\n"
-                           f"경험치 {exp_gain}, 코인 {coin_gain} 획득!")
-                        
 
-                if player["exp"] >= self.calculate_next_level_exp(player["level"]):
-                    player["level"] += 1
+                if player["exp"] >= player["level"] * 100:
                     player["hp"] = 100
-
-                    stat_to_increase = random.choice(["attack", "defense", "evasion_chance", "critical_chance"])
-                    if stat_to_increase == "attack":
-                        player["attack"] += 1
-                    elif stat_to_increase == "defense":
-                        player["defense"] += 1
-                    elif stat_to_increase == "evasion_chance":
-                        player["evasion_chance"] += 1
-                    elif stat_to_increase == "critical_chance":
-                        player["critical_chance"] += 1
-                    
+                    player["level"] += 1
                     enemy["hp"] = 40 + 10 * player["level"]
                     
-                    result += (f"\n\n레벨 업! 현재 레벨 : {player['level']}\n"
+                    result += (f"\n \n레벨 업! 현재 레벨 : {player['level']}"
+                               "\n \n와아~ 쨈미몬이 쓰러졌습니다!\n"
                                "...\n"
                                "헉.. 쨈미몬이 더 강해져서 돌아왔어요! 끄앙\n"
                                f"현재 쨈미몬의 체력 : {enemy['hp']}")
                 else:
                     player["hp"] = 100
                     enemy["hp"] = 40 + 10 * player["level"]
-                    result += ("\n...\n"
+                    result += ("\n \n와아~ 쨈미몬이 쓰러졌습니다!\n"
+                               "...\n"
                                "헉.. 쨈미몬이 다시 깨어났어요!\n"
-                               f"현재 쨈미몬의 체력 : {enemy['hp']}")
+                               f"현재 쨈미몬의 체력 : {enemy['hp']}")          
         else:
-            if player["evasion_items"] > 0:
-                player["evasion_items"] -= 1
-                result = (f"공격 실패! 쨈미몬이 반격해 {actual_damage}의 데미지를 입힐..뻔 했지만\n"
-                          f"{user_nickname}님이 어제 산 '수학의 정석'이 공격을 막아주었습니다! ( 성공 확률 : {success_chance}% )\n"
-                          f"레벨 : {player['level']}, {user_nickname}님의 체력 : {player['hp']}, 쨈미몬의 체력 : {enemy['hp']}")   
-            else:
-                evasion = random.randint(1, 100) <= player["evasion_chance"]
-                if evasion:
-                    result = (f"공격 실패! 쨈미몬이 반격해 {actual_damage}의 데미지를 입힐..뻔 했지만 회피했습니다! 럭키~\n"
-                              f"( 성공 확률 : {success_chance}%, 회피 확률 : {player['evasion']}% )\n"
-                              f"레벨 : {player['level']}, {user_nickname}님의 체력 : {player['hp']}, 쨈미몬의 체력 : {enemy['hp']}")
-                else:
-                    actual_damage = max(10, damage - player["defense"])
-                    player["hp"] -= actual_damage
-                    result = (f"공격 실패! 쨈미몬이 반격해 {actual_damage}의 데미지를 입혔습니다. ( 성공 확률 : {success_chance}% )\n"
-                              f"레벨 : {player['level']}, {user_nickname}님의 체력 : {player['hp']}, 쨈미몬의 체력 : {enemy['hp']}")
-                    if player["hp"] <= 0:
-                        result += f"\n \n{user_nickname}님의 체력이 0이 되어 사망했습니다. 끄앙"
-                        self.delete_player_data(user_id)
-                        await interaction.response.send_message(result)
-                        return
-                    
-
+            player["hp"] -= damage
+            result = (f"공격 실패! 쨈미몬이 반격해 {damage}의 데미지를 입혔습니다. ( 성공 확률 : {success_chance}% )\n"
+                      f"레벨 : {player['level']}, {user_nickname}님의 체력 : {player['hp']}, 쨈미몬의 체력 : {enemy['hp']}")
+            if player["hp"] <= 0:
+                result += f"\n \n{user_nickname}님의 체력이 0이 되어 사망했습니다. 끄앙"
+                self.delete_player_data(user_id)
+                await interaction.response.send_message(result)
+                return
+        
         self.save_game_data(data)
         await interaction.response.send_message(result)
 
     async def stats(self, interaction: discord.Interaction):
-        print(f"Interaction data: {interaction.data}")
-        try:
-            data = self.load_game_data()
-            guild = interaction.guild
-            user_nickname = get_user_nickname(guild, interaction.user.id)
-            user_id = str(interaction.user.id)
+        data = self.load_game_data()
+        guild = interaction.guild
+        user_nickname = get_user_nickname(guild, interaction.user.id)
+        user_id = str(interaction.user.id)
         
-            player_data = data.get("players", {}).get(user_id, None)
-            enemy_data = data.get("current_enemies", {}).get(user_id, None)
+        player_data = data.get("players", {}).get(user_id, None)
+        enemy_data = data.get("current_enemies", {}).get(user_id, None)
         
-            if player_data:
-                print("Sending deferred response")
-                await interaction.response.defer()
-            
-                print("Sending followup message")
-                await interaction.followup.send(f"[{user_nickname}님의 스탯] \n"
-                                                f"\n레벨 : {player_data['level']}, 체력 : {player_data['hp']}, 경험치 : {player_data['exp']}\n"
-                                                f"공격력 : {player_data['attack']}, 방어력 : {player_data['defense']}, 회피 확률 : {player_data['evasion']}%\n"
-                                                f"크리티컬 확률 : {player_data['critical_chance']}%, 크리티컬 데미지 : {player_data['critical_damage']*100}%\n"
-                                                f"네잎클로버 : {player_data['evasion_items']}개\n"
-                                                f"코인 : {player_data['coins']}\n"
-                                                f"\n현재 쨈미몬의 체력 : {enemy_data['hp']}")
-            else:
-                await interaction.response.send_message(f"{user_nickname}님의 데이터가 없습니다. `/rpg`로 게임을 시작해보세요!")
-        except Exception as e:
-            print(f"Exception occurred: {e}")
-            await interaction.response.send_message(f"오류가 발생했습니다: {e}")
-
-
+        if player_data:
+            await interaction.response.send_message(f"[{user_nickname}님의 스탯] \n"
+                                                    f"\n레벨 : {player_data['level']}, 체력 : {player_data['hp']}, 경험치 : {player_data['exp']}\n"
+                                                    f"현재 쨈미몬의 체력 : {enemy_data['hp']}")
+        else:
+            await interaction.response.send_message(f"{user_nickname}님의 데이터가 없습니다. `/rpg`로 게임을 시작해보세요!.")
 
     async def leaderboard(self, interaction: discord.Interaction):
         guild = interaction.guild
@@ -410,86 +336,9 @@ class rpg:
         leaderboard_message = "RPG 게임 순위:\n"
         for rank, (user_id, player) in enumerate(sorted_players, start=1):
             user_nickname = get_user_nickname(guild, int(user_id))
-            leaderboard_message += f"{rank}. {user_nickname} - 레벨: {player['level']}, 경험치: {player['exp']}, 코인: {player['coins']}\n"
+            leaderboard_message += f"{rank}. {user_nickname} - 레벨: {player['level']}, 경험치: {player['exp']}\n"
 
         await interaction.response.send_message(leaderboard_message)
-
-    async def handle_purchase(self, interaction: discord.Interaction, item: str):
-        user_id = str(interaction.user.id)
-        data = self.data
-        player = data["players"][user_id]
-
-        item_prices = {
-            "shop_attack": 100,
-            "shop_defense": 100,
-            "shop_evasion": 100,
-            "shop_critical": 150,
-            "shop_critical_damage": 150,
-            "shop_evasion_item": 200
-        }
-
-        if item not in item_prices:
-            result = "[ERROR] 아이템이 품절되었습니다."
-            await interaction.response.send_message(result)
-            return
-
-        item_price = item_prices[item]
-
-        if player["coins"] < item_price:
-            result = f"코인이 부족합니다. 현재 코인: {player['coins']}"
-            await interaction.response.send_message(result)
-            return
-
-        player["coins"] -= item_price
-
-        if item == "shop_evasion_item":
-            if "evasion_items" not in player:
-                player["evasion_items"] = 0
-            player["evasion_items"] += 1
-            result = f"{item} 아이템을 구매하였습니다. 현재 소지 개수: {player['evasion_items']}"
-        else:
-            if item == "shop_attack":
-                player["attack"] += 1
-            elif item == "shop_defense":
-                player["defense"] += 1
-            elif item == "shop_evasion":
-                player["evasion_chance"] += 1
-            elif item == "shop_critical":
-                player["critical_chance"] += 1
-            elif item == "shop_critical_damage":
-                player["critical_damage"] += 0.05
-            result = f"{item} 아이템을 구매하였습니다."
-
-        self.save_game_data(data)
-        await interaction.response.send_message(result)
-
-    async def shop(self, interaction: discord.Interaction):
-        user_id = str(interaction.user.id)
-        data = self.load_game_data()
-        
-        if user_id not in data["players"]:
-            await interaction.response.send_message("게임을 시작해야 상점으로 들어갈 수 있습니다. 아리스랑 같이 놀아요!")
-            return
-
-        shop_message = ("상점에 오신 것을 환영합니다! 다음 아이템을 구매할 수 있습니다\n"
-                        "\n1. 버섯 : 쨈미몬이 싫어합니다. 공격력이 증가합니다. ( 100 coins )\n"
-                        "2. 고양이 : 쨈미몬이 좋아합니다. 방어력이 증가합니다. ( 100 coins )\n"
-                        "3. 네잎클로버 : 행운이 가득합니다. 회피 확률이 증가합니다. ( 100 coins )\n"
-                        "4. 안경 : 앞이 잘 보입니다. 크리티컬 확률이 증가합니다. ( 150 coins )\n"
-                        "5. 민트초코 : 쨈미몬이 극혐합니다. 크리티컬 데미지가 증가합니다. ( 150 coins )\n"
-                        "6. 수학의 정석 : 책이 공격을 대신 받아줍니다. 찢어지면 다시 쓸 수 없으며, 여러 개 구매할 수 있습니다. ( 200 coins )")
-
-        view = discord.ui.View()
-        view.add_item(discord.ui.Button(label="버섯", style=discord.ButtonStyle.primary, custom_id="shop_attack"))
-        view.add_item(discord.ui.Button(label="고양이", style=discord.ButtonStyle.primary, custom_id="shop_defense"))
-        view.add_item(discord.ui.Button(label="네잎클로버", style=discord.ButtonStyle.primary, custom_id="shop_evasion"))
-        view.add_item(discord.ui.Button(label="안경", style=discord.ButtonStyle.primary, custom_id="shop_critical"))
-        view.add_item(discord.ui.Button(label="민트초코", style=discord.ButtonStyle.primary, custom_id="shop_critical_damage"))
-        view.add_item(discord.ui.Button(label="수학의 정석", style=discord.ButtonStyle.primary, custom_id="shop_evasion_item"))
-
-        await interaction.response.send_message(shop_message, view=view)
-
-
 
 # 봇 설정
 
@@ -510,22 +359,6 @@ class MyBot(commands.Bot):
         scheduled_task.start()
         tracemalloc.start()
 
-    async def on_interaction(self, interaction: discord.Interaction):
-        print(f"Interaction data: {interaction.data}")
-
-        if interaction.data['custom_id'] in [
-            'shop_attack', 'shop_defense', 'shop_evasion', 
-            'shop_critical', 'shop_critical_damage', 'shop_evasion_item'
-        ]:
-            await self.handle_purchase(interaction, interaction.data['custom_id'])
-        else:
-            await interaction.response.send_message("Invalid interaction.", ephemeral=True)
-
-
-    async def handle_purchase(self, interaction: discord.Interaction, item: str):
-        await self.rpg.handle_purchase(interaction, item)
-
-    
 bot = MyBot()
 
 # 사용자 서버 닉네임 출력 함수
@@ -554,7 +387,7 @@ schedule_times_messages = [
 lock = asyncio.Lock()
 tz = pytz.timezone('Asia/Seoul')
 
-@tasks.loop(minutes=1)
+@tasks.loop(hours=1)
 async def scheduled_task():
     async with lock:
         try:
@@ -677,10 +510,6 @@ async def 스탯(interaction: discord.Interaction):
 @bot.tree.command(name="순위", description="rpg - 유저들의 순위를 확인합니다")
 async def 순위(interaction: discord.Interaction):
     await bot.rpg.leaderboard(interaction)
-
-@bot.tree.command(name="상점", description="rpg - 상점으로 이동합니다")
-async def 상점(interaction: discord.Interaction):
-    await bot.rpg.shop(interaction)
 
 @bot.tree.command(name='rpg_규칙', description="아리스가 RPG게임의 규칙을 설명해줍니다")
 async def rpg_규칙(interaction: discord.Interaction):
