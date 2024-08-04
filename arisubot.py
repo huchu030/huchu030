@@ -194,6 +194,11 @@ class rpg:
 
     def load_game_data(self):
         try:
+            if os.path.exists(data_file) and os.path.getsize(data_file) > 0:
+                with open(data_file, 'r') as f:
+                    return json.load(f)
+            else:
+                return {"players": {}, "current_enemies": {}}
             with open(data_file, 'r') as f:
                 return json.load(f)
         except Exception as e:
