@@ -366,7 +366,7 @@ class rpg:
         enemy_data = data.get("current_enemies", {}).get(user_id, None)
         
         if player_data:
-            evasion_item_count = player_data.get("evasion_items")
+            evasion_item_count = player_data.get("evasion_items", 0)
             await interaction.response.send_message(f"[{user_nickname}님의 스탯] \n"
                                                     f"\n레벨 : {player_data['level']}, 체력 : {player_data['hp']}, 경험치 : {player_data['exp']}\n"
                                                     f"공격력 : {player_data['attack']}, 방어력 : {player_data['defense']}, 회피 확률 : {player_data['evasion']}%\n"
