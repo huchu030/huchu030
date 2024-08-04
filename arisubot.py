@@ -407,7 +407,7 @@ class MyBot(commands.Bot):
         self.synced = False
         self.number_baseball = NumberBaseball()
         self.number_guessing = NumberGuessing()
-        self.rpg = RPG()
+        self.rpg = RPG(self)
         self.rpg.initialize_game_data()
         
     async def on_ready(self):
