@@ -54,7 +54,7 @@ class NumberBaseballGame:
         # 입력이 3자리가 아니거나, 중복 숫자가 있거나, 숫자가 아닐 때
         if len(guess) != 3 or len(set(guess)) != 3 or not guess.isdigit():
             return "3자리의 서로 다른 숫자를 입력해야 합니다!"
-
+        guess_list = list(map(int, guess))
         self.guesses.append(guess)
         self.attempts += 1
 
