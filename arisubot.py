@@ -464,12 +464,7 @@ class rpg:
 
         await interaction.response.send_message(shop_message, view=view)
 
-    async def on_interaction(self, interaction: discord.Interaction):
-        if interaction.data['custom_id'] in [
-            'shop_attack', 'shop_defense', 'shop_evasion', 
-            'shop_critical', 'shop_critical_damage', 'shop_evasion_item'
-        ]:
-            await self.handle_purchase(interaction, interaction.data['custom_id'])
+
 
 # 봇 설정
 
@@ -489,6 +484,14 @@ class MyBot(commands.Bot):
             self.synced = True
         scheduled_task.start()
         tracemalloc.start()
+
+    async def on_interaction(self, interaction: discord.Interaction):
+        if interaction.type == discord.InteractionType.component:
+            if interaction.data['custom_id'] in [
+                'shop_attack', 'shop_defense', 'shop_evasion', 
+                'shop_critical', 'shop_critical_damage', 'shop_evasion_item'
+            ]:
+                await self.rpg.handle_purchase(interaction, interaction.data['custom_id'])
 
 bot = MyBot()
 
