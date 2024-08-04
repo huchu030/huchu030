@@ -516,17 +516,17 @@ class MyBot(commands.Bot):
         self.synced = False
         self.number_baseball = NumberBaseball()
         self.number_guessing = NumberGuessing()
-        self.add_cog(RPG(self))
         
     async def on_ready(self):
         print(f'봇이 로그인되었습니다: {self.user.name}')
         if not self.synced:
+            await self.add_cog(RPG(self))
             await self.tree.sync()
             print("슬래시 명령어가 동기화되었습니다.")
             self.synced = True
         scheduled_task.start()
         tracemalloc.start()
-        await self.add_cog(RPG(self))
+        
 
 bot = MyBot()
 
