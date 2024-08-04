@@ -369,26 +369,33 @@ class rpg:
         await interaction.response.send_message(result)
 
     async def stats(self, interaction: discord.Interaction):
-        data = self.load_game_data()
-        guild = interaction.guild
-        user_nickname = get_user_nickname(guild, interaction.user.id)
-        user_id = str(interaction.user.id)
+        try:
+            data = self.load_game_data()
+            guild = interaction.guild
+            user_nickname = get_user_nickname(guild, interaction.user.id)
+            user_id = str(interaction.user.id)
         
-        player_data = data.get("players", {}).get(user_id, None)
-        enemy_data = data.get("current_enemies", {}).get(user_id, None)
+            player_data = data.get("players", {}).get(user_id, None)
+            enemy_data = data.get("current_enemies", {}).get(user_id, None)
         
-        if player_data:
-            await interaction.response.defer()
-            await interaction.followup.send(f"[{user_nickname}님의 스탯] \n"
-                                            f"\n레벨 : {player_data['level']}, 체력 : {player_data['hp']}, 경험치 : {player_data['exp']}\n"
-                                            f"공격력 : {player_data['attack']}, 방어력 : {player_data['defense']}, 회피 확률 : {player_data['evasion']}%\n"
-                                            f"크리티컬 확률 : {player_data['critical_chance']}%, 크리티컬 데미지 : {player_data['critical_damage']*100}%\n"
-                                            f"네잎클로버 : {player_data['evasion_items']}개\n"
-                                            f"코인 : {player_data['coins']}\n"
-                                            f"\n현재 쨈미몬의 체력 : {enemy_data['hp']}")
+            if player_data:
+            # 응답 지연
+                await interaction.response.defer()
+            
+            # 실제 응답을 보냅니다
+                await interaction.followup.send(f"[{user_nickname}님의 스탯] \n"
+                                                f"\n레벨 : {player_data['level']}, 체력 : {player_data['hp']}, 경험치 : {player_data['exp']}\n"
+                                                f"공격력 : {player_data['attack']}, 방어력 : {player_data['defense']}, 회피 확률 : {player_data['evasion']}%\n"
+                                                f"크리티컬 확률 : {player_data['critical_chance']}%, 크리티컬 데미지 : {player_data['critical_damage']*100}%\n"
+                                                f"네잎클로버 : {player_data['evasion_items']}개\n"
+                                                f"코인 : {player_data['coins']}\n"
+                                                f"\n현재 쨈미몬의 체력 : {enemy_data['hp']}")
+            else:
+                await interaction.response.send_message(f"{user_nickname}님의 데이터가 없습니다. `/rpg`로 게임을 시작해보세요!")
+        except Exception as e:
+        # 예외 처리
+            await interaction.response.send_message(f"오류가 발생했습니다: {e}")
 
-        else:
-            await interaction.response.send_message(f"{user_nickname}님의 데이터가 없습니다. `/rpg`로 게임을 시작해보세요!")
 
     async def leaderboard(self, interaction: discord.Interaction):
         guild = interaction.guild
