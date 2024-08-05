@@ -403,7 +403,6 @@ class rpg:
         await interaction.response.send_message(leaderboard_message)
 
 
-class Shop(ui.View):
 
 class Shop(discord.ui.View):
     def __init__(self, bot, user_id):
