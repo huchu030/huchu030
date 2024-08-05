@@ -465,33 +465,36 @@ class rpg:
 
                 if item["effect"] == "attack":
                     player_data["attack"] += 1
-                    await interaction.response.send_message("공격력이 1 증가했습니다!"
-                                                            f"\n`/스탯`으로 {user_nickname}님의 현재 능력치를 확인해보세요~")
+                    response_message = ("공격력이 1 증가했습니다!"
+                                        f"\n`/스탯`으로 {user_nickname}님의 현재 능력치를 확인해보세요~")
                 elif item["effect"] == "defense":
                     player_data["defense"] += 1
-                    await interaction.response.send_message("방어력이 1 증가했습니다!"
-                                                            f"\n`/스탯`으로 {user_nickname}님의 현재 능력치를 확인해보세요~")
+                    response_message = ("방어력이 1 증가했습니다!"
+                                        f"\n`/스탯`으로 {user_nickname}님의 현재 능력치를 확인해보세요~")
                 elif item["effect"] == "evasion_chance":
                     player_data["evasion_chance"] += 1
-                    await interaction.response.send_message("회피 확률이 1%p 증가했습니다!"
-                                                            f"\n`/스탯`으로 {user_nickname}님의 현재 능력치를 확인해보세요~")
+                    response_message = ("회피 확률이 1%p 증가했습니다!"
+                                        f"\n`/스탯`으로 {user_nickname}님의 현재 능력치를 확인해보세요~")
                 elif item["effect"] == "attack_chance":
                     player_data["attack_chance"] += 1
-                    await interaction.response.send_message("공격 확률이 1%p 증가했습니다!"
-                                                            f"\n`/스탯`으로 {user_nickname}님의 현재 능력치를 확인해보세요~")
+                    response_message = ("공격 확률이 1%p 증가했습니다!"
+                                        f"\n`/스탯`으로 {user_nickname}님의 현재 능력치를 확인해보세요~")
                 elif item["effect"] == "critical_chance":
                     player_data["critical_chance"] += 1
-                    await interaction.response.send_message("크리티컬 확률이 1%p 증가했습니다!"
-                                                            f"\n`/스탯`으로 {user_nickname}님의 현재 능력치를 확인해보세요~")
+                    response_message = ("크리티컬 확률이 1%p 증가했습니다!"
+                                        f"\n`/스탯`으로 {user_nickname}님의 현재 능력치를 확인해보세요~")
                 elif item["effect"] == "critical_damage":
                     player_data["critical_damage"] += 0.05
-                    await interaction.response.send_message("크리티컬 데미지가 5%p 증가했습니다!"
-                                                            f"\n`/스탯`으로 {user_nickname}님의 현재 능력치를 확인해보세요~")
+                    response_message = ("크리티컬 데미지가 5%p 증가했습니다!"
+                                        f"\n`/스탯`으로 {user_nickname}님의 현재 능력치를 확인해보세요~")
                 elif item["effect"] == "evasion_items":
                     player_data["evasion_items"] += 1
-                    await interaction.response.send_message(f"수학의 정석이 {player_data['evasion_items']}개가 되었습니다!"
-                                                            f"\n`/스탯`으로 {user_nickname}님의 현재 능력치를 확인해보세요~")
+                    aresponse_message = (f"수학의 정석이 {player_data['evasion_items']}개가 되었습니다!"
+                                         f"\n`/스탯`으로 {user_nickname}님의 현재 능력치를 확인해보세요~")
+                    
                 self.save_game_data(data)
+
+                await interaction.response.send_message(response_message)
 
             else:
                 await interaction.response.send_message(f"코인이 부족합니다! 현재 코인: {player_data['coins']}")
