@@ -588,7 +588,7 @@ async def rpg(interaction: discord.Interaction):
 @bot.tree.command(name="공격", description="rpg - 적을 공격합니다")
 async def 공격(interaction: discord.Interaction, damage: str):
     await bot.rpg.attack(interaction, damage)
-na
+
 @bot.tree.command(name="스탯", description="rpg - 자신의 스탯을 확인합니다")
 async def 스탯(interaction: discord.Interaction):
     await bot.rpg.stats(interaction)
