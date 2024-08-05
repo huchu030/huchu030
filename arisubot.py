@@ -391,7 +391,7 @@ class rpg:
             await interaction.response.send_message(f"디버그 메시지:\n{debug_message_str}")
         
             if player_data:
-                await interaction.response.send_message(f"[{user_nickname}님의 스탯] \n"
+                await interaction.followup.send_message(f"[{user_nickname}님의 스탯] \n"
                                                         f"\n레벨 : {player_data['level']}, 체력 : {player_data['hp']}, 경험치 : {player_data['exp']}\n"
                                                         f"공격력 : {player_data['attack']}, 방어력 : {player_data['defense']}\n"
                                                         f"회피 확률 : {player_data['evasion_chance']}%, 공격 성공 확률 : + {player_data['attack_chance']}%p\n"
@@ -400,7 +400,7 @@ class rpg:
                                                         f"코인 : {player_data['coins']}\n"
                                                         f"\n현재 쨈미몬의 체력 : {enemy_data['hp']}")
             else:
-                await interaction.response.send_message(f"{user_nickname}님의 데이터가 없습니다. `/rpg`로 게임을 시작해보세요!")
+                await interaction.followup.send_message(f"{user_nickname}님의 데이터가 없습니다. `/rpg`로 게임을 시작해보세요!")
         except discord.errors.Forbidden:
             await interaction.response.send_message("[ERROR] 메시지를 보낼 수 없습니다. 봇의 권한을 확인해주세요.")
         except Exception as e:
@@ -433,7 +433,7 @@ class rpg:
                 user_nickname = get_user_nickname(guild, int(user_id))
                 leaderboard_message += f"{rank}. {user_nickname} - 레벨: {player['level']}, 경험치: {player['exp']}, 코인: {player['coins']}\n"
 
-            await interaction.response.send_message(leaderboard_message)
+            await interaction.followup.send_message(leaderboard_message)
         except discord.errors.Forbidden:
             await interaction.response.send_message("[ERROR] 메시지를 보낼 수 없습니다. 봇의 권한을 확인해주세요.")
         except Exception as e:
