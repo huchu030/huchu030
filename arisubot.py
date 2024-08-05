@@ -182,6 +182,15 @@ class rpg:
 
     def __init__(self):
         self.initialize_game_data()
+        self.items = {
+            "attack": {"label": "버섯", "cost": 100, "effect": "attack"},
+            "defense": {"label": "고양이", "cost": 100, "effect": "defense"},
+            "evasion_chance": {"label": "네잎클로버", "cost": 150, "effect": "evasion_chance"},
+            "attack_chance": {"label": "헬스장 월간이용권", "cost": 150, "effect": "attack_chance"},
+            "critical_chance": {"label": "안경", "cost": 150, "effect": "critical_chance"},
+            "critical_damage": {"label": "민트초코", "cost": 150, "effect": "critical_damage"},
+            "evasion_items": {"label": "수학의 정석", "cost": 200, "effect": "evasion_items"}
+        }
 
     def initialize_game_data(self):
         if not os.path.exists(data_file) or os.path.getsize(data_file) == 0:
@@ -392,8 +401,6 @@ class rpg:
         else:
             await interaction.response.send_message(f"{user_nickname}님의 데이터가 없습니다. `/rpg`로 게임을 시작해보세요!")
         
-
-            
     async def leaderboard(self, interaction: discord.Interaction):
         try:
             guild = interaction.guild
@@ -415,6 +422,78 @@ class rpg:
             await interaction.response.send_message("[ERROR] 메시지를 보낼 수 없습니다. 봇의 권한을 확인해주세요.")
         except Exception as e:
             await interaction.response.send_message(f"[ERROR] 오류 발생: {str(e)}")
+
+    
+    async def shop(self, interaction: discord.Interaction):
+        data = self.load_game_data()
+        user_id = str(interaction.user.id)
+        player_data = data["players"].get(user_id, None)
+        
+        if player_data:
+            buttons = []
+            for item_key, item in self.items.items():
+                if player_data["coins"] >= item["cost"]:
+                    buttons.append(
+                        ui.Button(label=item["name"], style=ButtonStyle.primary, custom_id=f'buy_{item_key}')
+                    )
+            if not buttons:
+                await interaction.response.send_message(f"코인이 부족합니다! 현재 코인: {player_data['coins']}")
+                return
+
+            view = ui.View()
+            for button in buttons:
+                view.add_item(button)
+        else:
+            await interaction.response.send_message("코인이 없습니다. `/rpg`로 게임을 시작해보세요!")
+
+    async def handle_shop_interaction(self, interaction: discord.Interaction):
+        data = self.load_game_data()
+        user_id = str(interaction.user.id)
+        player_data = data["players"].get(user_id, None)
+        
+        if player_data:
+            item_key = interaction.data['custom_id'].split('_')[1]
+            item = self.items.get(item_key, None)
+            
+            if item and player_data["coins"] >= item["cost"]:
+                player_data["coins"] -= item["cost"]
+
+
+                if item["effect"] == "attack":
+                    player_data["attack"] += 1
+                    await interaction.response.send_message("공격력이 1 증가했습니다!")
+                      
+                elif item["effect"] == "defense":
+                    player_data["defense"] += 1
+                    await interaction.response.send_message("방어력이 1 증가했습니다!")
+            
+                elif item["effect"] == "evasion_chance":
+                    player_data["evasion_chance"] += 1
+                    await interaction.response.send_message("회피 확률이 1%p 증가했습니다!")
+            
+                elif item["effect"] == "attack_chance":
+                    player_data["attack_chance"] += 1
+                    await interaction.response.send_message("공격 확률이 1%p 증가했습니다!")
+            
+                elif item["effect"] == "critical_chance":
+                    player_data["critical_chance"] += 1
+                    await interaction.response.send_message("크리티컬 확률이 1%p 증가했습니다!")
+            
+                elif item["effect"] == "critical_damage":
+                    player_data["critical_damage"] += 0.05
+                    await interaction.response.send_message("크리티컬 데미지가 5%p 증가했습니다!")
+            
+                elif item["effect"] == "evasion_items":
+                    player_data["evasion_items"] += 1
+                    await interaction.response.send_message(f"수학의 정석이 {player_data['evasion_items']}개가 되었습니다!")
+
+                await interaction.response.send_message(f"\n`/스탯`으로 {user_nickname}님의 현재 능력치를 확인해보세요~")
+
+            else:
+                await interaction.response.send_message(f"코인이 부족합니다! 현재 코인: {player_data['coins']}")
+        else:
+            await interaction.response.send_message("코인이 없습니다. `/rpg`로 게임을 시작해보세요!")
+
 
 # 봇 설정
 
@@ -586,6 +665,23 @@ async def 스탯(interaction: discord.Interaction):
 @bot.tree.command(name="순위", description="rpg - 유저들의 순위를 확인합니다")
 async def 순위(interaction: discord.Interaction):
     await bot.rpg.leaderboard(interaction)
+
+@bot.tree.command(name="상점", description="rpg - 상점으로 들어갑니다")
+async def shop(interaction: discord.Interaction):
+    await bot.rpg.shop(interaction)
+    await interaction.response.send_message("상점에 오신 것을 환영합니다! 다음 아이템을 구매할 수 있습니다\n"
+                                                "\n1. 버섯 : 쨈미몬이 싫어합니다. 공격력이 증가합니다. ( 100 coins )\n"
+                                                "2. 고양이 : 쨈미몬이 좋아합니다. 방어력이 증가합니다. ( 100 coins )\n"
+                                                "3. 네잎클로버 : 행운을 불러옵니다. 회피 확률이 증가합니다. ( 100 coins )\n"
+                                                "4. 안경 : 시력이 상승합니다. 크리티컬 확률이 증가합니다. ( 150 coins )\n"
+                                                "5. 민트초코 : 쨈미몬이 극혐합니다. 크리티컬 데미지가 증가합니다. ( 150 coins )\n"
+                                                "6. 수학의 정석 : 책이 공격을 대신 받아줍니다. 찢어지면 다시 쓸 수 없으며, 여러 개 구매할 수 있습니다. ( 200 coins )\n"
+                                                , view=view)
+
+@bot.event
+async def on_interaction(interaction: discord.Interaction):
+    if interaction.type == discord.InteractionType.component:
+        await bot.rpg.handle_shop_interaction(interaction)
 
 @bot.tree.command(name='rpg_규칙', description="아리스가 RPG게임의 규칙을 설명해줍니다")
 async def rpg_규칙(interaction: discord.Interaction):
