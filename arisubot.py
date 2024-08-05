@@ -452,7 +452,7 @@ class Shop(ui.View):
 
     async def purchase_item(self, interaction: discord.Interaction, item_id: str):
         try:
-            data = self.rpg_game.load_game_data()
+            data = await self.rpg_game.load_game_data()
             user_id = str(interaction.user.id)
             guild = interaction.guild
             user_nickname = get_user_nickname(guild, interaction.user.id)
