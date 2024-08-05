@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands, tasks
-from discord import app_commands
+from discord import app_commands, ui
 import datetime
 from datetime import datetime
 import pytz
@@ -334,18 +334,18 @@ class rpg:
                                "헉.. 쨈미몬이 다시 깨어났어요!\n"
                                f"현재 쨈미몬의 체력 : {enemy['hp']}")      
         else:
+            evasion = random.randint(1, 100) <= player["evasion_chance"]
+            
             if player["evasion_items"] > 0:
                 player["evasion_items"] -= 1
                 result = (f"공격 실패! 쨈미몬이 반격해 {actual_damage}의 데미지를 입힐..뻔 했지만\n"
                           f"{user_nickname}님이 어제 산 '수학의 정석'이 공격을 막아주었습니다! ( 성공 확률 : {success_chance}% )\n"
                           f"레벨 : {player['level']}, {user_nickname}님의 체력 : {player['hp']}, 쨈미몬의 체력 : {enemy['hp']}\n"
                           f"남은 수학의 정석 : {player['evasion_items']}개")
-            elif:
-                evasion = random.randint(1, 100) <= player["evasion_chance"]
-                if evasion:
-                    result = (f"공격 실패! 쨈미몬이 반격해 {actual_damage}의 데미지를 입힐..뻔 했지만 회피했습니다! 럭키~\n"
-                              f"( 성공 확률 : {success_chance}%, 회피 확률 : {player['evasion']}% )\n"
-                              f"레벨 : {player['level']}, {user_nickname}님의 체력 : {player['hp']}, 쨈미몬의 체력 : {enemy['hp']}")
+            elif evasion:
+                result = (f"공격 실패! 쨈미몬이 반격해 {actual_damage}의 데미지를 입힐..뻔 했지만 회피했습니다! 럭키~\n"
+                          f"( 성공 확률 : {success_chance}%, 회피 확률 : {player['evasion']}% )\n"
+                          f"레벨 : {player['level']}, {user_nickname}님의 체력 : {player['hp']}, 쨈미몬의 체력 : {enemy['hp']}")
             else:
                 actual_damage = max(10, damage - player["defense"])
                 player["hp"] -= actual_damage
@@ -404,7 +404,7 @@ class Shop(ui.View):
         "shop_defense": {"label": "고양이", "price": 100, "effect": "defense"},
         "shop_evasion_chance": {"label": "네잎클로버", "price": 150, "effect": "evasion_chance"},
         "shop_attack_chance": {"label": "헬스장 월간이용권", "price": 150, "effect": "attack_chance"},
-        "shop_critical_chance": {"label": "안경", "price": 150, "effect": "critical_chance""},
+        "shop_critical_chance": {"label": "안경", "price": 150, "effect": "critical_chance"},
         "shop_critical_damage": {"label": "민트초코", "price": 150, "effect": "shop_critical_damage"},
         "shop_evasion_items":  {"label": "수학의 정석", "price": 200, "effect": "shop_evasion_items"}
     }
@@ -416,31 +416,31 @@ class Shop(ui.View):
         for item_id, item_info in self.ITEMS.items():
             self.add_item(ui.Button(label=f"{item_info['label']}", style=discord.ButtonStyle.primary, custom_id=item_id))
 
-    @ui.button(label="버섯", style=discord.ButtonStyle.primary, custom_id="shop_attack"))
+    @ui.button(label="버섯", style=discord.ButtonStyle.primary, custom_id="shop_attack")
     async def shop_attack(self, interaction: discord.Interaction, button: ui.Button):
         await self.purchase_item(interaction, "shop_attack")
 
-    @ui.button(label="고양이", style=discord.ButtonStyle.primary, custom_id="shop_defense"))
+    @ui.button(label="고양이", style=discord.ButtonStyle.primary, custom_id="shop_defense")
     async def shop_defense(self, interaction: discord.Interaction, button: ui.Button):
         await self.purchase_item(interaction, "shop_defense")
 
-    @ui.button(label="네잎클로버", style=discord.ButtonStyle.primary, custom_id="shop_evasion_chance"))
+    @ui.button(label="네잎클로버", style=discord.ButtonStyle.primary, custom_id="shop_evasion_chance")
     async def shop_evasion_chance(self, interaction: discord.Interaction, button: ui.Button):
         await self.purchase_item(interaction, "shop_evasion_chance")
 
-    @ui.button(label="헬스장 월간이용권", style=discord.ButtonStyle.primary, custom_id="shop_attack_chance"))
+    @ui.button(label="헬스장 월간이용권", style=discord.ButtonStyle.primary, custom_id="shop_attack_chance")
     async def shop_attack_chance(self, interaction: discord.Interaction, button: ui.Button):
         await self.purchase_item(interaction, "shop_attack_chance")
 
-    @ui.button(label="안경", style=discord.ButtonStyle.primary, custom_id="shop_critical_chance"))
+    @ui.button(label="안경", style=discord.ButtonStyle.primary, custom_id="shop_critical_chance")
     async def shop_critical_chance(self, interaction: discord.Interaction, button: ui.Button):
         await self.purchase_item(interaction, "shop_critical_chance")
 
-    @ui.button(label="민트초코", style=discord.ButtonStyle.primary, custom_id="shop_critical_damage"))
+    @ui.button(label="민트초코", style=discord.ButtonStyle.primary, custom_id="shop_critical_damage")
     async def shop_critical_damage(self, interaction: discord.Interaction, button: ui.Button):
         await self.purchase_item(interaction, "shop_critical_damage")
 
-    @ui.button(label="수학의 정석", style=discord.ButtonStyle.primary, custom_id="shop_evasion_items"))
+    @ui.button(label="수학의 정석", style=discord.ButtonStyle.primary, custom_id="shop_evasion_items")
     async def shop_evasion_items(self, interaction: discord.Interaction, button: ui.Button):
         await self.purchase_item(interaction, "shop_evasion_items")
 
@@ -463,7 +463,7 @@ class Shop(ui.View):
 
         if item_info["effect"] == "attack":
             player["attack"] += 1
-            result = ("공격력이 1 증가했습니다!"
+            result = "공격력이 1 증가했습니다!"
                       
         elif item_info["effect"] == "defense":
             player["defense"] += 1
