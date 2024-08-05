@@ -665,7 +665,6 @@ async def 순위(interaction: discord.Interaction):
 async def 상점(interaction: discord.Interaction):
     user_id = str(interaction.user.id)
     shop_view = Shop(user_id=user_id, rpg_game=bot.rpg)
-    await bot.rpg.shop(interaction)
     await interaction.response.send_message("상점에 오신 것을 환영합니다! 다음 아이템을 구매할 수 있습니다\n"
                                             "\n1. 버섯 : 쨈미몬이 싫어합니다. 공격력이 증가합니다. ( 100 coins )\n"
                                             "2. 고양이 : 쨈미몬이 좋아합니다. 방어력이 증가합니다. ( 100 coins )\n"
