@@ -419,6 +419,7 @@ class Shop(ui.View):
         self.user_id = user_id
         self.rpg_game = rpg_game
         for item_id, item_info in self.ITEMS.items():
+            custom_id = f"shop_{item_id}"
             self.add_item(ui.Button(label=f"{item_info['label']}", style=discord.ButtonStyle.primary, custom_id=item_id))
 
     @ui.button(label="버섯", style=discord.ButtonStyle.primary, custom_id="shop_attack")
