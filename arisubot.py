@@ -367,27 +367,14 @@ class rpg:
 
     async def stats(self, interaction: discord.Interaction):
         try:
-            debug_messages = []
-            
-            debug_messages.append(f"[DEBUG] Interaction data: {interaction.data}")
             data = self.load_game_data()
-            debug_messages.append(f"[DEBUG] Loaded data: {data}")
-        
             guild = interaction.guild
-            debug_messages.append(f"[DEBUG] Guild: {guild}")
-            
             user_nickname = get_user_nickname(guild, interaction.user.id)
-            debug_messages.append(f"[DEBUG] User Nickname: {user_nickname}")
-            
             user_id = str(interaction.user.id)
-            debug_messages.append(f"[DEBUG] User ID: {user_id}")
 
             player_data = data.get("players", {}).get(user_id, None)
             enemy_data = data.get("current_enemies", {}).get(user_id, None)
-            debug_messages.append(f"[DEBUG] Player Data: {player_data}")
-            debug_messages.append(f"[DEBUG] Enemy Data: {enemy_data}")
 
-            debug_message_str = "\n".join(debug_messages)
         
             if player_data:
                 await interaction.response.send_message(f"[{user_nickname}님의 스탯] \n"
@@ -399,8 +386,7 @@ class rpg:
                                                         f"코인 : {player_data['coins']}\n"
                                                         f"\n현재 쨈미몬의 체력 : {enemy_data['hp']}")
             else:
-                await interaction.response.send_message(f"{user_nickname}님의 데이터가 없습니다. `/rpg`로 게임을 시작해보세요!")
-            await interaction.followup.send_message(f"디버그 메시지:\n{debug_message_str}")
+                await interaction.response.send_message(f"{user_nickname}님의 데이터가 없습니다. `/rpg`로 게임을 시작해보세요!"))
         except discord.errors.Forbidden:
             await interaction.response.send_message("[ERROR] 메시지를 보낼 수 없습니다. 봇의 권한을 확인해주세요.")
         except Exception as e:
