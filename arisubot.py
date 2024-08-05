@@ -428,31 +428,31 @@ class Shop(discord.ui.View):
             self.add_item(button)
 
     @discord.ui.button(label="버섯", style=discord.ButtonStyle.primary, custom_id="shop_attack")
-    async def buy_attack_item(self, interaction: discord.Interaction, button: discord.ui.Button):
+    async def buy_attack_item(self, interaction: discord.Interaction):
         await self.buy_item(interaction, "attack")
 
     @discord.ui.button(label="고양이", style=discord.ButtonStyle.primary, custom_id="shop_defense")
-    async def buy_defense_item(self, interaction: discord.Interaction, button: discord.ui.Button):
+    async def buy_defense_item(self, interaction: discord.Interaction):
         await self.buy_item(interaction, "defense")
 
     @discord.ui.button(label="네잎클로버", style=discord.ButtonStyle.primary, custom_id="shop_evasion_chance")
-    async def buy_evasion_chance_item(self, interaction: discord.Interaction, button: discord.ui.Button):
+    async def buy_evasion_chance_item(self, interaction: discord.Interaction):
         await self.buy_item(interaction, "evasion_chance")
 
     @discord.ui.button(label="헬스장 월간이용권", style=discord.ButtonStyle.primary, custom_id="shop_attack_chance")
-    async def buy_attack_chance_item(self, interaction: discord.Interaction, button: discord.ui.Button):
+    async def buy_attack_chance_item(self, interaction: discord.Interaction):
         await self.buy_item(interaction, "attack_chance")
 
     @discord.ui.button(label="안경", style=discord.ButtonStyle.primary, custom_id="shop_critical_chance")
-    async def buy_critical_chance_item(self, interaction: discord.Interaction, button: discord.ui.Button):
+    async def buy_critical_chance_item(self, interaction: discord.Interaction):
         await self.buy_item(interaction, "critical_chance")
 
     @discord.ui.button(label="민트초코", style=discord.ButtonStyle.primary, custom_id="shop_critical_damage")
-    async def buy_critical_damage_item(self, interaction: discord.Interaction, button: discord.ui.Button):
+    async def buy_critical_damage_item(self, interaction: discord.Interaction):
         await self.buy_item(interaction, "critical_damage")
 
     @discord.ui.button(label="수학의 정석", style=discord.ButtonStyle.primary, custom_id="shop_evasion_items")
-    async def buy_evasion_items_item(self, interaction: discord.Interaction, button: discord.ui.Button):
+    async def buy_evasion_items_item(self, interaction: discord.Interaction):
         await self.buy_item(interaction, "evasion_items")
 
     
@@ -692,9 +692,8 @@ async def 순위(interaction: discord.Interaction):
     await bot.rpg.leaderboard(interaction)
 
 @bot.tree.command(name="상점", description="rpg - 상점으로 들어갑니다")
-async def 상점(self, interaction: discord.Interaction):
+async def 상점(self, interaction: discord.Interaction, item_id = str):
     try:
-        user_id = str(interaction.user.id)
         view = Shop(interaction.user.id, self)
         await interaction.response.send_message("상점에 오신 것을 환영합니다! 다음 아이템을 구매할 수 있습니다\n"
                                                 "\n1. 버섯 : 쨈미몬이 싫어합니다. 공격력이 증가합니다. ( 100 coins )\n"
