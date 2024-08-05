@@ -182,15 +182,6 @@ class rpg:
 
     def __init__(self):
         self.initialize_game_data()
-        self.items = {
-            "attack": {"label": "버섯", "cost": 100, "effect": "attack"},
-            "defense": {"label": "고양이", "cost": 100, "effect": "defense"},
-            "evasion_chance": {"label": "네잎클로버", "cost": 150, "effect": "evasion_chance"},
-            "attack_chance": {"label": "헬스장 월간이용권", "cost": 150, "effect": "attack_chance"},
-            "critical_chance": {"label": "안경", "cost": 150, "effect": "critical_chance"},
-            "critical_damage": {"label": "민트초코", "cost": 150, "effect": "critical_damage"},
-            "evasion_items": {"label": "수학의 정석", "cost": 200, "effect": "evasion_items"}
-        }
 
     def initialize_game_data(self):
         if not os.path.exists(data_file) or os.path.getsize(data_file) == 0:
@@ -428,6 +419,15 @@ class rpg:
         data = self.load_game_data()
         user_id = str(interaction.user.id)
         player_data = data["players"].get(user_id, None)
+
+        items = {"attack": {"label": "버섯", "cost": 100, "effect": "attack"},
+                 "defense": {"label": "고양이", "cost": 100, "effect": "defense"},
+                 "evasion_chance": {"label": "네잎클로버", "cost": 150, "effect": "evasion_chance"},
+                 "attack_chance": {"label": "헬스장 월간이용권", "cost": 150, "effect": "attack_chance"},
+                 "critical_chance": {"label": "안경", "cost": 150, "effect": "critical_chance"},
+                 "critical_damage": {"label": "민트초코", "cost": 150, "effect": "critical_damage"},
+                 "evasion_items": {"label": "수학의 정석", "cost": 200, "effect": "evasion_items"}
+                 }
 
         buttons = []
         
