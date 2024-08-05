@@ -455,16 +455,23 @@ class Shop(ui.View):
         user_id = str(interaction.user.id)
         guild = interaction.guild
         user_nickname = get_user_nickname(guild, interaction.user.id)
+        player_data = data["players"].get(user_id)
         
         if user_id not in data["players"]:
             await interaction.response.send_message("코인이 없습니다. `/rpg`로 게임을 시작해보세요!", ephemeral=False)
             return
-        
-        if player["coins"] < item_cost:
+
+        item_info = self.ITEMS.get(item_id)
+        if not item_info:
+            await interaction.response.send_message("[ERROR] 아이템이 품절되었습니다.", ephemeral=False)
+            return
+    
+        if player_data["coins"] < item_info['price']:
             await interaction.response.send_message(f"코인이 부족합니다! 현재 코인: {player['coins']}", ephemeral=False)
             return
 
-        player["coins"] -= item_cost
+        player_data["coins"] -= item_info['price']
+        result = ""
 
         if item_info["effect"] == "attack":
             player["attack"] += 1
