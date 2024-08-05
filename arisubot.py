@@ -665,7 +665,7 @@ async def 스탯(interaction: discord.Interaction):
 async def 순위(interaction: discord.Interaction):
     await bot.rpg.leaderboard(interaction)
 
-@bot.tree.command(name="상점", description="아이템을 구매할 수 있는 상점을 엽니다")
+@bot.tree.command(name="상점", description="rpg - 상점으로 들어갑니다")
 async def 상점(interaction: discord.Interaction):
     user_id = str(interaction.user.id)
     shop_view = Shop(user_id=user_id, rpg_game=bot.rpg)
