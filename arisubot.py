@@ -694,6 +694,7 @@ async def 순위(interaction: discord.Interaction):
 @bot.tree.command(name="상점", description="rpg - 상점으로 들어갑니다")
 async def 상점(self, interaction: discord.Interaction):
     try:
+        user_id = str(interaction.user.id)
         view = Shop(interaction.user.id, self)
         await interaction.response.send_message("상점에 오신 것을 환영합니다! 다음 아이템을 구매할 수 있습니다\n"
                                                 "\n1. 버섯 : 쨈미몬이 싫어합니다. 공격력이 증가합니다. ( 100 coins )\n"
