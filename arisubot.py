@@ -451,60 +451,65 @@ class Shop(ui.View):
 
 
     async def purchase_item(self, interaction: discord.Interaction, item_id: str):
-        data = self.rpg_game.load_game_data()
-        user_id = str(interaction.user.id)
-        guild = interaction.guild
-        user_nickname = get_user_nickname(guild, interaction.user.id)
-        player_data = data["players"].get(user_id)
+        try:
+            data = self.rpg_game.load_game_data()
+            user_id = str(interaction.user.id)
+            guild = interaction.guild
+            user_nickname = get_user_nickname(guild, interaction.user.id)
+            player_data = data["players"].get(user_id)
         
-        if user_id not in data["players"]:
-            await interaction.response.send_message("코인이 없습니다. `/rpg`로 게임을 시작해보세요!", ephemeral=False)
-            return
+            if user_id not in data["players"]:
+                await interaction.response.send_message("코인이 없습니다. `/rpg`로 게임을 시작해보세요!", ephemeral=False)
+                return
 
-        item_info = self.ITEMS.get(item_id)
-        if not item_info:
-            await interaction.response.send_message("[ERROR] 아이템이 품절되었습니다.", ephemeral=False)
-            return
+            item_info = self.ITEMS.get(item_id)
+            if not item_info:
+                await interaction.response.send_message("[ERROR] 아이템이 품절되었습니다.", ephemeral=False)
+                return
     
-        if player_data["coins"] < item_info['price']:
-            await interaction.response.send_message(f"코인이 부족합니다! 현재 코인: {player['coins']}", ephemeral=False)
-            return
+            if player_data["coins"] < item_info['price']:
+                await interaction.response.send_message(f"코인이 부족합니다! 현재 코인: {player['coins']}", ephemeral=False)
+                return
 
-        player_data["coins"] -= item_info['price']
-        result = ""
+            player_data["coins"] -= item_info['price']
+            result = ""
 
-        if item_info["effect"] == "attack":
-            player["attack"] += 1
-            result = "공격력이 1 증가했습니다!"
+            if item_info["effect"] == "attack":
+                player["attack"] += 1
+                result = "공격력이 1 증가했습니다!"
                       
-        elif item_info["effect"] == "defense":
-            player["defense"] += 1
-            result = "방어력이 1 증가했습니다!"
+            elif item_info["effect"] == "defense":
+                player["defense"] += 1
+                result = "방어력이 1 증가했습니다!"
             
-        elif item_info["effect"] == "evasion_chance":
-            player["evasion_chance"] += 1
-            result = "회피 확률이 1%p 증가했습니다!"
+            elif item_info["effect"] == "evasion_chance":
+                player["evasion_chance"] += 1
+                result = "회피 확률이 1%p 증가했습니다!"
             
-        elif item_info["effect"] == "attack_chance":
-            player["attack_chance"] += 1
-            result = "공격 확률이 1%p 1 증가했습니다!"
+            elif item_info["effect"] == "attack_chance":
+                player["attack_chance"] += 1
+                result = "공격 확률이 1%p 1 증가했습니다!"
             
-        elif item_info["effect"] == "critical_chance":
-            player["critical_chance"] += 1
-            result = "크리티컬 확률이 1%p 증가했습니다!"
+            elif item_info["effect"] == "critical_chance":
+                player["critical_chance"] += 1
+                result = "크리티컬 확률이 1%p 증가했습니다!"
             
-        elif item_info["effect"] == "critical_damage":
-            player["critical_damage"] += 1
-            result = "크리티컬 데미지가 5%p 증가했습니다!"
+            elif item_info["effect"] == "critical_damage":
+                player["critical_damage"] += 1
+                result = "크리티컬 데미지가 5%p 증가했습니다!"
             
-        elif item_info["effect"] == "evasion_items":
-            player["evasion_items"] += 1
-            result = f"수학의 정석이 {player_data['evasion_items']}개가 되었습니다!"
+            elif item_info["effect"] == "evasion_items":
+                player["evasion_items"] += 1
+                result = f"수학의 정석이 {player_data['evasion_items']}개가 되었습니다!"
 
-        result += f"\n`/스탯`으로 {user_nickname}님의 현재 능력치를 확인해보세요~"
+            result += f"\n`/스탯`으로 {user_nickname}님의 현재 능력치를 확인해보세요~"
 
-        self.rpg_game.save_game_data(data)
-        await interaction.response.send_message(result, ephemeral=False)
+            await self.rpg_game.save_game_data(data)
+            await interaction.response.send_message(result, ephemeral=False)
+            
+        except Exception as e:
+            print(f"[ERROR] Error in purchase_item: {e}")
+            await interaction.response.send_message("[ERROR] 상점 알바가 화장실에 갔습니다. 사장님에게 문의해주세요", ephemeral=True)
 
 # 봇 설정
 
