@@ -367,17 +367,30 @@ class rpg:
 
     async def stats(self, interaction: discord.Interaction):
         try:
-            print(f"[DEBUG] Interaction data: {interaction.data}")
+            debug_messages = []
+            
+            debug_messages.append(f"[DEBUG] Interaction data: {interaction.data}")
             data = self.load_game_data()
+            debug_messages.append(f"[DEBUG] Loaded data: {data}")
+        
             guild = interaction.guild
+            debug_messages.append(f"[DEBUG] Guild: {guild}")
+            
             user_nickname = get_user_nickname(guild, interaction.user.id)
+            debug_messages.append(f"[DEBUG] User Nickname: {user_nickname}")
+            
             user_id = str(interaction.user.id)
+            debug_messages.append(f"[DEBUG] User ID: {user_id}")
 
             player_data = data.get("players", {}).get(user_id, None)
             enemy_data = data.get("current_enemies", {}).get(user_id, None)
+            debug_messages.append(f"[DEBUG] Player Data: {player_data}")
+            debug_messages.append(f"[DEBUG] Enemy Data: {enemy_data}")
+
+            debug_message_str = "\n".join(debug_messages)
+            await interaction.response.send_message(f"디버그 메시지:\n{debug_message_str}")
         
             if player_data:
-                print(f"[DEBUG] player_data: {player_data}")
                 await interaction.response.send_message(f"[{user_nickname}님의 스탯] \n"
                                                         f"\n레벨 : {player_data['level']}, 체력 : {player_data['hp']}, 경험치 : {player_data['exp']}\n"
                                                         f"공격력 : {player_data['attack']}, 방어력 : {player_data['defense']}\n"
@@ -389,20 +402,31 @@ class rpg:
             else:
                 await interaction.response.send_message(f"{user_nickname}님의 데이터가 없습니다. `/rpg`로 게임을 시작해보세요!")
         except discord.errors.Forbidden:
-            print("[ERROR] 메시지를 보낼 수 없습니다. 봇의 권한을 확인해주세요.")
+            await interaction.response.send_message("[ERROR] 메시지를 보낼 수 없습니다. 봇의 권한을 확인해주세요.")
         except Exception as e:
-                print(f"[ERROR] 오류 발생: {e}")
-                await interaction.response.send_message("[ERROR] 오류가 발생했습니다. 쨈미에게 문의해주세요.")
+                await interaction.response.send_message("[ERROR] 오류 발생: {e}")
 
             
     async def leaderboard(self, interaction: discord.Interaction):
         try:
+            debug_messages = []
+
             guild = interaction.guild
+            debug_messages.append(f"[DEBUG] Guild: {guild}")
+            
             user_nickname = get_user_nickname(guild, interaction.user.id)
+            debug_messages.append(f"[DEBUG] User Nickname: {user_nickname}")
+            
             data = self.load_game_data()
+            debug_messages.append(f"[DEBUG] Loaded data: {data}")
+            
             sorted_players = sorted(
                 [(user_id, player) for user_id, player in data["players"].items()],
                 key=lambda x: x[1]["exp"], reverse=True)
+
+            debug_messages.append(f"[DEBUG] Sorted Players: {sorted_players}")
+            debug_message_str = "\n".join(debug_messages)
+            await interaction.response.send_message(f"디버그 메시지:\n{debug_message_str}")
 
             leaderboard_message = "RPG 게임 순위:\n"
             for rank, (user_id, player) in enumerate(sorted_players, start=1):
@@ -411,10 +435,9 @@ class rpg:
 
             await interaction.response.send_message(leaderboard_message)
         except discord.errors.Forbidden:
-            print("[ERROR] 메시지를 보낼 수 없습니다. 봇의 권한을 확인해주세요.")
+            await interaction.response.send_message("[ERROR] 메시지를 보낼 수 없습니다. 봇의 권한을 확인해주세요.")
         except Exception as e:
-            print(f"[ERROR] 오류 발생: {e}")
-            await interaction.response.send_message("[ERROR] 오류가 발생했습니다. 쨈미에게 문의해주세요.")
+            await interaction.response.send_message("[ERROR] 오류 발생: {e}")
         
 # 봇 설정
 
