@@ -254,14 +254,13 @@ class rpg:
         user_id = str(interaction.user.id)
         if self.is_player_in_game(user_id):
             await interaction.response.send_message("`/공격`으로 빨리 적을 공격하세요!")
-            return
-
-        self.add_new_player(user_id)
-        await interaction.response.send_message("용사여. 빛이 당신과 함께 합니다...\n"
-                                                "`/rpg_규칙`으로 게임 규칙을 볼 수 있습니다.\n"
-                                                "앗, 방심한 사이에 쨈미몬이 나타났습니다. 어서 공격하세요!")
+        else:
+            self.add_new_player(user_id)
+            await interaction.response.send_message("용사여. 빛이 당신과 함께 합니다...\n"
+                                                    "`/rpg_규칙`으로 게임 규칙을 볼 수 있습니다.\n"
+                                                    "앗, 방심한 사이에 쨈미몬이 나타났습니다. 어서 공격하세요!")
         
-    async def attack(self, interaction: discord.Interaction, damage: int):
+    async def attack(self, interaction: discord.Interaction, damage: str):
         data = self.load_game_data()
         guild = interaction.guild
         user_nickname = get_user_nickname(guild, interaction.user.id)
@@ -374,7 +373,7 @@ class rpg:
             await interaction.response.send_message(f"[{user_nickname}님의 스탯] \n"
                                                     f"\n레벨 : {player_data['level']}, 체력 : {player_data['hp']}, 경험치 : {player_data['exp']}\n"
                                                     f"공격력 : {player_data['attack']}, 방어력 : {player['defense']}\n"
-                                                    f"회피 확률 : {player_data['evasion']}%, 공격 성공 확률 : + {player_data['attck_chance']}%p\n"
+                                                    f"회피 확률 : {player_data['evasion']}%, 공격 성공 확률 : + {player_data['attack_chance']}%p\n"
                                                     f"크리티컬 확률 : {player_data['critical_chance']}%, 크리티컬 데미지 : {player_data['critical_damage']*100}%\n"
                                                     f"수학의 정석 : {player_data['evasion_items']}개\n"
                                                     f"코인 : {player_data['coins']}\n"
