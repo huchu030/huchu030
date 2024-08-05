@@ -429,6 +429,9 @@ class Shop(ui.View):
                 used_custom_ids.add(custom_id)
                 self.add_item(ui.Button(label=f"{item_info['label']}", style=discord.ButtonStyle.primary, custom_id=custom_id))
 
+        for child in self.children:
+            print(f"Button: {child.label}, custom_id: {child.custom_id}")
+            
     @ui.button(label="버섯", style=discord.ButtonStyle.primary, custom_id="shop_attack")
     async def 버섯(self, interaction: discord.Interaction, button: ui.Button):
         await self.purchase_item(interaction, "shop_attack")
