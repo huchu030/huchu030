@@ -367,7 +367,7 @@ class rpg:
 
     async def stats(self, interaction: discord.Interaction):
         try:
-        print(f"[DEBUG] Interaction data: {interaction.data}")
+            print(f"[DEBUG] Interaction data: {interaction.data}")
             data = self.load_game_data()
             guild = interaction.guild
             user_nickname = get_user_nickname(guild, interaction.user.id)
