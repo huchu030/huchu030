@@ -457,7 +457,7 @@ class rpg:
         
         if player_data:
             item_key = interaction.custom_id.split('_')[1]
-            item = items.get(item_key, None)
+            item = self.items.get(item_key, None)
             
             if item:
                 if player_data["coins"] >= item["cost"]:
