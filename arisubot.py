@@ -314,7 +314,7 @@ class rpg:
                         player["hp"] = 100
                         player["level"] += 1
                         enemy["hp"] = 40 + 10 * player["level"]
-
+    
                         stat_to_increase = random.choice(["attack", "defense", "evasion_chance", "critical_chance"])
                         if stat_to_increase == "attack":
                             player["attack"] += 1
