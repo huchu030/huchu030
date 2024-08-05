@@ -431,29 +431,21 @@ class rpg:
         
         if player_data:
             buttons = []
-            no_funds = []
             
             for item_key, item in self.items.items():
-                if player_data["coins"] >= item["cost"]:
-                    buttons.append(
-                        ui.Button(label=item["name"], style=ButtonStyle.primary, custom_id=f'buy_{item_key}')
-                        )
-                else:
-                    no_funds.append(item["name"])
+
+                buttons.append(
+                    ui.Button(label=item["name"], style=ButtonStyle.primary, custom_id=f'buy_{item_key}')
+                    )
 
             view = ui.View()
             for button in buttons:
                 view.add_item(button)
 
-            if no_funds:
-                no_funds_message = "다음 아이템은 코인이 부족합니다:\n" + "\n".join(no_funds)
-            else:
-                no_funds_message = ""
-
             if buttons:
                 await interaction.response.send_message(f"상점에서 아이템을 구매하세요!\n{no_funds_message}", view=view)
             else:
-                await interaction.response.send_message(f"코인으로 구매할 수 있는 아이템이 없습니다.\n{no_funds_message}")
+                await interaction.response.send_message("[ERROR] 상점이 폐업했습니다. 쟌넨")
                 
         else:
             await interaction.response.send_message("코인이 없습니다. `/rpg`로 게임을 시작해보세요!")
