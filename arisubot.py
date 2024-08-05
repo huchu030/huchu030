@@ -181,6 +181,15 @@ data_file = 'game_data.json'
 class rpg:
 
     def __init__(self):
+        self.items = {
+            "attack": {"label": "버섯", "cost": 100, "effect": "attack", "value": 1},
+            "defense": {"label": "고양이", "cost": 100, "effect": "defense", "value": 1},
+            "evasion_chance": {"label": "네잎클로버", "cost": 150, "effect": "evasion_chance", "value": 1},
+            "attack_chance": {"label": "헬스장 월간이용권", "cost": 150, "effect": "attack_chance", "value": 1},
+            "critical_chance": {"label": "안경", "cost": 150, "effect": "critical_chance", "value": 1},
+            "critical_damage": {"label": "민트초코", "cost": 150, "effect": "critical_damage", "value": 0.05},
+            "evasion_items": {"label": "수학의 정석", "cost": 200, "effect": "evasion_items", "value": 1}
+        }
         self.initialize_game_data()
 
     def initialize_game_data(self):
@@ -420,19 +429,10 @@ class rpg:
         user_id = str(interaction.user.id)
         player_data = data["players"].get(user_id, None)
 
-        items = {"attack": {"label": "버섯", "cost": 100, "effect": "attack", "value": 1},
-                 "defense": {"label": "고양이", "cost": 100, "effect": "defense", "value": 1},
-                 "evasion_chance": {"label": "네잎클로버", "cost": 150, "effect": "evasion_chance", "value": 1},
-                 "attack_chance": {"label": "헬스장 월간이용권", "cost": 150, "effect": "attack_chance", "value": 1},
-                 "critical_chance": {"label": "안경", "cost": 150, "effect": "critical_chance", "value": 1},
-                 "critical_damage": {"label": "민트초코", "cost": 150, "effect": "critical_damage", "value": 0.05},
-                 "evasion_items": {"label": "수학의 정석", "cost": 200, "effect": "evasion_items", "value": 1}
-                 }
-
         buttons = []
         
         if player_data:
-            for item_key, item in items.items():
+            for item_key, item in self.items.items():
                 buttons.append(
                     ui.Button(label=item["label"], style=ButtonStyle.primary, custom_id=f'buy_{item_key}')
                     )
