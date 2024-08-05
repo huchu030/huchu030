@@ -366,17 +366,17 @@ class rpg:
             await interaction.response.send_message("[ERROR] 공격 도중 오류가 발생했습니다. 쨈미에게 문의해주세요.")
 
     async def stats(self, interaction: discord.Interaction):
-        try:
-            data = self.load_game_data()
-            guild = interaction.guild
-            user_nickname = get_user_nickname(guild, interaction.user.id)
-            user_id = str(interaction.user.id)
+        data = self.load_game_data()
+        guild = interaction.guild
+        user_nickname = get_user_nickname(guild, interaction.user.id)
+        user_id = str(interaction.user.id)
 
-            player_data = data.get("players", {}).get(user_id, None)
-            enemy_data = data.get("current_enemies", {}).get(user_id, None)
+        player_data = data.get("players", {}).get(user_id, None)
+        enemy_data = data.get("current_enemies", {}).get(user_id, None)
 
         
-            if player_data:
+        if player_data:
+            try:
                 await interaction.response.send_message(f"[{user_nickname}님의 스탯] \n"
                                                         f"\n레벨 : {player_data['level']}, 체력 : {player_data['hp']}, 경험치 : {player_data['exp']}\n"
                                                         f"공격력 : {player_data['attack']}, 방어력 : {player_data['defense']}\n"
@@ -385,12 +385,13 @@ class rpg:
                                                         f"수학의 정석 : {player_data['evasion_items']}개\n"
                                                         f"코인 : {player_data['coins']}\n"
                                                         f"\n현재 쨈미몬의 체력 : {enemy_data['hp']}")
-            else:
-                await interaction.response.send_message(f"{user_nickname}님의 데이터가 없습니다. `/rpg`로 게임을 시작해보세요!")
-        except discord.errors.Forbidden:
-            await interaction.response.send_message("[ERROR] 메시지를 보낼 수 없습니다. 봇의 권한을 확인해주세요.")
-        except Exception as e:
+            except discord.errors.Forbidden:
+                await interaction.response.send_message("[ERROR] 메시지를 보낼 수 없습니다. 봇의 권한을 확인해주세요.")
+            except Exception as e:
                 await interaction.response.send_message(f"[ERROR] 오류 발생: {str(e)}")
+        else:
+            await interaction.response.send_message(f"{user_nickname}님의 데이터가 없습니다. `/rpg`로 게임을 시작해보세요!")
+        
 
             
     async def leaderboard(self, interaction: discord.Interaction):
