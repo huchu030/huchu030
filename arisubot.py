@@ -432,7 +432,7 @@ class rpg:
         buttons = []
         
         if player_data:
-            for item_key, item in self.items.items():
+            for item_key, item in items.items():
                 buttons.append(
                     ui.Button(label=item["name"], style=ButtonStyle.primary, custom_id=f'buy_{item_key}')
                     )
