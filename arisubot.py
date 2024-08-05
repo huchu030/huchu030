@@ -245,14 +245,10 @@ class rpg:
             del data["players"][user_id]
             del data["current_enemies"][user_id]
             self.save_game_data(data)
-
-    def is_player_in_game(self, user_id):
-        data = self.load_game_data()
-        return user_id in data["players"]
-
+            
     async def start_game(self, interaction: discord.Interaction):
         user_id = str(interaction.user.id)
-        if self.is_player_in_game(user_id):
+        if user_id in data["players"]:
             await interaction.response.send_message("`/공격`으로 빨리 적을 공격하세요!")
             return
 
@@ -366,19 +362,19 @@ class rpg:
         guild = interaction.guild
         user_nickname = get_user_nickname(guild, interaction.user.id)
         user_id = str(interaction.user.id)
+
+        player = data["players"][user_id]
+        enemy = data["current_enemies"][user_id]
         
-        player_data = data.get("players", {}).get(user_id, None)
-        enemy_data = data.get("current_enemies", {}).get(user_id, None)
-        
-        if player_data:
+        if user_id in data["players"]:
             await interaction.response.send_message(f"[{user_nickname}님의 스탯] \n"
-                                                    f"\n레벨 : {player_data['level']}, 체력 : {player_data['hp']}, 경험치 : {player_data['exp']}\n"
-                                                    f"공격력 : {player_data['attack']}, 방어력 : {player_data['defense']}\n"
-                                                    f"회피 확률 : {player_data['evasion']}%, 공격 성공 확률 : + {player_data['attck_chance']}%p\n"
-                                                    f"크리티컬 확률 : {player_data['critical_chance']}%, 크리티컬 데미지 : {player_data['critical_damage']*100}%\n"
-                                                    f"수학의 정석 : {player_data['evasion_items']}개\n"
-                                                    f"코인 : {player_data['coins']}\n"
-                                                    f"\n현재 쨈미몬의 체력 : {enemy_data['hp']}")
+                                                    f"\n레벨 : {player['level']}, 체력 : {player['hp']}, 경험치 : {player['exp']}\n"
+                                                    f"공격력 : {player['attack']}, 방어력 : {player['defense']}\n"
+                                                    f"회피 확률 : {player['evasion']}%, 공격 성공 확률 : + {player['attck_chance']}%p\n"
+                                                    f"크리티컬 확률 : {player['critical_chance']}%, 크리티컬 데미지 : {player['critical_damage']*100}%\n"
+                                                    f"수학의 정석 : {player['evasion_items']}개\n"
+                                                    f"코인 : {player['coins']}\n"
+                                                    f"\n현재 쨈미몬의 체력 : {enemy['hp']}")
         else:
             await interaction.response.send_message(f"{user_nickname}님의 데이터가 없습니다. `/rpg`로 게임을 시작해보세요!.")
 
@@ -669,6 +665,7 @@ async def 순위(interaction: discord.Interaction):
 async def 상점(interaction: discord.Interaction):
     user_id = str(interaction.user.id)
     shop_view = Shop(user_id=user_id, rpg_game=bot.rpg)
+    await bot.rpg.shop(interaction)
     await interaction.response.send_message("상점에 오신 것을 환영합니다! 다음 아이템을 구매할 수 있습니다\n"
                                             "\n1. 버섯 : 쨈미몬이 싫어합니다. 공격력이 증가합니다. ( 100 coins )\n"
                                             "2. 고양이 : 쨈미몬이 좋아합니다. 방어력이 증가합니다. ( 100 coins )\n"
