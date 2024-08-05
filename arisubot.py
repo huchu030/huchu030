@@ -428,12 +428,11 @@ class rpg:
         data = self.load_game_data()
         user_id = str(interaction.user.id)
         player_data = data["players"].get(user_id, None)
+
+        buttons = []
         
         if player_data:
-            buttons = []
-            
             for item_key, item in self.items.items():
-
                 buttons.append(
                     ui.Button(label=item["name"], style=ButtonStyle.primary, custom_id=f'buy_{item_key}')
                     )
@@ -442,10 +441,7 @@ class rpg:
             for button in buttons:
                 view.add_item(button)
 
-            if buttons:
-                await interaction.response.send_message(f"상점에서 아이템을 구매하세요!\n{no_funds_message}", view=view)
-            else:
-                await interaction.response.send_message("[ERROR] 상점이 폐업했습니다. 쟌넨")
+            await interaction.response.send_message("상점에서 아이템을 구매하세요!", view=view)
                 
         else:
             await interaction.response.send_message("코인이 없습니다. `/rpg`로 게임을 시작해보세요!")
