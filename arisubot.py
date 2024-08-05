@@ -437,6 +437,7 @@ class rpg:
                 if player_data["coins"] >= item["cost"]:
                     buttons.append(
                         ui.Button(label=item["name"], style=ButtonStyle.primary, custom_id=f'buy_{item_key}')
+                        )
                 else:
                     no_funds.append(item["name"])
 
