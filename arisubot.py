@@ -472,7 +472,7 @@ class rpg:
                                       "critical_chance": "크리티컬 확률이 1%p 증가했습니다!",
                                       "critical_damage": "크리티컬 데미지가 5%p 증가했습니다!",
                                       "evasion_items": f"수학의 정석이 {player_data['evasion_items']}개가 되었습니다!"
-                                      )
+                                      }
                                       
                     await interaction.response.send_message(f"{effect_message}\n"
                                                             "`/스탯`으로 {user_nickname}님의 현재 능력치를 확인해보세요~")
