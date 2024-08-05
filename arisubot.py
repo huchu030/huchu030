@@ -396,23 +396,13 @@ class rpg:
             
     async def leaderboard(self, interaction: discord.Interaction):
         try:
-            debug_messages = []
-
             guild = interaction.guild
-            debug_messages.append(f"[DEBUG] Guild: {guild}")
-            
-            user_nickname = get_user_nickname(guild, interaction.user.id)
-            debug_messages.append(f"[DEBUG] User Nickname: {user_nickname}")
-            
+            user_nickname = get_user_nickname(guild, interaction.user.id) 
             data = self.load_game_data()
-            debug_messages.append(f"[DEBUG] Loaded data: {data}")
-            
+
             sorted_players = sorted(
                 [(user_id, player) for user_id, player in data["players"].items()],
                 key=lambda x: x[1]["exp"], reverse=True)
-
-            debug_messages.append(f"[DEBUG] Sorted Players: {sorted_players}")
-            debug_message_str = "\n".join(debug_messages)
 
             leaderboard_message = "RPG 게임 순위:\n"
             for rank, (user_id, player) in enumerate(sorted_players, start=1):
