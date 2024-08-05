@@ -489,7 +489,7 @@ class rpg:
                                         f"\n`/스탯`으로 {user_nickname}님의 현재 능력치를 확인해보세요~")
                 elif item["effect"] == "evasion_items":
                     player_data["evasion_items"] += 1
-                    aresponse_message = (f"수학의 정석이 {player_data['evasion_items']}개가 되었습니다!"
+                    response_message = (f"수학의 정석이 {player_data['evasion_items']}개가 되었습니다!"
                                          f"\n`/스탯`으로 {user_nickname}님의 현재 능력치를 확인해보세요~")
                     
                 self.save_game_data(data)
