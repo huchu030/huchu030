@@ -405,13 +405,13 @@ class rpg:
 
 class Shop(ui.View):
     ITEMS = {
-        "shop_attack": {"label": "버섯", "price": 100, "effect": "attack"},
-        "shop_defense": {"label": "고양이", "price": 100, "effect": "defense"},
-        "shop_evasion_chance": {"label": "네잎클로버", "price": 150, "effect": "evasion_chance"},
-        "shop_attack_chance": {"label": "헬스장 월간이용권", "price": 150, "effect": "attack_chance"},
-        "shop_critical_chance": {"label": "안경", "price": 150, "effect": "critical_chance"},
-        "shop_critical_damage": {"label": "민트초코", "price": 150, "effect": "shop_critical_damage"},
-        "shop_evasion_items":  {"label": "수학의 정석", "price": 200, "effect": "shop_evasion_items"}
+        "attack": {"label": "버섯", "price": 100, "effect": "attack"},
+        "defense": {"label": "고양이", "price": 100, "effect": "defense"},
+        "evasion_chance": {"label": "네잎클로버", "price": 150, "effect": "evasion_chance"},
+        "attack_chance": {"label": "헬스장 월간이용권", "price": 150, "effect": "attack_chance"},
+        "critical_chance": {"label": "안경", "price": 150, "effect": "critical_chance"},
+        "critical_damage": {"label": "민트초코", "price": 150, "effect": "shop_critical_damage"},
+        "evasion_items":  {"label": "수학의 정석", "price": 200, "effect": "shop_evasion_items"}
     }
     
     def __init__(self, user_id, rpg_game):
@@ -420,34 +420,34 @@ class Shop(ui.View):
         self.rpg_game = rpg_game
         for item_id, item_info in self.ITEMS.items():
             custom_id = f"shop_{item_id}"
-            self.add_item(ui.Button(label=f"{item_info['label']}", style=discord.ButtonStyle.primary, custom_id=item_id))
+            self.add_item(ui.Button(label=f"{item_info['label']}", style=discord.ButtonStyle.primary, custom_id=custom_id))
 
     @ui.button(label="버섯", style=discord.ButtonStyle.primary, custom_id="shop_attack")
-    async def shop_attack(self, interaction: discord.Interaction, button: ui.Button):
+    async def 버섯(self, interaction: discord.Interaction, button: ui.Button):
         await self.purchase_item(interaction, "shop_attack")
 
     @ui.button(label="고양이", style=discord.ButtonStyle.primary, custom_id="shop_defense")
-    async def shop_defense(self, interaction: discord.Interaction, button: ui.Button):
+    async def 고양이(self, interaction: discord.Interaction, button: ui.Button):
         await self.purchase_item(interaction, "shop_defense")
 
     @ui.button(label="네잎클로버", style=discord.ButtonStyle.primary, custom_id="shop_evasion_chance")
-    async def shop_evasion_chance(self, interaction: discord.Interaction, button: ui.Button):
+    async def 네잎클로버(self, interaction: discord.Interaction, button: ui.Button):
         await self.purchase_item(interaction, "shop_evasion_chance")
 
     @ui.button(label="헬스장 월간이용권", style=discord.ButtonStyle.primary, custom_id="shop_attack_chance")
-    async def shop_attack_chance(self, interaction: discord.Interaction, button: ui.Button):
+    async def 헬스장_월간이용권(self, interaction: discord.Interaction, button: ui.Button):
         await self.purchase_item(interaction, "shop_attack_chance")
 
     @ui.button(label="안경", style=discord.ButtonStyle.primary, custom_id="shop_critical_chance")
-    async def shop_critical_chance(self, interaction: discord.Interaction, button: ui.Button):
+    async def 안경(self, interaction: discord.Interaction, button: ui.Button):
         await self.purchase_item(interaction, "shop_critical_chance")
 
     @ui.button(label="민트초코", style=discord.ButtonStyle.primary, custom_id="shop_critical_damage")
-    async def shop_critical_damage(self, interaction: discord.Interaction, button: ui.Button):
+    async def 민트초코(self, interaction: discord.Interaction, button: ui.Button):
         await self.purchase_item(interaction, "shop_critical_damage")
 
     @ui.button(label="수학의 정석", style=discord.ButtonStyle.primary, custom_id="shop_evasion_items")
-    async def shop_evasion_items(self, interaction: discord.Interaction, button: ui.Button):
+    async def 수학의_정석(self, interaction: discord.Interaction, button: ui.Button):
         await self.purchase_item(interaction, "shop_evasion_items")
 
 
