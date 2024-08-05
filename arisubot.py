@@ -420,13 +420,13 @@ class rpg:
         user_id = str(interaction.user.id)
         player_data = data["players"].get(user_id, None)
 
-        items = {"attack": {"label": "버섯", "cost": 100, "effect": "attack"},
-                 "defense": {"label": "고양이", "cost": 100, "effect": "defense"},
-                 "evasion_chance": {"label": "네잎클로버", "cost": 150, "effect": "evasion_chance"},
-                 "attack_chance": {"label": "헬스장 월간이용권", "cost": 150, "effect": "attack_chance"},
-                 "critical_chance": {"label": "안경", "cost": 150, "effect": "critical_chance"},
-                 "critical_damage": {"label": "민트초코", "cost": 150, "effect": "critical_damage"},
-                 "evasion_items": {"label": "수학의 정석", "cost": 200, "effect": "evasion_items"}
+        items = {"attack": {"label": "버섯", "cost": 100, "effect": "attack", "value": 1},
+                 "defense": {"label": "고양이", "cost": 100, "effect": "defense", "value": 1},
+                 "evasion_chance": {"label": "네잎클로버", "cost": 150, "effect": "evasion_chance", "value": 1},
+                 "attack_chance": {"label": "헬스장 월간이용권", "cost": 150, "effect": "attack_chance", "value": 1},
+                 "critical_chance": {"label": "안경", "cost": 150, "effect": "critical_chance", "value": 1},
+                 "critical_damage": {"label": "민트초코", "cost": 150, "effect": "critical_damage", "value": 0.05},
+                 "evasion_items": {"label": "수학의 정석", "cost": 200, "effect": "evasion_items", "value": 1}
                  }
 
         buttons = []
@@ -457,55 +457,27 @@ class rpg:
         
         if player_data:
             item_key = interaction.custom_id.split('_')[1]
-            items = {
-                "attack": {"label": "버섯", "cost": 100, "effect": "attack"},
-                "defense": {"label": "고양이", "cost": 100, "effect": "defense"},
-                "evasion_chance": {"label": "네잎클로버", "cost": 150, "effect": "evasion_chance"},
-                "attack_chance": {"label": "헬스장 월간이용권", "cost": 150, "effect": "attack_chance"},
-                "critical_chance": {"label": "안경", "cost": 150, "effect": "critical_chance"},
-                "critical_damage": {"label": "민트초코", "cost": 150, "effect": "critical_damage"},
-                "evasion_items": {"label": "수학의 정석", "cost": 200, "effect": "evasion_items"}
-            }
             item = items.get(item_key, None)
             
-            if item and player_data["coins"] >= item["cost"]:
-                player_data["coins"] -= item["cost"]
+            if item:
+                if player_data["coins"] >= item["cost"]:
+                    player_data["coins"] -= item["cost"]
+                    player_data[item["effect"]] += item["value"]
+                    self.save_game_data(data)
 
-                if item["effect"] == "attack":
-                    player_data["attack"] += 1
-                    response_message = ("공격력이 1 증가했습니다!"
-                                        f"\n`/스탯`으로 {user_nickname}님의 현재 능력치를 확인해보세요~")
-                elif item["effect"] == "defense":
-                    player_data["defense"] += 1
-                    response_message = ("방어력이 1 증가했습니다!"
-                                        f"\n`/스탯`으로 {user_nickname}님의 현재 능력치를 확인해보세요~")
-                elif item["effect"] == "evasion_chance":
-                    player_data["evasion_chance"] += 1
-                    response_message = ("회피 확률이 1%p 증가했습니다!"
-                                        f"\n`/스탯`으로 {user_nickname}님의 현재 능력치를 확인해보세요~")
-                elif item["effect"] == "attack_chance":
-                    player_data["attack_chance"] += 1
-                    response_message = ("공격 확률이 1%p 증가했습니다!"
-                                        f"\n`/스탯`으로 {user_nickname}님의 현재 능력치를 확인해보세요~")
-                elif item["effect"] == "critical_chance":
-                    player_data["critical_chance"] += 1
-                    response_message = ("크리티컬 확률이 1%p 증가했습니다!"
-                                        f"\n`/스탯`으로 {user_nickname}님의 현재 능력치를 확인해보세요~")
-                elif item["effect"] == "critical_damage":
-                    player_data["critical_damage"] += 0.05
-                    response_message = ("크리티컬 데미지가 5%p 증가했습니다!"
-                                        f"\n`/스탯`으로 {user_nickname}님의 현재 능력치를 확인해보세요~")
-                elif item["effect"] == "evasion_items":
-                    player_data["evasion_items"] += 1
-                    response_message = (f"수학의 정석이 {player_data['evasion_items']}개가 되었습니다!"
-                                         f"\n`/스탯`으로 {user_nickname}님의 현재 능력치를 확인해보세요~")
-                    
-                self.save_game_data(data)
+                    effect_message = {"attack": "공격력이 1 증가했습니다!",
+                                      "defense": "방어력이 1 증가했습니다!",
+                                      "evasion_chance": "회피 확률이 1%p 증가했습니다!",
+                                      "attack_chance": "공격 성공 확률이 1%p 증가했습니다!",
+                                      "critical_chance": "크리티컬 확률이 1%p 증가했습니다!",
+                                      "critical_damage": "크리티컬 데미지가 5%p 증가했습니다!",
+                                      "evasion_items": f"수학의 정석이 {player_data['evasion_items']}개가 되었습니다!"
+                                      
+                    await interaction.response.send_message(f"{effect_message}\n"
+                                                            "`/스탯`으로 {user_nickname}님의 현재 능력치를 확인해보세요~")
 
-                await interaction.response.send_message(response_message)
-
-            else:
-                await interaction.response.send_message(f"코인이 부족합니다! 현재 코인: {player_data['coins']}")
+                else:
+                    await interaction.response.send_message(f"코인이 부족합니다! 현재 코인: {player_data['coins']}")
         else:
             await interaction.response.send_message("코인이 없습니다. `/rpg`로 게임을 시작해보세요!")
 
