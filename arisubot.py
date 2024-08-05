@@ -404,7 +404,7 @@ class rpg:
         except discord.errors.Forbidden:
             await interaction.response.send_message("[ERROR] 메시지를 보낼 수 없습니다. 봇의 권한을 확인해주세요.")
         except Exception as e:
-                await interaction.response.send_message("[ERROR] 오류 발생: {str:(e)}")
+                await interaction.response.send_message(f"[ERROR] 오류 발생: {str(e)}")
 
             
     async def leaderboard(self, interaction: discord.Interaction):
@@ -437,7 +437,7 @@ class rpg:
         except discord.errors.Forbidden:
             await interaction.response.send_message("[ERROR] 메시지를 보낼 수 없습니다. 봇의 권한을 확인해주세요.")
         except Exception as e:
-            await interaction.response.send_message("[ERROR] 오류 발생: {str:(e)}")
+            await interaction.response.send_message(f"[ERROR] 오류 발생: {str(e)}")
         
 # 봇 설정
 
