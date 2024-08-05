@@ -451,9 +451,9 @@ class rpg:
                 no_funds_message = ""
 
             if buttons:
-                await ctx.send(f"상점에서 아이템을 구매하세요!\n{no_funds_message}", view=view)
+                await interaction.response.send_message(f"상점에서 아이템을 구매하세요!\n{no_funds_message}", view=view)
             else:
-                await ctx.send(f"코인으로 구매할 수 있는 아이템이 없습니다.\n{no_funds_message}")
+                await interaction.response.send_message(f"코인으로 구매할 수 있는 아이템이 없습니다.\n{no_funds_message}")
                 
         else:
             await interaction.response.send_message("코인이 없습니다. `/rpg`로 게임을 시작해보세요!")
