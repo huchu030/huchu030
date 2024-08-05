@@ -419,8 +419,13 @@ class Shop(ui.View):
         self.user_id = user_id
         self.rpg_game = rpg_game
 
+        used_custom_ids = set()
         for item_id, item_info in self.ITEMS.items():
             custom_id = f"shop_{item_id}"
+            if custom_id in used_custom_ids:
+                print(f"[ERROR] Warning: Duplicate custom_id: {custom_id}")
+                custom_id += "_1"
+            used_custom_ids.add(custom_id)
             self.add_item(ui.Button(label=f"{item_info['label']}", style=discord.ButtonStyle.primary, custom_id=custom_id))
             
     @ui.button(label="버섯", style=discord.ButtonStyle.primary, custom_id="shop_attack")
