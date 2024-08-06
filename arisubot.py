@@ -185,11 +185,11 @@ class rpg:
             "hp": {"label": "마시멜로", "cost": 100, "effect": "hp", "value": 50},
             "attack": {"label": "버섯", "cost": 100, "effect": "attack", "value": 1},
             "defense": {"label": "고양이", "cost": 100, "effect": "defense", "value": 1},
-            "evasion_chance": {"label": "네잎클로버", "cost": 150, "effect": "evasion_chance", "value": 1},
-            "attack_chance": {"label": "헬스장 월간이용권", "cost": 150, "effect": "attack_chance", "value": 1},
+            "evasionchance": {"label": "네잎클로버", "cost": 150, "effect": "evasionchance", "value": 1},
+            "attackchance": {"label": "헬스장 월간이용권", "cost": 150, "effect": "attackchance", "value": 1},
             "criticalchance": {"label": "안경", "cost": 150, "effect": "criticalchance", "value": 1},
             "criticaldamage": {"label": "민트초코", "cost": 150, "effect": "criticaldamage", "value": 0.05},
-            "evasion_items": {"label": "수학의 정석", "cost": 200, "effect": "evasion_items", "value": 1}
+            "evasionitems": {"label": "수학의 정석", "cost": 200, "effect": "evasionitems", "value": 1}
         }
         self.initialize_game_data()
 
@@ -232,12 +232,12 @@ class rpg:
                 "exp": 0,
                 "attack": 0,
                 "defense": 0,
-                "evasion_chance": 0,
-                "attack_chance": 0,
+                "evasionchance": 0,
+                "attackchance": 0,
                 "criticalchance": 0,
                 "criticaldamage": 0.5,
                 "coins": 0,
-                "evasion_items": 0
+                "evasionitems": 0
             }
             data["current_enemies"][user_id] = {
                 "hp": 50
@@ -291,7 +291,7 @@ class rpg:
 
             damage = int(damage)
 
-            success_chance = random.randint(10, 90) + player["attack_chance"]
+            success_chance = random.randint(10, 90) + player["attackchance"]
             actual_chance = random.randint(10, 90)
             attack_success = actual_chance <= success_chance
         
@@ -326,15 +326,15 @@ class rpg:
                         player["level"] += 1
                         enemy["hp"] = 40 + 10 * player["level"]
     
-                        stat_to_increase = random.choice(["attack", "defense", "evasion_chance", "criticalchance"])
+                        stat_to_increase = random.choice(["attack", "defense", "evasionchance", "criticalchance"])
                         if stat_to_increase == "attack":
                             player["attack"] += 1
                             inc_stat = "공격력"
                         elif stat_to_increase == "defense":
                             player["defense"] += 1
                             inc_stat = "방어력"
-                        elif stat_to_increase == "evasion_chance":
-                            player["evasion_chance"] += 1
+                        elif stat_to_increase == "evasionchance":
+                            player["evasionchance"] += 1
                             inc_stat = "회피 확률"
                         elif stat_to_increase == "criticalchance":
                             player["criticalchance"] += 1
@@ -352,18 +352,18 @@ class rpg:
                                    "헉.. 쨈미몬이 다시 깨어났어요!\n"
                                    f"현재 쨈미몬의 체력 : {enemy['hp']}")      
             else:
-                evasion = random.randint(1, 100) <= player["evasion_chance"]
+                evasion = random.randint(1, 100) <= player["evasionchance"]
                 actual_damage = max(10, damage - player["defense"])
             
-                if player["evasion_items"] > 0:
-                    player["evasion_items"] -= 1
+                if player["evasionitems"] > 0:
+                    player["evasionitems"] -= 1
                     result = (f"공격 실패! 쨈미몬이 반격해 {actual_damage}의 데미지를 입힐..뻔 했지만\n"
                               f"{user_nickname}님이 어제 산 '수학의 정석'이 공격을 막아주었습니다! ( 성공 확률 : {success_chance}% )\n"
                               f"레벨 : {player['level']}, {user_nickname}님의 체력 : {player['hp']}, 쨈미몬의 체력 : {enemy['hp']}\n"
-                              f"남은 수학의 정석 : {player['evasion_items']}권")
+                              f"남은 수학의 정석 : {player['evasionitems']}권")
                 elif evasion:
                     result = (f"공격 실패! 쨈미몬이 반격해 {actual_damage}의 데미지를 입힐..뻔 했지만 회피했습니다! 럭키~\n"
-                              f"( 성공 확률 : {success_chance}%, 회피 확률 : {player['evasion']}% )\n"
+                              f"( 성공 확률 : {success_chance}%, 회피 확률 : {player['evasionchance']}% )\n"
                               f"레벨 : {player['level']}, {user_nickname}님의 체력 : {player['hp']}, 쨈미몬의 체력 : {enemy['hp']}")
                 else:
                     player["hp"] -= actual_damage
@@ -396,9 +396,9 @@ class rpg:
                 await interaction.response.send_message(f"[{user_nickname}님의 스탯] \n"
                                                         f"\n레벨 : {player_data['level']}, 체력 : {player_data['hp']}, 경험치 : {player_data['exp']}\n"
                                                         f"공격력 : {player_data['attack']}, 방어력 : {player_data['defense']}\n"
-                                                        f"회피 확률 : {player_data['evasion_chance']}%, 공격 성공 확률 : + {player_data['attack_chance']}%p\n"
+                                                        f"회피 확률 : {player_data['evasionchance']}%, 공격 성공 확률 : + {player_data['attackchance']}%p\n"
                                                         f"크리티컬 확률 : {player_data['criticalchance']}%, 크리티컬 데미지 : {player_data['criticaldamage']*100}%\n"
-                                                        f"수학의 정석 : {player_data['evasion_items']}권\n"
+                                                        f"수학의 정석 : {player_data['evasionitems']}권\n"
                                                         f"코인 : {player_data['coins']}\n"
                                                         f"\n현재 쨈미몬의 체력 : {enemy_data['hp']}")
             except discord.errors.Forbidden:
@@ -494,10 +494,10 @@ class rpg:
                             "attack": "공격력이 1 증가했습니다!",
                             "defense": "방어력이 1 증가했습니다!",
                             "evasion_chance": "회피 확률이 1%p 증가했습니다!",
-                            "attack_chance": "공격 성공 확률이 1%p 증가했습니다!",
+                            "attackchance": "공격 성공 확률이 1%p 증가했습니다!",
                             "criticalchance": "크리티컬 확률이 1%p 증가했습니다!",
                             "criticaldamage": "크리티컬 데미지가 5%p 증가했습니다!",
-                            "evasion_items": f"수학의 정석이 {player_data['evasion_items']}권이 되었습니다!"
+                            "evasionitems": f"수학의 정석이 {player_data['evasionitems']}권이 되었습니다!"
                         }
 
                         response_message = effect_message.get(item["effect"], "아이템 효과를 적용했습니다.")
