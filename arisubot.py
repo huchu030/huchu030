@@ -341,7 +341,7 @@ class rpg:
                             inc_stat = "크리티컬 확률"
                         
                         result += (f"\n \n레벨 업! 현재 레벨 : {player['level']}\n"
-                                   f"{inc_stat}이 강화되었습니다.}\n"
+                                   f"{inc_stat}이 강화되었습니다.\n"
                                    "...\n"
                                    "헉.. 쨈미몬이 더 강해져서 돌아왔어요! 끄앙\n"
                                    f"현재 쨈미몬의 체력 : {enemy['hp']}")
