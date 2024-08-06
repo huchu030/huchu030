@@ -186,8 +186,8 @@ class rpg:
             "defense": {"label": "고양이", "cost": 100, "effect": "defense", "value": 1},
             "evasion_chance": {"label": "네잎클로버", "cost": 150, "effect": "evasion_chance", "value": 1},
             "attack_chance": {"label": "헬스장 월간이용권", "cost": 150, "effect": "attack_chance", "value": 1},
-            "critical_chance": {"label": "안경", "cost": 150, "effect": "critical_chance", "value": 1},
-            "critical_damage": {"label": "민트초코", "cost": 150, "effect": "critical_damage", "value": 0.05},
+            "criticalchance": {"label": "안경", "cost": 150, "effect": "criticalchance", "value": 1},
+            "criticaldamage": {"label": "민트초코", "cost": 150, "effect": "criticaldamage", "value": 0.05},
             "evasion_items": {"label": "수학의 정석", "cost": 200, "effect": "evasion_items", "value": 1}
         }
         self.initialize_game_data()
@@ -233,8 +233,8 @@ class rpg:
                 "defense": 0,
                 "evasion_chance": 0,
                 "attack_chance": 0,
-                "critical_chance": 0,
-                "critical_damage": 0.5,
+                "criticalchance": 0,
+                "criticaldamage": 0.5,
                 "coins": 0,
                 "evasion_items": 0
             }
@@ -294,7 +294,7 @@ class rpg:
             actual_chance = random.randint(0, 90)
             attack_success = actual_chance <= success_chance
         
-            critical_hit = random.randint(1, 100) <= player["critical_chance"]
+            critical_hit = random.randint(1, 100) <= player["criticalchance"]
             total_damage = damage + player["attack"]
 
             result = ""
@@ -302,7 +302,7 @@ class rpg:
             if attack_success:
 
                 if critical_hit:
-                    critical_bonus = damage * player["critical_damage"]
+                    critical_bonus = damage * player["criticaldamage"]
                     total_damage += round(critical_bonus)
                     result = "\n크리티컬!!!!!"
                 
@@ -324,15 +324,15 @@ class rpg:
                         player["level"] += 1
                         enemy["hp"] = 40 + 10 * player["level"]
     
-                        stat_to_increase = random.choice(["attack", "defense", "evasion_chance", "critical_chance"])
+                        stat_to_increase = random.choice(["attack", "defense", "evasion_chance", "criticalchance"])
                         if stat_to_increase == "attack":
                             player["attack"] += 1
                         elif stat_to_increase == "defense":
                             player["defense"] += 1
                         elif stat_to_increase == "evasion_chance":
                             player["evasion_chance"] += 1
-                        elif stat_to_increase == "critical_chance":
-                            player["critical_chance"] += 1
+                        elif stat_to_increase == "criticalchance":
+                            player["criticalchance"] += 1
                         
                         result += (f"\n \n레벨 업! 현재 레벨 : {player['level']}"
                                    "...\n"
@@ -390,7 +390,7 @@ class rpg:
                                                         f"\n레벨 : {player_data['level']}, 체력 : {player_data['hp']}, 경험치 : {player_data['exp']}\n"
                                                         f"공격력 : {player_data['attack']}, 방어력 : {player_data['defense']}\n"
                                                         f"회피 확률 : {player_data['evasion_chance']}%, 공격 성공 확률 : + {player_data['attack_chance']}%p\n"
-                                                        f"크리티컬 확률 : {player_data['critical_chance']}%, 크리티컬 데미지 : {player_data['critical_damage']*100}%\n"
+                                                        f"크리티컬 확률 : {player_data['criticalchance']}%, 크리티컬 데미지 : {player_data['criticaldamage']*100}%\n"
                                                         f"수학의 정석 : {player_data['evasion_items']}개\n"
                                                         f"코인 : {player_data['coins']}\n"
                                                         f"\n현재 쨈미몬의 체력 : {enemy_data['hp']}")
@@ -450,44 +450,80 @@ class rpg:
 
     async def handle_shop_interaction(self, interaction: discord.Interaction):
         try:
+            # Ensure the interaction type is a button interaction
+            if interaction.type != discord.InteractionType.component:
+                await interaction.response.send_message("잘못된 상호작용입니다.")
+                return
+
+            # Extract custom_id from interaction.data
+            custom_id = interaction.data.get('custom_id', '')
+            if not custom_id:
+                await interaction.response.send_message("잘못된 상호작용입니다.")
+                return
+
+            item_key = custom_id.split('_')[1]
+            print(f"[DEBUG] Item key extracted: {item_key}")
+
+            # Load game data and player data
             data = self.load_game_data()
             user_id = str(interaction.user.id)
             guild = interaction.guild
             user_nickname = get_user_nickname(guild, interaction.user.id)
             player_data = data["players"].get(user_id, None)
             
+            print(f"[DEBUG] Interaction received from user: {user_id}")
+            print(f"[DEBUG] Player data: {player_data}")
+
             if player_data:
-                item_key = interaction.custom_id.split('_')[1]
                 item = self.items.get(item_key, None)
-                
+                print(f"[DEBUG] Item details: {item}")
+
                 if item:
                     if player_data["coins"] >= item["cost"]:
                         player_data["coins"] -= item["cost"]
                         player_data[item["effect"]] += item["value"]
                         self.save_game_data(data)
 
-                        effect_message = {"attack": "공격력이 1 증가했습니다!",
-                                          "defense": "방어력이 1 증가했습니다!",
-                                          "evasion_chance": "회피 확률이 1%p 증가했습니다!",
-                                          "attack_chance": "공격 성공 확률이 1%p 증가했습니다!",
-                                          "critical_chance": "크리티컬 확률이 1%p 증가했습니다!",
-                                          "critical_damage": "크리티컬 데미지가 5%p 증가했습니다!",
-                                          "evasion_items": f"수학의 정석이 {player_data['evasion_items']}개가 되었습니다!"
-                                          }
-                                          
-                        response_message = effect_message.get(item["effect"], "아이템 효과를 적용했습니다.")
-                        await interaction.response.send_message(f"{response_message}\n"
-                                                                "`/스탯`으로 {user_nickname}님의 현재 능력치를 확인해보세요~")
-                    else:
-                        await interaction.response.send_message(f"코인이 부족합니다! 현재 코인: {player_data['coins']}")
-                else:
-                    await interaction.response.send_message("[ERROR] 아이템이 품절되었습니다.")
+                        effect_message = {
+                            "attack": "공격력이 1 증가했습니다!",
+                            "defense": "방어력이 1 증가했습니다!",
+                            "evasion_chance": "회피 확률이 1%p 증가했습니다!",
+                            "attack_chance": "공격 성공 확률이 1%p 증가했습니다!",
+                            "criticalchance": "크리티컬 확률이 1%p 증가했습니다!",
+                            "criticaldamage": "크리티컬 데미지가 5%p 증가했습니다!",
+                            "evasion_items": f"수학의 정석이 {player_data['evasion_items']}개가 되었습니다!"
+                        }
 
+                        response_message = effect_message.get(item["effect"], "아이템 효과를 적용했습니다.")
+                        
+                        # Check if the response has already been sent
+                        if interaction.response.is_done():
+                            await interaction.followup.send(f"{response_message}\n`/스탯`으로 {user_nickname}님의 현재 능력치를 확인해보세요~")
+                        else:
+                            await interaction.response.send_message(f"{response_message}\n`/스탯`으로 {user_nickname}님의 현재 능력치를 확인해보세요~")
+                    else:
+                        if interaction.response.is_done():
+                            await interaction.followup.send(f"코인이 부족합니다! 현재 코인: {player_data['coins']}")
+                        else:
+                            await interaction.response.send_message(f"코인이 부족합니다! 현재 코인: {player_data['coins']}")
+                else:
+                    if interaction.response.is_done():
+                        await interaction.followup.send("아이템을 찾을 수 없습니다!")
+                    else:
+                        await interaction.response.send_message("아이템을 찾을 수 없습니다!")
             else:
-                await interaction.response.send_message("코인이 없습니다. `/rpg`로 게임을 시작해보세요!")
+                if interaction.response.is_done():
+                    await interaction.followup.send("코인이 없습니다. `/rpg`로 게임을 시작해보세요!")
+                else:
+                    await interaction.response.send_message("코인이 없습니다. `/rpg`로 게임을 시작해보세요!")
         except Exception as e:
             print(f"[ERROR] Error handling shop interaction: {e}")
-            await interaction.response.send_message("상점 처리 중 오류가 발생했습니다.")
+            # Provide an appropriate response if an error occurs
+            if interaction.response.is_done():
+                await interaction.followup.send("상점 처리 중 오류가 발생했습니다.")
+            else:
+                await interaction.response.send_message("상점 처리 중 오류가 발생했습니다.")
+
 
 # 봇 설정
 
