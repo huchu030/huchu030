@@ -450,16 +450,7 @@ class rpg:
 
 async def handle_shop_interaction(self, interaction: discord.Interaction):
     try:
-        # Ensure the interaction type is a button interaction
-        if interaction.type != discord.InteractionType.component:
-            await interaction.response.send_message("잘못된 상호작용입니다.")
-            return
 
-        # Extract custom_id from interaction.data
-        custom_id = interaction.data.get('custom_id', '')
-        if not custom_id:
-            await interaction.response.send_message("잘못된 상호작용입니다.")
-            return
 
         item_key = custom_id.split('_')[1]
         print(f"[DEBUG] Item key extracted: {item_key}")
