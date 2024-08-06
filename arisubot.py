@@ -443,6 +443,7 @@ class rpg:
 
             if buttons:
                 await interaction.response.send_message("상점입니다", view=view, ephemeral=True)
+                self.shop_message_id = message.id
             else:
                 await interaction.response.send_message("[ERROR] 아이템이 품절되었습니다.")
         else:
@@ -496,6 +497,11 @@ class rpg:
                         }
 
                         response_message = effect_message.get(item["effect"], "아이템 효과를 적용했습니다.")
+
+                        channel = interaction.channel
+                        if hasattr(self, 'shop_message_id'):
+                            shop_message = await channel.fetch_message(self.shop_message_id)
+                            await shop_message.delete()
                         
                         # Check if the response has already been sent
                         if interaction.response.is_done():
