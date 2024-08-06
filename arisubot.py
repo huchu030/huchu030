@@ -474,9 +474,10 @@ class rpg:
                                       "evasion_items": f"수학의 정석이 {player_data['evasion_items']}개가 되었습니다!"
                                       }
                                       
-                    await interaction.response.send_message(f"{effect_message}\n"
+                    response_message = effect_message.get(item["effect"])
+                    await interaction.response.send_message(f"{response_message}\n"
                                                             "`/스탯`으로 {user_nickname}님의 현재 능력치를 확인해보세요~")
-
+                 
                 else:
                     await interaction.response.send_message(f"코인이 부족합니다! 현재 코인: {player_data['coins']}")
         else:
