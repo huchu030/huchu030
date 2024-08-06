@@ -442,7 +442,7 @@ class rpg:
                 view.add_item(button)
 
             if buttons:
-                await interaction.response.send_message("상점입니다", view=view)
+                await interaction.response.send_message("상점입니다", view=view, ephemeral=True)
             else:
                 await interaction.response.send_message("[ERROR] 아이템이 품절되었습니다.")
         else:
