@@ -485,7 +485,7 @@ class rpg:
 
             else:
                 await interaction.response.send_message("코인이 없습니다. `/rpg`로 게임을 시작해보세요!")
-         except Exception as e:
+        except Exception as e:
             print(f"[ERROR] Error handling shop interaction: {e}")
             await interaction.response.send_message("상점 처리 중 오류가 발생했습니다.")
 
