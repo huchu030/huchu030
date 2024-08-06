@@ -182,7 +182,7 @@ class rpg:
 
     def __init__(self):
         self.items = {
-            "hp": {"label": "마시멜로", "cost": 10, "effect": "hp", "value": 50},
+            "hp": {"label": "마시멜로", "cost": 100, "effect": "hp", "value": 50},
             "attack": {"label": "버섯", "cost": 100, "effect": "attack", "value": 1},
             "defense": {"label": "고양이", "cost": 100, "effect": "defense", "value": 1},
             "evasion_chance": {"label": "네잎클로버", "cost": 150, "effect": "evasion_chance", "value": 1},
