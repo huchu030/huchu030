@@ -501,9 +501,13 @@ class rpg:
                         
                         # Check if the response has already been sent
                         if interaction.response.is_done():
-                            await interaction.followup.send(f"{response_message}\n`/스탯`으로 {user_nickname}님의 현재 능력치를 확인해보세요~")
+                            await interaction.followup.send(f"{response_message}\n"
+                                                            f"현재 코인: {player_data['coins']}"
+                                                            f"`/스탯`으로 {user_nickname}님의 현재 능력치를 확인해보세요~")
                         else:
-                            await interaction.response.send_message(f"{response_message}\n`/스탯`으로 {user_nickname}님의 현재 능력치를 확인해보세요~")
+                            await interaction.response.send_message(f"{response_message}\n"
+                                                                    f"현재 코인: {player_data['coins']}"
+                                                                    f"`/스탯`으로 {user_nickname}님의 현재 능력치를 확인해보세요~")
                     else:
                         if interaction.response.is_done():
                             await interaction.followup.send(f"코인이 부족합니다! 현재 코인: {player_data['coins']}")
