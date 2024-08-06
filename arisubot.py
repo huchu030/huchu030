@@ -471,15 +471,13 @@ class rpg:
             item_key = custom_id.split('_')[1]
             print(f"[DEBUG] Item key extracted: {item_key}")
 
-            # Load game data and player data
+
             data = self.load_game_data()
             user_id = str(interaction.user.id)
             guild = interaction.guild
             user_nickname = get_user_nickname(guild, interaction.user.id)
             player_data = data["players"].get(user_id, None)
 
-            print(f"[DEBUG] Interaction received from user: {user_id}")
-            print(f"[DEBUG] Player data: {player_data}")
 
             if player_data:
                 item = self.items.get(item_key, None)
@@ -497,8 +495,8 @@ class rpg:
                             "defense": "방어력이 1 증가했습니다!",
                             "evasion_chance": "회피 확률이 1%p 증가했습니다!",
                             "attack_chance": "공격 성공 확률이 1%p 증가했습니다!",
-                            "critical_chance": "크리티컬 확률이 1%p 증가했습니다!",
-                            "critical_damage": "크리티컬 데미지가 5%p 증가했습니다!",
+                            "criticalchance": "크리티컬 확률이 1%p 증가했습니다!",
+                            "criticaldamage": "크리티컬 데미지가 5%p 증가했습니다!",
                             "evasion_items": f"수학의 정석이 {player_data['evasion_items']}권이 되었습니다!"
                         }
 
