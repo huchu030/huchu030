@@ -448,8 +448,7 @@ class rpg:
             )
         else:
             await interaction.response.send_message(
-                "코인이 없습니다. `/rpg`로 게임을 시작해보세요!", 
-                ephemeral=True  # Make the message visible only to the user
+                "코인이 없습니다. `/rpg`로 게임을 시작해보세요!"
             )
 
     async def handle_shop_interaction(self, interaction: discord.Interaction):
@@ -501,22 +500,21 @@ class rpg:
             else:
                 response_message = "코인이 없습니다. `/rpg`로 게임을 시작해보세요!"
 
-            # Update the shop message with the final result
+            # Check if shop_message exists
             if hasattr(self, 'shop_message'):
+                # Edit the original shop message to remove buttons and update content
                 await self.shop_message.edit(
                     content=f"{response_message}\n`/스탯`으로 {user_nickname}님의 현재 능력치를 확인해보세요~",
-                    view=None  # Remove the view to hide the buttons
+                    view=None  # Remove buttons from the view
                 )
             else:
                 await interaction.response.send_message(
-                    f"{response_message}\n`/스탯`으로 {user_nickname}님의 현재 능력치를 확인해보세요~",
-                    ephemeral=True  # Make the message visible only to the user
+                    f"{response_message}\n`/스탯`으로 {user_nickname}님의 현재 능력치를 확인해보세요~"
                 )
         except Exception as e:
             print(f"[ERROR] Error handling shop interaction: {e}")
             await interaction.response.send_message(
-                "상점 처리 중 오류가 발생했습니다.",
-                ephemeral=True  # Make the message visible only to the user
+                "상점 처리 중 오류가 발생했습니다."
             )
 
 # 봇 설정
