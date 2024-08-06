@@ -182,7 +182,7 @@ class rpg:
 
     def __init__(self):
         self.items = {
-            "attack": {"label": "버섯", "cost": 10, "effect": "attack", "value": 1},
+            "attack": {"label": "버섯", "cost": 100, "effect": "attack", "value": 1},
             "defense": {"label": "고양이", "cost": 100, "effect": "defense", "value": 1},
             "evasion_chance": {"label": "네잎클로버", "cost": 150, "effect": "evasion_chance", "value": 1},
             "attack_chance": {"label": "헬스장 월간이용권", "cost": 150, "effect": "attack_chance", "value": 1},
@@ -353,7 +353,7 @@ class rpg:
                     result = (f"공격 실패! 쨈미몬이 반격해 {actual_damage}의 데미지를 입힐..뻔 했지만\n"
                               f"{user_nickname}님이 어제 산 '수학의 정석'이 공격을 막아주었습니다! ( 성공 확률 : {success_chance}% )\n"
                               f"레벨 : {player['level']}, {user_nickname}님의 체력 : {player['hp']}, 쨈미몬의 체력 : {enemy['hp']}\n"
-                              f"남은 수학의 정석 : {player['evasion_items']}개")
+                              f"남은 수학의 정석 : {player['evasion_items']}권")
                 elif evasion:
                     result = (f"공격 실패! 쨈미몬이 반격해 {actual_damage}의 데미지를 입힐..뻔 했지만 회피했습니다! 럭키~\n"
                               f"( 성공 확률 : {success_chance}%, 회피 확률 : {player['evasion']}% )\n"
@@ -391,7 +391,7 @@ class rpg:
                                                         f"공격력 : {player_data['attack']}, 방어력 : {player_data['defense']}\n"
                                                         f"회피 확률 : {player_data['evasion_chance']}%, 공격 성공 확률 : + {player_data['attack_chance']}%p\n"
                                                         f"크리티컬 확률 : {player_data['criticalchance']}%, 크리티컬 데미지 : {player_data['criticaldamage']*100}%\n"
-                                                        f"수학의 정석 : {player_data['evasion_items']}개\n"
+                                                        f"수학의 정석 : {player_data['evasion_items']}권\n"
                                                         f"코인 : {player_data['coins']}\n"
                                                         f"\n현재 쨈미몬의 체력 : {enemy_data['hp']}")
             except discord.errors.Forbidden:
@@ -441,9 +441,15 @@ class rpg:
             for button in buttons:
                 view.add_item(button)
 
-            # Save the message to edit later
             self.shop_message = await interaction.response.send_message(
-                "상점에서 아이템을 구매하세요!", 
+                "상점에 오신 것을 환영합니다! 다음 아이템을 구매할 수 있습니다\n"
+                "\n1. 버섯 : 쨈미몬이 싫어합니다. 공격력이 증가합니다. ( 100 coins )\n"
+                "2. 고양이 : 쨈미몬이 좋아합니다. 방어력이 증가합니다. ( 100 coins )\n"
+                "3. 네잎클로버 : 행운을 불러옵니다. 회피 확률이 증가합니다. ( 150 coins )\n"
+                "4. 헬스장 월간이용권 : 회원님 한개만 더! 공격 성공 확률이 증가합니다. ( 150 coins )\n"
+                "5. 안경 : 시력이 상승합니다. 크리티컬 확률이 증가합니다. ( 150 coins )\n"
+                "6. 민트초코 : 쨈미몬이 극혐합니다. 크리티컬 데미지가 증가합니다. ( 150 coins )\n"
+                "7. 수학의 정석 : 책이 공격을 대신 받아줍니다. 찢어지면 다시 쓸 수 없으며, 여러 개 구매할 수 있습니다. ( 200 coins )\n",                 
                 view=view
             )
         else:
@@ -453,16 +459,7 @@ class rpg:
 
     async def handle_shop_interaction(self, interaction: discord.Interaction):
         try:
-            # Ensure the interaction type is a button interaction
-            if interaction.type != discord.InteractionType.component:
-                await interaction.response.send_message("잘못된 상호작용입니다.")
-                return
-
-            # Extract custom_id from interaction.data
             custom_id = interaction.data.get('custom_id', '')
-            if not custom_id:
-                await interaction.response.send_message("잘못된 상호작용입니다.")
-                return
 
             item_key = custom_id.split('_')[1]
             print(f"[DEBUG] Item key extracted: {item_key}")
@@ -494,19 +491,18 @@ class rpg:
                             "attack_chance": "공격 성공 확률이 1%p 증가했습니다!",
                             "critical_chance": "크리티컬 확률이 1%p 증가했습니다!",
                             "critical_damage": "크리티컬 데미지가 5%p 증가했습니다!",
-                            "evasion_items": f"수학의 정석이 {player_data['evasion_items']}개가 되었습니다!"
+                            "evasion_items": f"수학의 정석이 {player_data['evasion_items']}권이 되었습니다!"
                         }
 
                         response_message = effect_message.get(item["effect"], "아이템 효과를 적용했습니다.")
-                        
-                        # Check if the response has already been sent
+
                         if interaction.response.is_done():
                             await interaction.followup.send(f"{response_message}\n"
-                                                            f"현재 코인: {player_data['coins']}"
+                                                            f"현재 코인: {player_data['coins']}\n"
                                                             f"`/스탯`으로 {user_nickname}님의 현재 능력치를 확인해보세요~")
                         else:
                             await interaction.response.send_message(f"{response_message}\n"
-                                                                    f"현재 코인: {player_data['coins']}"
+                                                                    f"현재 코인: {player_data['coins']}\n"
                                                                     f"`/스탯`으로 {user_nickname}님의 현재 능력치를 확인해보세요~")
                     else:
                         if interaction.response.is_done():
