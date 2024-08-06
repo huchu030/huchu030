@@ -499,46 +499,31 @@ class rpg:
                         }
 
                         response_message = effect_message.get(item["effect"], "아이템 효과를 적용했습니다.")
-
-                        channel = interaction.channel
-                        if hasattr(self, 'shop_message'):
-                            await self.shop_message.edit(
-                                content=f"{response_message}\n`/스탯`으로 {user_nickname}님의 현재 능력치를 확인해보세요~",
-                                view=None  # Remove the view to hide the buttons
-                            )
-                        else:
-                            await interaction.response.send_message(
-                                f"{response_message}\n`/스탯`으로 {user_nickname}님의 현재 능력치를 확인해보세요~",
-                                ephemeral=True  # Make the message visible only to the user
-                            )
-                        
-                        # Check if the response has already been sent
-                        if interaction.response.is_done():
-                            await interaction.followup.send(f"{response_message}\n`/스탯`으로 {user_nickname}님의 현재 능력치를 확인해보세요~")
-                        else:
-                            await interaction.response.send_message(f"{response_message}\n`/스탯`으로 {user_nickname}님의 현재 능력치를 확인해보세요~")
                     else:
-                        if interaction.response.is_done():
-                            await interaction.followup.send(f"코인이 부족합니다! 현재 코인: {player_data['coins']}")
-                        else:
-                            await interaction.response.send_message(f"코인이 부족합니다! 현재 코인: {player_data['coins']}")
+                        response_message = f"코인이 부족합니다! 현재 코인: {player_data['coins']}"
                 else:
-                    if interaction.response.is_done():
-                        await interaction.followup.send("아이템을 찾을 수 없습니다!")
-                    else:
-                        await interaction.response.send_message("아이템을 찾을 수 없습니다!")
+                    response_message = "아이템을 찾을 수 없습니다!"
             else:
-                if interaction.response.is_done():
-                    await interaction.followup.send("코인이 없습니다. `/rpg`로 게임을 시작해보세요!")
-                else:
-                    await interaction.response.send_message("코인이 없습니다. `/rpg`로 게임을 시작해보세요!")
+                response_message = "코인이 없습니다. `/rpg`로 게임을 시작해보세요!"
+
+            if hasattr(self, 'shop_message'):
+                await self.shop_message.edit(
+                    content=f"{response_message}\n`/스탯`으로 {user_nickname}님의 현재 능력치를 확인해보세요~",
+                    view=None  # Remove the view to hide the buttons
+                )
+            else:
+                await interaction.response.send_message(
+                    f"{response_message}\n`/스탯`으로 {user_nickname}님의 현재 능력치를 확인해보세요~",
+                    ephemeral=True  # Make the message visible only to the user
+                )
         except Exception as e:
             print(f"[ERROR] Error handling shop interaction: {e}")
-            # Provide an appropriate response if an error occurs
-            if interaction.response.is_done():
-                await interaction.followup.send("상점 처리 중 오류가 발생했습니다.")
-            else:
-                await interaction.response.send_message("상점 처리 중 오류가 발생했습니다.")
+            await interaction.response.send_message(
+                "상점 처리 중 오류가 발생했습니다.",
+                ephemeral=True  # Make the message visible only to the user
+            )
+                        
+
 
 
 # 봇 설정
