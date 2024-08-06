@@ -291,8 +291,8 @@ class rpg:
 
             damage = int(damage)
 
-            success_chance = random.randint(0, 90) + player["attack_chance"]
-            actual_chance = random.randint(0, 90)
+            success_chance = random.randint(10, 90) + player["attack_chance"]
+            actual_chance = random.randint(10, 90)
             attack_success = actual_chance <= success_chance
         
             critical_hit = random.randint(1, 100) <= player["criticalchance"]
