@@ -442,15 +442,25 @@ class rpg:
                 view.add_item(button)
 
             if buttons:
-                await interaction.response.send_message("", view=view)
+                await interaction.response.send_message("상점입니다", view=view)
             else:
                 await interaction.response.send_message("[ERROR] 아이템이 품절되었습니다.")
         else:
             await interaction.response.send_message("코인이 없습니다. `/rpg`로 게임을 시작해보세요!")
 
+
     async def handle_shop_interaction(self, interaction: discord.Interaction):
         try:
+            # Ensure the interaction type is a button interaction
+            if interaction.type != discord.InteractionType.component:
+                await interaction.response.send_message("잘못된 상호작용입니다.")
+                return
 
+            # Extract custom_id from interaction.data
+            custom_id = interaction.data.get('custom_id', '')
+            if not custom_id:
+                await interaction.response.send_message("잘못된 상호작용입니다.")
+                return
 
             item_key = custom_id.split('_')[1]
             print(f"[DEBUG] Item key extracted: {item_key}")
@@ -461,7 +471,7 @@ class rpg:
             guild = interaction.guild
             user_nickname = get_user_nickname(guild, interaction.user.id)
             player_data = data["players"].get(user_id, None)
-            
+
             print(f"[DEBUG] Interaction received from user: {user_id}")
             print(f"[DEBUG] Player data: {player_data}")
 
@@ -514,7 +524,6 @@ class rpg:
                 await interaction.followup.send("상점 처리 중 오류가 발생했습니다.")
             else:
                 await interaction.response.send_message("상점 처리 중 오류가 발생했습니다.")
-
 
 
 # 봇 설정
