@@ -417,7 +417,6 @@ class rpg:
                 leaderboard_message += f"{rank}. {user_nickname} - 레벨: {player['level']}, 경험치: {player['exp']}, 코인: {player['coins']}\n"
 
             await interaction.response.send_message(leaderboard_message)
-            await interaction.followup.send_message(f"디버그 메시지:\n{debug_message_str}")
         except discord.errors.Forbidden:
             await interaction.response.send_message("[ERROR] 메시지를 보낼 수 없습니다. 봇의 권한을 확인해주세요.")
         except Exception as e:
@@ -511,9 +510,9 @@ class rpg:
                             await interaction.response.send_message(f"코인이 부족합니다! 현재 코인: {player_data['coins']}")
                 else:
                     if interaction.response.is_done():
-                        await interaction.followup.send("아이템을 찾을 수 없습니다!")
+                        await interaction.followup.send("[ERROR] 아이템이 품절되었습니다.")
                     else:
-                        await interaction.response.send_message("아이템을 찾을 수 없습니다!")
+                        await interaction.response.send_message("[ERROR] 아이템이 품절되었습니다.")
             else:
                 if interaction.response.is_done():
                     await interaction.followup.send("코인이 없습니다. `/rpg`로 게임을 시작해보세요!")
@@ -521,11 +520,11 @@ class rpg:
                     await interaction.response.send_message("코인이 없습니다. `/rpg`로 게임을 시작해보세요!")
         except Exception as e:
             print(f"[ERROR] Error handling shop interaction: {e}")
-            # Provide an appropriate response if an error occurs
+
             if interaction.response.is_done():
-                await interaction.followup.send("상점 처리 중 오류가 발생했습니다.")
+                await interaction.followup.send("상점이 폐업했습니다. 쟌넨")
             else:
-                await interaction.response.send_message("상점 처리 중 오류가 발생했습니다.")
+                await interaction.response.send_message("상점이 폐업했습니다. 쟌넨")
 
 
     
