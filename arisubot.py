@@ -442,7 +442,7 @@ class rpg:
                 view.add_item(button)
 
             self.shop_message = await interaction.response.send_message(
-                "상점에 오신 것을 환영합니다! 다음 아이템을 구매할 수 있습니다\n"
+                "뽜밤뽜밤-! 아리스 상점에 오신 것을 환영합니다!"
                 "\n1. 버섯 : 쨈미몬이 싫어합니다. 공격력이 1 증가합니다. ( 100 coins )\n"
                 "2. 고양이 : 쨈미몬이 좋아합니다. 방어력이 1 증가합니다. ( 100 coins )\n"
                 "3. 네잎클로버 : 행운을 불러옵니다. 회피 확률이 1%p 증가합니다. ( 150 coins )\n"
