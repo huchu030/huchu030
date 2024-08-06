@@ -702,14 +702,6 @@ async def 순위(interaction: discord.Interaction):
 @bot.tree.command(name="상점", description="rpg - 상점으로 들어갑니다")
 async def shop(interaction: discord.Interaction):
     await bot.rpg.shop(interaction)
-    await interaction.response.send_message("상점에 오신 것을 환영합니다! 다음 아이템을 구매할 수 있습니다\n"
-                                                "\n1. 버섯 : 쨈미몬이 싫어합니다. 공격력이 증가합니다. ( 100 coins )\n"
-                                                "2. 고양이 : 쨈미몬이 좋아합니다. 방어력이 증가합니다. ( 100 coins )\n"
-                                                "3. 네잎클로버 : 행운을 불러옵니다. 회피 확률이 증가합니다. ( 100 coins )\n"
-                                                "4. 안경 : 시력이 상승합니다. 크리티컬 확률이 증가합니다. ( 150 coins )\n"
-                                                "5. 민트초코 : 쨈미몬이 극혐합니다. 크리티컬 데미지가 증가합니다. ( 150 coins )\n"
-                                                "6. 수학의 정석 : 책이 공격을 대신 받아줍니다. 찢어지면 다시 쓸 수 없으며, 여러 개 구매할 수 있습니다. ( 200 coins )\n"
-                                                , view=view)
 
 @bot.event
 async def on_interaction(interaction: discord.Interaction):
