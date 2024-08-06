@@ -8,8 +8,8 @@
             "defense": 0,
             "evasion_chance": 0,
             "attack_chance": 0,
-            "critical_chance": 0,
-            "critical_damage": 0.5,
+            "criticalchance": 0,
+            "criticaldamage": 0.5,
             "coins": 0,
             "evasion_items": 0
         }
