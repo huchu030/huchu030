@@ -450,7 +450,6 @@ class rpg:
 
     async def handle_shop_interaction(self, interaction: discord.Interaction):
         try:
-
             custom_id = interaction.data.get('custom_id', '')
 
             item_key = custom_id.split('_')[1]
@@ -485,7 +484,7 @@ class rpg:
                             "evasion_items": f"수학의 정석이 {player_data['evasion_items']}개가 되었습니다!"
                         }
 
-                        response_message = effect_message.get(item["effect"])
+                        response_message = effect_message.get(item["effect"], "아이템 효과를 적용했습니다.")
 
                         await interaction.response.send_message(f"{response_message}\n`/스탯`으로 {user_nickname}님의 현재 능력치를 확인해보세요~")
                         
