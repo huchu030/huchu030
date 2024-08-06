@@ -314,7 +314,7 @@ class rpg:
 
                 if enemy["hp"] <= 0:
                     exp_gain = random.randint(30, 40)
-                    coin_gain = random.randint(10, 20)
+                    coin_gain = random.randint(30, 50)
                     player["hp"] = 100
                     player["exp"] += exp_gain
                     player["coins"] += coin_gain
