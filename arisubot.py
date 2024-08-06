@@ -423,7 +423,7 @@ class rpg:
         except Exception as e:
             await interaction.response.send_message(f"[ERROR] 오류 발생: {str(e)}")
 
-    
+
     async def shop(self, interaction: discord.Interaction):
         data = self.load_game_data()
         user_id = str(interaction.user.id)
@@ -435,31 +435,29 @@ class rpg:
             for item_key, item in self.items.items():
                 buttons.append(
                     ui.Button(label=item["label"], style=ButtonStyle.primary, custom_id=f'buy_{item_key}')
-                    )
+                )
 
             view = ui.View()
             for button in buttons:
                 view.add_item(button)
 
-            if buttons:
-                self.shop_message = await interaction.response.send_message(
-                    "상점에서 아이템을 구매하세요!", 
-                    view=view
-                )
-            else:
-                await interaction.response.send_message("[ERROR] 아이템이 품절되었습니다.")
+            # Save the message to edit later
+            self.shop_message = await interaction.response.send_message(
+                "상점에서 아이템을 구매하세요!", 
+                view=view
+            )
         else:
-            await interaction.response.send_message("코인이 없습니다. `/rpg`로 게임을 시작해보세요!")
-
+            await interaction.response.send_message(
+                "코인이 없습니다. `/rpg`로 게임을 시작해보세요!", 
+                ephemeral=True  # Make the message visible only to the user
+            )
 
     async def handle_shop_interaction(self, interaction: discord.Interaction):
         try:
-            # Ensure the interaction type is a button interaction
             if interaction.type != discord.InteractionType.component:
                 await interaction.response.send_message("잘못된 상호작용입니다.")
                 return
 
-            # Extract custom_id from interaction.data
             custom_id = interaction.data.get('custom_id', '')
             if not custom_id:
                 await interaction.response.send_message("잘못된 상호작용입니다.")
@@ -468,7 +466,6 @@ class rpg:
             item_key = custom_id.split('_')[1]
             print(f"[DEBUG] Item key extracted: {item_key}")
 
-            # Load game data and player data
             data = self.load_game_data()
             user_id = str(interaction.user.id)
             guild = interaction.guild
@@ -478,6 +475,7 @@ class rpg:
             print(f"[DEBUG] Interaction received from user: {user_id}")
             print(f"[DEBUG] Player data: {player_data}")
 
+            response_message = ""
             if player_data:
                 item = self.items.get(item_key, None)
                 print(f"[DEBUG] Item details: {item}")
@@ -487,8 +485,7 @@ class rpg:
                         player_data["coins"] -= item["cost"]
                         player_data[item["effect"]] += item["value"]
                         self.save_game_data(data)
-
-                        effect_message = {
+                        response_message = {
                             "attack": "공격력이 1 증가했습니다!",
                             "defense": "방어력이 1 증가했습니다!",
                             "evasion_chance": "회피 확률이 1%p 증가했습니다!",
@@ -496,9 +493,7 @@ class rpg:
                             "critical_chance": "크리티컬 확률이 1%p 증가했습니다!",
                             "critical_damage": "크리티컬 데미지가 5%p 증가했습니다!",
                             "evasion_items": f"수학의 정석이 {player_data['evasion_items']}개가 되었습니다!"
-                        }
-
-                        response_message = effect_message.get(item["effect"], "아이템 효과를 적용했습니다.")
+                        }.get(item["effect"], "아이템 효과를 적용했습니다.")
                     else:
                         response_message = f"코인이 부족합니다! 현재 코인: {player_data['coins']}"
                 else:
@@ -506,6 +501,7 @@ class rpg:
             else:
                 response_message = "코인이 없습니다. `/rpg`로 게임을 시작해보세요!"
 
+            # Update the shop message with the final result
             if hasattr(self, 'shop_message'):
                 await self.shop_message.edit(
                     content=f"{response_message}\n`/스탯`으로 {user_nickname}님의 현재 능력치를 확인해보세요~",
@@ -522,9 +518,6 @@ class rpg:
                 "상점 처리 중 오류가 발생했습니다.",
                 ephemeral=True  # Make the message visible only to the user
             )
-                        
-
-
 
 # 봇 설정
 
