@@ -442,8 +442,10 @@ class rpg:
                 view.add_item(button)
 
             if buttons:
-                await interaction.response.send_message("상점입니다", view=view, ephemeral=True)
-                self.shop_message_id = message.id
+                self.shop_message = await interaction.response.send_message(
+                    "상점에서 아이템을 구매하세요!", 
+                    view=view
+                )
             else:
                 await interaction.response.send_message("[ERROR] 아이템이 품절되었습니다.")
         else:
@@ -499,9 +501,16 @@ class rpg:
                         response_message = effect_message.get(item["effect"], "아이템 효과를 적용했습니다.")
 
                         channel = interaction.channel
-                        if hasattr(self, 'shop_message_id'):
-                            shop_message = await channel.fetch_message(self.shop_message_id)
-                            await shop_message.delete()
+                        if hasattr(self, 'shop_message'):
+                            await self.shop_message.edit(
+                                content=f"{response_message}\n`/스탯`으로 {user_nickname}님의 현재 능력치를 확인해보세요~",
+                                view=None  # Remove the view to hide the buttons
+                            )
+                        else:
+                            await interaction.response.send_message(
+                                f"{response_message}\n`/스탯`으로 {user_nickname}님의 현재 능력치를 확인해보세요~",
+                                ephemeral=True  # Make the message visible only to the user
+                            )
                         
                         # Check if the response has already been sent
                         if interaction.response.is_done():
