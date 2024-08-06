@@ -307,7 +307,7 @@ class rpg:
                     result = "\n크리티컬!!!!!"
                 
                 enemy["hp"] -= total_damage
-                result = (f"\n공격 성공! 쨈미몬이 {damage}의 데미지를 입었습니다. ( 성공 확률 : {success_chance}% )\n"
+                result = (f"\n공격 성공! 쨈미몬이 {total_damage}의 데미지를 입었습니다. ( 성공 확률 : {success_chance}% )\n"
                           "( 쨈미몬 : 으앙 )\n"
                           f"레벨 : {player['level']}, {user_nickname}님의 체력 : {player['hp']}, 쨈미몬의 체력 : {enemy['hp']}")
 
@@ -334,7 +334,7 @@ class rpg:
                         elif stat_to_increase == "criticalchance":
                             player["criticalchance"] += 1
                         
-                        result += (f"\n \n레벨 업! 현재 레벨 : {player['level']}"
+                        result += (f"\n \n레벨 업! 현재 레벨 : {player['level']}\n"
                                    "...\n"
                                    "헉.. 쨈미몬이 더 강해져서 돌아왔어요! 끄앙\n"
                                    f"현재 쨈미몬의 체력 : {enemy['hp']}")
