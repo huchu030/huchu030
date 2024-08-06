@@ -3,20 +3,20 @@
         "1112776976994930842": {
             "level": 2,
             "hp": 100,
-            "exp": 103,
+            "exp": 143,
             "attack": 1,
             "defense": 0,
             "evasion_chance": 0,
             "attack_chance": 0,
             "criticalchance": 0,
             "criticaldamage": 0.5,
-            "coins": 37,
+            "coins": 48,
             "evasion_items": 0
         }
     },
     "current_enemies": {
         "1112776976994930842": {
-            "hp": 9
+            "hp": 60
         }
     }
 }
