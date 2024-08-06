@@ -182,6 +182,7 @@ class rpg:
 
     def __init__(self):
         self.items = {
+            "hp": {"label": "마시멜로", "cost": 10, "effect": "hp", "value": 50},
             "attack": {"label": "버섯", "cost": 100, "effect": "attack", "value": 1},
             "defense": {"label": "고양이", "cost": 100, "effect": "defense", "value": 1},
             "evasion_chance": {"label": "네잎클로버", "cost": 150, "effect": "evasion_chance", "value": 1},
@@ -314,6 +315,7 @@ class rpg:
                 if enemy["hp"] <= 0:
                     exp_gain = random.randint(30, 40)
                     coin_gain = random.randint(10, 20)
+                    player["hp"] = 100
                     player["exp"] += exp_gain
                     player["coins"] += coin_gain
                     result += ("\n\n와아~ 쨈미몬이 쓰러졌습니다.\n"
@@ -442,13 +444,14 @@ class rpg:
 
             self.shop_message = await interaction.response.send_message(
                 "뽜밤뽜밤-! 아리스 상점에 오신 것을 환영합니다!\n"
-                "\n1. 버섯 : 쨈미몬이 싫어합니다. 공격력이 1 증가합니다. ( 100 coins )\n"
-                "2. 고양이 : 쨈미몬이 좋아합니다. 방어력이 1 증가합니다. ( 100 coins )\n"
-                "3. 네잎클로버 : 행운을 불러옵니다. 회피 확률이 1%p 증가합니다. ( 150 coins )\n"
-                "4. 헬스장 월간이용권 : 회원님 한개만 더! 공격 성공 확률이 1%p 증가합니다. ( 150 coins )\n"
-                "5. 안경 : 시력이 상승합니다. 크리티컬 확률이  1%p 증가합니다. ( 150 coins )\n"
-                "6. 민트초코 : 쨈미몬이 극혐합니다. 크리티컬 데미지가 5%p 증가합니다. ( 150 coins )\n"
-                "7. 수학의 정석 : 책이 공격을 대신 받아줍니다. 찢어지면 다시 쓸 수 없으며, 여러 개 구매할 수 있습니다. ( 200 coins )\n",                 
+                "\n1. 마시멜로 : 맛있습니다. 일시적으로 체력을 50 회복합니다. ( 100 coins )\n"
+                "2. 버섯 : 쨈미몬이 싫어합니다. 공격력이 1 증가합니다. ( 100 coins )\n"
+                "3. 고양이 : 쨈미몬이 좋아합니다. 방어력이 1 증가합니다. ( 100 coins )\n"
+                "4. 네잎클로버 : 행운을 불러옵니다. 회피 확률이 1%p 증가합니다. ( 150 coins )\n"
+                "5. 헬스장 월간이용권 : 회원님 한개만 더! 공격 성공 확률이 1%p 증가합니다. ( 150 coins )\n"
+                "6. 안경 : 시력이 상승합니다. 크리티컬 확률이  1%p 증가합니다. ( 150 coins )\n"
+                "7. 민트초코 : 쨈미몬이 극혐합니다. 크리티컬 데미지가 5%p 증가합니다. ( 150 coins )\n"
+                "8. 수학의 정석 : 책이 공격을 대신 받아줍니다. 찢어지면 다시 쓸 수 없으며, 여러 개 구매할 수 있습니다. ( 200 coins )\n",                 
                 view=view
             )
         else:
@@ -484,6 +487,7 @@ class rpg:
                         self.save_game_data(data)
 
                         effect_message = {
+                            "hp": "체력을 50 회복했습니다!",
                             "attack": "공격력이 1 증가했습니다!",
                             "defense": "방어력이 1 증가했습니다!",
                             "evasion_chance": "회피 확률이 1%p 증가했습니다!",
