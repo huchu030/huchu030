@@ -478,11 +478,11 @@ class rpg:
         except Exception as e:
             await interaction.response.send_message(f"[ERROR] 오류 발생: {str(e)}")
 
-    def get_purchase_count(self, item_key):
+    def get_purchase_count(self, user_id, item_key):
         data = self.load_game_data()
         return data.get("purchase_counts", {}).get(user_id, {}).get(item_key, 0)
 
-    def increment_purchase_count(self, item_key):
+    def increment_purchase_count(self, user_id, item_key):
         data = self.load_game_data()
         player_purchase_counts = data.get("purchase_counts", {}).get(user_id, {})
         player_purchase_counts[item_key] = player_purchase_counts.get(item_key, 0) + 1
