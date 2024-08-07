@@ -286,7 +286,10 @@ class rpg:
             else:
                 return random.choice(self.enemies["1-3"])
 
-        enemy["hp"] = enemy["hp"] = 40 + 10 * player["level"]
+        enemy["hp"] = 40 + 10 * player["level"]
+
+        if enemy["id"] ==3:
+            enemy["hp"] = 50 * player["level"]
             
     async def start_game(self, interaction: discord.Interaction):
         user_id = str(interaction.user.id)
