@@ -490,6 +490,7 @@ class rpg:
         data = self.load_game_data()
         base_cost = self.items[item_key]["cost"]
         price_increase = self.items[item_key]["price_increase"]
+        user_id = str(interaction.user.id)
         purchase_data = data["purchases"].get(user_id, None)
         purchase_count = data["purchases"].get(user_id, {}).get(item_key, 0)
         return base_cost + (price_increase * purchase_count)
@@ -533,11 +534,13 @@ class rpg:
         try:
             custom_id = interaction.data.get('custom_id', '')
             item_key = custom_id.split('_')[1]
+            
             data = self.load_game_data()
             user_id = str(interaction.user.id)
             guild = interaction.guild
             user_nickname = get_user_nickname(guild, interaction.user.id)
             player_data = data["players"].get(user_id, None)
+            
             item_cost = self.get_item_cost(item_key, user_id)
 
             if player_data:
@@ -565,7 +568,7 @@ class rpg:
                     if player_data["coins"] >= item_cost:
                         player_data["coins"] -= item_cost
                         player_data[item["effect"]] += item["value"]
-                        purchase_data[item_key] += 1
+                        purchase_data[user_id][item_key] += 1
                         self.save_game_data(data)
 
                         effect_message = {
