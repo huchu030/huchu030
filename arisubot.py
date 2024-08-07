@@ -505,7 +505,7 @@ class rpg:
         enemy_data = data.get("current_enemies", {}).get(user_id, None)
 
         buttons = []
-        
+
         if player_data:
             for item_key, item in self.items.items():
                 self.items[item_key]["cost"] = item["base_cost"] + (self.get_purchase_count(user_id, item_key) * item["price_increment"])
