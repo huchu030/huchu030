@@ -527,7 +527,6 @@ class rpg:
     async def handle_shop_interaction(self, interaction: discord.Interaction):
         try:
             custom_id = interaction.data.get('custom_id', '')
-
             item_key = custom_id.split('_')[1]
             print(f"[DEBUG] Item key extracted: {item_key}")
 
@@ -546,19 +545,19 @@ class rpg:
                 if item:
                     item_cost = item["base_cost"] + (self.get_purchase_count(item_key) * item["price_increment"])
                     
-                    if item["effect"] == "evasionchance": and player_data["evasionchance"] >= 50:
+                    if item["effect"] == "evasionchance" and player_data["evasionchance"] >= 50:
                         await interaction.response.send_message("스탯 최대치에 도달했습니다!")
                         return
                         
-                    if item["effect"] == "attackchance": and player_data["attackchance"] >= 50:
+                    if item["effect"] == "attackchance" and player_data["attackchance"] >= 50:
                         await interaction.response.send_message("스탯 최대치에 도달했습니다!")
                         return
 
-                    if item["effect"] == "criticalchance": and player_data["criticalchance"] >= 50:
+                    if item["effect"] == "criticalchance" and player_data["criticalchance"] >= 50:
                         await interaction.response.send_message("스탯 최대치에 도달했습니다!")
                         return
 
-                    if item["effect"] == "criticaldamage": and player_data["criticaldamage"] >= 1:
+                    if item["effect"] == "criticaldamage" and player_data["criticaldamage"] >= 1:
                         await interaction.response.send_message("스탯 최대치에 도달했습니다!")
                         return
 
