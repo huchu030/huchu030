@@ -545,7 +545,6 @@ class rpg:
 
             if player_data:
                 item = self.items.get(item_key, None)
-                purchase_count = data["purchases"].get(user_id, {}).get(item_key, 0)
 
                 if item:
 
