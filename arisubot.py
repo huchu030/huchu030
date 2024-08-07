@@ -507,7 +507,7 @@ class rpg:
         if player_data:
             for item_key, item in self.items.items():
                 purchase_count = self.get_purchase_count(user_id, item_key)
-                self.items[item_key]["cost"] = item["base_cost"] + (self.get_purchase_count(user_id, item_key) * item["price_increment"])
+                self.items[item_key]["cost"] = item["base_cost"] + (purchase_count * item["price_increment"])
                 buttons.append(
                     ui.Button(label=item["label"], style=ButtonStyle.primary, custom_id=f'buy_{item_key}')
                 )
@@ -550,7 +550,7 @@ class rpg:
                 purchase_count = self.get_purchase_count(user_id, item_key)
 
                 if item:
-                    item_cost = item["base_cost"] + (self.get_purchase_count(user_id, item_key) * item["price_increment"])
+                    item_cost = item["base_cost"] + (purchase_count * item["price_increment"])
 
                     if item["effect"] == "evasionchance" and player_data["evasionchance"] >= 50:
                         await interaction.response.send_message("스탯 최대치에 도달했습니다!")
