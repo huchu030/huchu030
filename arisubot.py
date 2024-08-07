@@ -487,13 +487,22 @@ class rpg:
 
     def get_purchase_count(self, user_id, item_key):
         data = self.load_game_data()
-        return data.get("purchase_counts", {}).get(user_id, {}).get(item_key, 0)
+        count = data.get("purchase_counts", {}).get(user_id, {}).get(item_key, 0)
+        print(f"[DEBUG] get_purchase_count - user_id: {user_id}, item_key: {item_key}, count: {count}")
+        return count
 
     def increment_purchase_count(self, user_id, item_key):
         data = self.load_game_data()
+        if user_id not in data["purchase_counts"]:
+            data["purchase_counts"][user_id] = {}
+        if item_key not in data["purchase_counts"][user_id]:
+            data["purchase_counts"][user_id][item_key] = 0
         data["purchase_counts"][user_id][item_key] += 1
+        print(f"[DEBUG] increment_purchase_count - user_id: {user_id}, item_key: {item_key}, new_count: {data['purchase_counts'][user_id][item_key]}")
         self.save_game_data(data)
 
+
+    
     async def shop(self, interaction: discord.Interaction):
         data = self.load_game_data()
         user_id = str(interaction.user.id)
@@ -504,7 +513,8 @@ class rpg:
 
         if player_data:
             for item_key, item in self.items.items():
-                self.items[item_key]["cost"] = self.items[item_key]["base_cost"] + (self.get_purchase_count(user_id, item_key) * self.items[item_key]["price_increment"])
+                purchase_count = self.get_purchase_count(user_id, item_key)
+                self.items[item_key]["cost"] = item["base_cost"] + (purchase_count * item["price_increment"])
                 buttons.append(
                     ui.Button(label=item["label"], style=ButtonStyle.primary, custom_id=f'buy_{item_key}')
                 )
@@ -535,7 +545,6 @@ class rpg:
         try:
             custom_id = interaction.data.get('custom_id', '')
             item_key = custom_id.split('_')[1]
-            print(f"[DEBUG] Item key extracted: {item_key}")
 
             data = self.load_game_data()
             user_id = str(interaction.user.id)
@@ -545,9 +554,12 @@ class rpg:
 
             if player_data:
                 item = self.items.get(item_key, None)
+                print(f"[DEBUG] Item details: {item}")
 
                 if item:
                     item_cost = item["base_cost"] + self.items[item_key]["base_cost"] + (self.get_purchase_count(user_id, item_key) * self.items[item_key]["price_increment"])
+                    print(f"[DEBUG] Item cost calculated: {item_cost}")
+
                     
                     if item["effect"] == "evasionchance" and player_data["evasionchance"] >= 50:
                         await interaction.response.send_message("스탯 최대치에 도달했습니다!")
@@ -593,10 +605,6 @@ class rpg:
                             await interaction.response.send_message(f"{response_message}\n"
                                                                     f"현재 코인: {player_data['coins']}\n"
                                                                     f"`/스탯`으로 {user_nickname}님의 현재 능력치를 확인해보세요~")
-
-
-
-                            
                     else:
                         if interaction.response.is_done():
                             await interaction.followup.send(f"코인이 부족합니다! 현재 코인: {player_data['coins']}")
