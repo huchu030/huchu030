@@ -485,6 +485,14 @@ class rpg:
         except Exception as e:
             await interaction.response.send_message(f"[ERROR] 오류 발생: {str(e)}")
 
+
+    def get_item_cost(self, item_key, purchase_count):
+        base_cost = self.items[item_key]["cost"]
+        price_increase = self.items[item_key]["price_increase"]
+        purchase_data = data["purchases"].get(user_id, None)
+        purchase_count = purchase_data.get(item_key, 0)
+        return base_cost + (price_increase * purchase_count)
+    
     async def shop(self, interaction: discord.Interaction):
         data = self.load_game_data()
         user_id = str(interaction.user.id)
@@ -521,12 +529,7 @@ class rpg:
             )
 
 
-    def get_item_cost(self, item_key, purchase_count):
-        base_cost = self.items[item_key]["cost"]
-        price_increase = self.items[item_key]["price_increase"]
-        purchase_data = data["purchases"].get(user_id, None)
-        purchase_count = purchase_data.get(item_key, 0)
-        return base_cost + (price_increase * purchase_count)
+
 
 
     async def handle_shop_interaction(self, interaction: discord.Interaction):
