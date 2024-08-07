@@ -533,8 +533,8 @@ class rpg:
                     if player_data["coins"] >= item["cost"]:
                         player_data["coins"] -= item["cost"]
 
-                        if item["effect"] == evasion_chance:
-                            if player_data["evasion_chance"] >= 50:
+                        if item["effect"] == evasionchance:
+                            if player_data["evasionchance"] >= 50:
                                 await interaction.response.send_message("스탯 최대치에 도달했습니다!")
                                 return
                         
@@ -560,7 +560,7 @@ class rpg:
                             "hp": "체력을 50 회복했습니다!",
                             "attack": "공격력이 1 증가했습니다!",
                             "defense": "방어력이 1 증가했습니다!",
-                            "evasion_chance": "회피 확률이 1%p 증가했습니다!",
+                            "evasionchance": "회피 확률이 1%p 증가했습니다!",
                             "attackchance": "공격 성공 확률이 1%p 증가했습니다!",
                             "criticalchance": "크리티컬 확률이 1%p 증가했습니다!",
                             "criticaldamage": "크리티컬 데미지가 5%p 증가했습니다!",
