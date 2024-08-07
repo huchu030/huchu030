@@ -288,7 +288,7 @@ class rpg:
 
         enemy["hp"] = 40 + 10 * player["level"]
 
-        if enemy["id"] ==3:
+        if enemy["id"] == 3:
             enemy["hp"] = 50 * player["level"]
             
     async def start_game(self, interaction: discord.Interaction):
@@ -385,7 +385,6 @@ class rpg:
                                        f"현재 {enemy['name']}의 체력 : {enemy['hp']}"
                                        )
                         elif enemy["id"] == 3:
-                            enemy["hp"] = 50 * player["level"]
                             result += (f"\n \n레벨 업! 현재 레벨 : {player['level']}\n"
                                        f"( new! ) {inc_stat}이 강화되었습니다.\n"
                                        "...\n"
@@ -492,9 +491,9 @@ class rpg:
 
     def increment_purchase_count(self, user_id, item_key):
         data = self.load_game_data()
-        player_purchase_counts = data.get("purchase_counts", {}).get(user_id, {})
-        player_purchase_counts[item_key] = player_purchase_counts.get(item_key, 0) + 1
-        data["purchase_counts"][user_id] = player_purchase_counts
+        if user_id not in data["purchase_counts"]:
+            data["purchase_counts"][user_id] = {}
+        data["purchase_counts"][user_id][item_key] = data["purchase_counts"][user_id].get(item_key, 0) + 1
         self.save_game_data(data)
 
 
