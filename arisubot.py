@@ -487,13 +487,13 @@ class rpg:
 
 
     def get_item_cost(self, item_key, user_id):
-        data = self.load_game_data()
+        data = self.load_game_data() x
         base_cost = self.items[item_key]["cost"]
         price_increase = self.items[item_key]["price_increase"]
-        user_id = str(interaction.user.id)
-        purchase_data = data["purchases"].get(user_id, None)
-        purchase_count = data["purchases"].get(user_id, {}).get(item_key, 0)
+        purchase_data = data["purchases"].get(user_id, {})
+        purchase_count = purchase_data.get(item_key, 0)
         return base_cost + (price_increase * purchase_count)
+
     
     async def shop(self, interaction: discord.Interaction):
         data = self.load_game_data()
@@ -567,7 +567,8 @@ class rpg:
                     if player_data["coins"] >= item_cost:
                         player_data["coins"] -= item_cost
                         player_data[item["effect"]] += item["value"]
-                        purchase_data[item["effect"]] += 1
+                        purchase_data[item_key] = purchase_data.get(item_key, 0) + 1
+                        data["purchases"][user_id] = purchase_data
                         self.save_game_data(data)
 
                         effect_message = {
