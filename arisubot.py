@@ -268,6 +268,7 @@ class rpg:
         if user_id in data["players"]:
             del data["players"][user_id]
             del data["current_enemies"][user_id]
+            del data["purchase_counts"][user_id]
             self.save_game_data(data)
 
     def get_enemy_for_level(self, level):
@@ -305,6 +306,7 @@ class rpg:
             
             player = data["players"][user_id]
             enemy = data["current_enemies"][user_id]
+            enemy["hp"] = 40 + 10 * player["level"]
         
             if not damage.isdigit() or not (1 <= int(damage) <= player["hp"]):
                 await interaction.response.send_message("체력 이하의 숫자를 입력해주세요! \n"
@@ -322,7 +324,7 @@ class rpg:
 
             if player["level"] <= 3:
                 success_chance = random.randint(50, 90) + player["attackchance"]
-                
+
             result = ""
 
             if attack_success:
