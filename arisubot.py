@@ -534,43 +534,22 @@ class rpg:
         try:
             custom_id = interaction.data.get('custom_id', '')
             item_key = custom_id.split('_')[1]
-            
+
             data = self.load_game_data()
             user_id = str(interaction.user.id)
             guild = interaction.guild
             user_nickname = get_user_nickname(guild, interaction.user.id)
             player_data = data["players"].get(user_id, None)
-            
-            item_cost = self.get_item_cost(item_key, user_id)
 
             if player_data:
                 item = self.items.get(item_key, None)
 
                 if item:
-
-                    if item["effect"] == "evasionchance" and player_data["evasionchance"] >= 50:
-                        await interaction.response.send_message("스탯 최대치에 도달했습니다!")
-                        return
-                    
-                    if item["effect"] == "attackchance" and player_data["attackchance"] >= 50:
-                        await interaction.response.send_message("스탯 최대치에 도달했습니다!")
-                        return
-
-                    if item["effect"] == "criticalchance" and player_data["criticalchance"] >= 50:
-                        await interaction.response.send_message("스탯 최대치에 도달했습니다!")
-                        return
-
-                    if item["effect"] == "criticaldamage" and player_data["criticaldamage"] >= 1:
-                        await interaction.response.send_message("스탯 최대치에 도달했습니다!")
-                        return
-
-                    if player_data["coins"] >= item_cost:
-                        player_data["coins"] -= item_cost
+                    if player_data["coins"] >= item["cost"]:
+                        player_data["coins"] -= item["cost"]
                         player_data[item["effect"]] += item["value"]
-                        purchase_data[item_key] = purchase_data.get(item_key, 0) + 1
-                        data["purchases"][user_id] = purchase_data
                         self.save_game_data(data)
-
+                        
                         effect_message = {
                             "hp": "체력을 50 회복했습니다!",
                             "attack": "공격력이 1 증가했습니다!",
@@ -608,7 +587,7 @@ class rpg:
                 else:
                     await interaction.response.send_message("코인이 없습니다. `/rpg`로 게임을 시작해보세요!")
         except Exception as e:
-            print(f"[ERROR] Error handling shop interaction: {e}")
+            print(f"[ERROR] Error handling shop interaction: {str(e)}")
 
             if interaction.response.is_done():
                 await interaction.followup.send("상점이 폐업했습니다. 쟌넨")
