@@ -191,10 +191,10 @@ class rpg:
             "criticaldamage": {"label": "민트초코", "cost": 150, "effect": "criticaldamage", "value": 0.05},
             "evasionitems": {"label": "수학의 정석", "cost": 200, "effect": "evasionitems", "value": 1}
         }
-        self.enemies = {"1-3": [{"name": "쨈미몬", "hp": 50}
+        self.enemies = {"1-3": [{"name": "쨈미몬", "hp": 50, "id": 1}
                                 ],
-                        "4-1000": [{"name": "쨈미몬", "hp": 50},
-                                {"name": "쨈쨈몬", "hp": 50}
+                        "4-1000": [{"name": "쨈미몬", "hp": 50, "id": 1},
+                                {"name": "쨈쨈몬", "hp": 50, "id": 2}
                                 ]
                         }
 
@@ -320,7 +320,7 @@ class rpg:
 
             if attack_success:
 
-                if enemy["name"] == 쨈쨈몬:
+                if enemy["id"] == 1:
                     total_damage += 10
 
                 if critical_hit:
@@ -330,7 +330,7 @@ class rpg:
                 
                 enemy["hp"] -= total_damage
                 result += (f"\n\n공격 성공! {enemy['name']}이 {total_damage}의 데미지를 입었습니다. ( 성공 확률 : {success_chance}% )\n"
-                          "( {enemy['name']} : 으앙 )\n"
+                          f"( {enemy['name']} : 으앙 )\n"
                           f"레벨 : {player['level']}, {user_nickname}님의 체력 : {player['hp']}, {enemy['name']}의 체력 : {enemy['hp']}")
 
                 if enemy["hp"] <= 0:
@@ -365,7 +365,7 @@ class rpg:
                         
                         data["current_enemies"][user_id] = self.get_enemy_for_level(player["level"])
 
-                        if enemy["name"] == 쨈미몬:
+                        if enemy["id"] == 1:
                             result += (f"\n \n레벨 업! 현재 레벨 : {player['level']}\n"
                                        f"( new! ) {inc_stat}이 강화되었습니다.\n"
                                        "...\n"
