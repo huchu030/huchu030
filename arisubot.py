@@ -191,12 +191,12 @@ class rpg:
             "criticaldamage": {"label": "민트초코", "base_cost": 150, "cost": 150, "effect": "criticaldamage", "value": 0.05, "price_increment": 20},
             "evasionitems": {"label": "수학의 정석", "base_cost": 200, "cost": 200, "effect": "evasionitems", "value": 1, "price_increment": 20}
         }
-        self.enemies = {"1-3": [{"name": "쨈미몬", "id": 1}
+        self.enemies = {"1-3": [{"name": "쨈미몬", "hp":50, "id": 1}
                                 ],
-                        "4-1000": [{"name": "쨈미몬", "id": 1},
-                                {"name": "쨈쨈몬", "id": 2}
+                        "4-1000": [{"name": "쨈미몬", "hp":50, "id": 1},
+                                {"name": "쨈쨈몬", "hp":50, "id": 2}
                                 ],
-                        "10+": [{"name": "쨈미쨈미몬", "id": 3}
+                        "10+": [{"name": "쨈미쨈미몬", "hp":50, "id": 3}
                                 ],
                         }
 
