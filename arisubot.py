@@ -320,7 +320,7 @@ class rpg:
 
             if attack_success:
 
-                if enemy["name"] = 쨈쨈몬:
+                if enemy["name"] == 쨈쨈몬:
                     total_damage += 10
 
                 if critical_hit:
