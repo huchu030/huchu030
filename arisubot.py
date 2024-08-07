@@ -532,6 +532,27 @@ class rpg:
                 if item:
                     if player_data["coins"] >= item["cost"]:
                         player_data["coins"] -= item["cost"]
+
+                        if item["effect"] == evasion_chance:
+                            if player_data["evasion_chance"] >= 50:
+                                await interaction.response.send_message("스탯 최대치에 도달했습니다!")
+                                return
+                        
+                        if item["effect"] == attackchance:
+                            if player_data["attackchance"] >= 50:
+                                await interaction.response.send_message("스탯 최대치에 도달했습니다!")
+                                return
+
+                        if item["effect"] == criticalchance:
+                            if player_data["criticalchance"] >= 50:
+                                await interaction.response.send_message("스탯 최대치에 도달했습니다!")
+                                return
+
+                        if item["effect"] == criticaldamage:
+                            if player_data["criticaldamage"] >= 1:
+                                await interaction.response.send_message("스탯 최대치에 도달했습니다!")
+                                return
+  
                         player_data[item["effect"]] += item["value"]
                         self.save_game_data(data)
 
@@ -556,6 +577,10 @@ class rpg:
                             await interaction.response.send_message(f"{response_message}\n"
                                                                     f"현재 코인: {player_data['coins']}\n"
                                                                     f"`/스탯`으로 {user_nickname}님의 현재 능력치를 확인해보세요~")
+
+
+
+                            
                     else:
                         if interaction.response.is_done():
                             await interaction.followup.send(f"코인이 부족합니다! 현재 코인: {player_data['coins']}")
