@@ -499,7 +499,7 @@ class rpg:
     async def shop(self, interaction: discord.Interaction):
         data = self.load_game_data()
         user_id = str(interaction.user.id)
-        player_data = data.get("players", {}).get(user_id, None)
+        player_data = data["players"].get(user_id, None)
         enemy_data = data.get("current_enemies", {}).get(user_id, None)
         
         buttons = []
