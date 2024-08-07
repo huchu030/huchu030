@@ -486,7 +486,8 @@ class rpg:
             await interaction.response.send_message(f"[ERROR] 오류 발생: {str(e)}")
 
 
-    def get_item_cost(self, item_key, purchase_count):
+    def get_item_cost(self, item_key, user_id, purchase_count):
+        data = self.load_game_data()
         base_cost = self.items[item_key]["cost"]
         price_increase = self.items[item_key]["price_increase"]
         purchase_data = data["purchases"].get(user_id, None)
@@ -527,10 +528,6 @@ class rpg:
             await interaction.response.send_message(
                 "코인이 없습니다. `/rpg`로 게임을 시작해보세요!"
             )
-
-
-
-
 
     async def handle_shop_interaction(self, interaction: discord.Interaction):
         try:
