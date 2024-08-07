@@ -487,7 +487,7 @@ class rpg:
 
 
     def get_item_cost(self, item_key, user_id):
-        data = self.load_game_data() x
+        data = self.load_game_data()
         base_cost = self.items[item_key]["cost"]
         price_increase = self.items[item_key]["price_increase"]
         purchase_data = data["purchases"].get(user_id, {})
