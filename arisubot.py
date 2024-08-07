@@ -568,7 +568,7 @@ class rpg:
                     if player_data["coins"] >= item_cost:
                         player_data["coins"] -= item_cost
                         player_data[item["effect"]] += item["value"]
-                        purchase_data[user_id][item_key] += 1
+                        purchase_data[item["effect"]] += 1
                         self.save_game_data(data)
 
                         effect_message = {
