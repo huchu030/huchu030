@@ -298,6 +298,9 @@ class rpg:
             critical_hit = random.randint(1, 100) <= player["criticalchance"]
             total_damage = damage + player["attack"]
 
+            if player["level"] <= 3:
+                success_chance = random.randint(50, 90) + player["attackchance"]
+                
             result = ""
 
             if attack_success:
@@ -314,7 +317,7 @@ class rpg:
 
                 if enemy["hp"] <= 0:
                     exp_gain = random.randint(30, 40)
-                    coin_gain = random.randint(30, 50)
+                    coin_gain = random.randint(player["level"]*10, player["level"]*10+20)
                     player["hp"] = 100
                     player["exp"] += exp_gain
                     player["coins"] += coin_gain
