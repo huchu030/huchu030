@@ -195,7 +195,9 @@ class rpg:
                                 ],
                         "4-1000": [{"name": "쨈미몬", "hp": 50, "id": 1},
                                 {"name": "쨈쨈몬", "hp": 50, "id": 2}
-                                ]
+                                ],
+                        "10+": [{"name": "쨈미쨈미몬", "hp": 50, "id": 3}
+                                ],
                         }
 
         
@@ -267,12 +269,15 @@ class rpg:
             self.save_game_data(data)
 
     def get_enemy_for_level(self, level):
-        if 1 <= level <= 3:
-            return random.choice(self.enemies["1-3"])
-        elif 4 <= level:
-            return random.choice(self.enemies["4-1000"])
+        if level % 10 == 0:
+            enemies = self.enemies["10+"]
         else:
-            return random.choice(self.enemies["1-3"])
+            if 1 <= level <= 3:
+                return random.choice(self.enemies["1-3"])
+            elif 4 <= level:
+                return random.choice(self.enemies["4-1000"])
+            else:
+                return random.choice(self.enemies["1-3"])
 
             
     async def start_game(self, interaction: discord.Interaction):
@@ -368,14 +373,22 @@ class rpg:
                                        f"( new! ) {inc_stat}이 강화되었습니다.\n"
                                        "...\n"
                                        "헉.. 쨈미몬이 더 강해져서 돌아왔어요! 끄앙\n"
-                                       f"현재 {enemy['name']}의 체력 : {data['current_enemies'][user_id]['hp']}"
+                                       f"현재 {enemy['name']}의 체력 : {enemy['hp']}"
+                                       )
+                        elif enemy["id"] == 3:
+                            enemy["hp"] = 100 * player["level"]
+                            result += (f"\n \n레벨 업! 현재 레벨 : {player['level']}\n"
+                                       f"( new! ) {inc_stat}이 강화되었습니다.\n"
+                                       "...\n"
+                                       "헉.. 쨈미쨈미몬이 등장했어요! 끄앙\n"
+                                       f"현재 {enemy['name']}의 체력 : {enemy['hp']}"
                                        )
                         else:
                             result += (f"\n \n레벨 업! 현재 레벨 : {player['level']}\n"
                                        f"( new! ) {inc_stat}이 강화되었습니다.\n"
                                        "...\n"
                                        "헉.. 새로운 적이 나타났어요! 끄앙\n"
-                                       f"현재 {enemy['name']}의 체력 : {data['current_enemies'][user_id]['hp']}"
+                                       f"현재 {enemy['name']}의 체력 : {enemy['hp']}"
                                        )
          
                     else:
