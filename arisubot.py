@@ -344,9 +344,7 @@ class rpg:
 
                     if player["exp"] >= player["level"] * 100:
                         player["level"] += 1
-                        
-                        enemy["hp"] = 40 + 10 * player["level"]
-    
+
                         stat_to_increase = random.choice(["attack", "defense", "evasionchance", "criticalchance"])
                         if stat_to_increase == "attack":
                             player["attack"] += 1
@@ -362,8 +360,8 @@ class rpg:
                             inc_stat = "크리티컬 확률"
                         
                         
-                        
                         data["current_enemies"][user_id] = self.get_enemy_for_level(player["level"])
+                        enemy["hp"] = 40 + 10 * player["level"]
 
                         if enemy["id"] == 1:
                             result += (f"\n \n레벨 업! 현재 레벨 : {player['level']}\n"
