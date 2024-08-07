@@ -192,7 +192,7 @@ class rpg:
             "evasionitems": {"label": "수학의 정석", "cost": 200, "effect": "evasionitems", "value": 1}
         }
         self.enemies = {"1-3": [{"name": "쨈미몬", "hp": 50}
-                                ]
+                                ],
                         "4-1000": [{"name": "쨈미몬", "hp": 50},
                                 {"name": "쨈쨈몬", "hp": 50}
                                 ]
