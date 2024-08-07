@@ -486,12 +486,12 @@ class rpg:
             await interaction.response.send_message(f"[ERROR] 오류 발생: {str(e)}")
 
 
-    def get_item_cost(self, item_key, user_id, purchase_count):
+    def get_item_cost(self, item_key, user_id):
         data = self.load_game_data()
         base_cost = self.items[item_key]["cost"]
         price_increase = self.items[item_key]["price_increase"]
         purchase_data = data["purchases"].get(user_id, None)
-        purchase_count = purchase_data.get(item_key, 0)
+        purchase_count = data["purchases"].get(user_id, {}).get(item_key, 0)
         return base_cost + (price_increase * purchase_count)
     
     async def shop(self, interaction: discord.Interaction):
