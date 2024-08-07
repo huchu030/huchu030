@@ -376,7 +376,7 @@ class rpg:
                                        f"현재 {enemy['name']}의 체력 : {enemy['hp']}"
                                        )
                         elif enemy["id"] == 3:
-                            enemy["hp"] = 100 * player["level"]
+                            enemy["hp"] = 50 * player["level"]
                             result += (f"\n \n레벨 업! 현재 레벨 : {player['level']}\n"
                                        f"( new! ) {inc_stat}이 강화되었습니다.\n"
                                        "...\n"
