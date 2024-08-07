@@ -434,7 +434,7 @@ class rpg:
                                                         f"크리티컬 확률 : {player_data['criticalchance']}%, 크리티컬 데미지 : {player_data['criticaldamage']*100}%\n"
                                                         f"수학의 정석 : {player_data['evasionitems']}권\n"
                                                         f"코인 : {player_data['coins']}\n"
-                                                        f"\n현재 {enemy['name']}의 체력 : {enemy_data['hp']}")
+                                                        f"\n현재 {enemy_data['name']}의 체력 : {enemy_data['hp']}")
             except discord.errors.Forbidden:
                 await interaction.response.send_message("[ERROR] 메시지를 보낼 수 없습니다. 봇의 권한을 확인해주세요.")
             except Exception as e:
