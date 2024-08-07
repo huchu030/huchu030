@@ -191,12 +191,12 @@ class rpg:
             "criticaldamage": {"label": "민트초코", "base_cost": 150, "cost": 150, "effect": "criticaldamage", "value": 0.05, "price_increment": 20},
             "evasionitems": {"label": "수학의 정석", "base_cost": 200, "cost": 200, "effect": "evasionitems", "value": 1, "price_increment": 20}
         }
-        self.enemies = {"1-3": [{"name": "쨈미몬", "hp": 50, "id": 1}
+        self.enemies = {"1-3": [{"name": "쨈미몬", "id": 1}
                                 ],
-                        "4-1000": [{"name": "쨈미몬", "hp": 50, "id": 1},
-                                {"name": "쨈쨈몬", "hp": 50, "id": 2}
+                        "4-1000": [{"name": "쨈미몬", "id": 1},
+                                {"name": "쨈쨈몬", "id": 2}
                                 ],
-                        "10+": [{"name": "쨈미쨈미몬", "hp": 50, "id": 3}
+                        "10+": [{"name": "쨈미쨈미몬", "id": 3}
                                 ],
                         }
 
@@ -272,6 +272,10 @@ class rpg:
             self.save_game_data(data)
 
     def get_enemy_for_level(self, level):
+
+        base_hp = 40
+        hp = base_hp + level * 10
+        
         if level % 10 == 0:
             enemies = self.enemies["10+"]
         else:
@@ -282,6 +286,7 @@ class rpg:
             else:
                 return random.choice(self.enemies["1-3"])
 
+        enemy["hp"] = hp
             
     async def start_game(self, interaction: discord.Interaction):
         user_id = str(interaction.user.id)
@@ -306,7 +311,6 @@ class rpg:
             
             player = data["players"][user_id]
             enemy = data["current_enemies"][user_id]
-            enemy["hp"] = 40 + 10 * player["level"]
         
             if not damage.isdigit() or not (1 <= int(damage) <= player["hp"]):
                 await interaction.response.send_message("체력 이하의 숫자를 입력해주세요! \n"
@@ -369,7 +373,6 @@ class rpg:
                         
                         
                         data["current_enemies"][user_id] = self.get_enemy_for_level(player["level"])
-                        enemy["hp"] = 40 + 10 * player["level"]
 
                         if enemy["id"] == 1:
                             result += (f"\n \n레벨 업! 현재 레벨 : {player['level']}\n"
