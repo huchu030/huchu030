@@ -493,9 +493,10 @@ class rpg:
         data = self.load_game_data()
         if user_id not in data["purchase_counts"]:
             data["purchase_counts"][user_id] = {}
-        data["purchase_counts"][user_id][item_key] = data["purchase_counts"][user_id].get(item_key, 0) + 1
+        if item_key not in data["purchase_counts"][user_id]:
+            data["purchase_counts"][user_id][item_key] = 0
+        data["purchase_counts"][user_id][item_key] += 1
         self.save_game_data(data)
-
 
     async def shop(self, interaction: discord.Interaction):
         data = self.load_game_data()
