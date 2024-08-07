@@ -365,7 +365,7 @@ class rpg:
                         
                         data["current_enemies"][user_id] = self.get_enemy_for_level(player["level"])
 
-                        if enemy["name"] = 쨈미몬:
+                        if enemy["name"] == 쨈미몬:
                         result += (f"\n \n레벨 업! 현재 레벨 : {player['level']}\n"
                                    f"( new! ) {inc_stat}이 강화되었습니다.\n"
                                    "...\n"
