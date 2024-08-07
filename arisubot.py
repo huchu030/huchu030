@@ -207,7 +207,8 @@ class rpg:
         if not os.path.exists(data_file) or os.path.getsize(data_file) == 0:
             default_data = {
                 "players": {},
-                "current_enemies": {}
+                "current_enemies": {},
+                "purchase_counts": {}
             }
             with open(data_file, 'w') as f:
                 json.dump(default_data, f, indent=4)
@@ -218,7 +219,7 @@ class rpg:
                 return json.load(f)
         except Exception as e:
             print(f"[ERROR] Error loading game data: {e}")
-            return {"players": {}, "current_enemies": {}}
+            return {"players": {}, "current_enemies": {}, "purchase_counts": {}}
 
     def save_game_data(self, data):
         try:
@@ -250,6 +251,7 @@ class rpg:
                 "evasionitems": 0
             }
             data["current_enemies"][user_id] = random.choice(self.enemies["1-3"])
+            data["purchase_counts"][user_id] = {item_key: 0 for item_key in self.items.keys()}
 
             print(f"[DEBUG] Saving data: {data}")
             
@@ -478,13 +480,13 @@ class rpg:
 
     def get_purchase_count(self, item_key):
         data = self.load_game_data()
-        return data.get("purchase_counts", {}).get(item_key, 0)
+        return data.get("purchase_counts", {}).get(user_id, {}).get(item_key, 0)
 
     def increment_purchase_count(self, item_key):
         data = self.load_game_data()
-        purchase_counts = data.get("purchase_counts", {})
-        purchase_counts[item_key] = purchase_counts.get(item_key, 0) + 1
-        data["purchase_counts"] = purchase_counts
+        player_purchase_counts = data.get("purchase_counts", {}).get(user_id, {})
+        player_purchase_counts[item_key] = player_purchase_counts.get(item_key, 0) + 1
+        data["purchase_counts"][user_id] = player_purchase_counts
         self.save_game_data(data)
 
 
@@ -498,7 +500,7 @@ class rpg:
         
         if player_data:
             for item_key, item in self.items.items():
-                self.items[item_key]["cost"] = item["base_cost"] + (self.get_purchase_count(item_key) * item["price_increment"])
+                self.items[item_key]["cost"] = item["base_cost"] + (self.get_purchase_count(user_id, item_key) * item["price_increment"])
                 buttons.append(
                     ui.Button(label=item["label"], style=ButtonStyle.primary, custom_id=f'buy_{item_key}')
                 )
@@ -565,7 +567,7 @@ class rpg:
                         player_data["coins"] -= item_cost
 
                         player_data[item["effect"]] += item["value"]
-                        self.increment_purchase_count(item_key) 
+                        self.increment_purchase_count(user_id, item_key)
                         self.save_game_data(data)
 
                         effect_message = {
