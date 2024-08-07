@@ -569,7 +569,7 @@ class rpg:
                         player_data["coins"] -= item_cost
 
                         player_data[item["effect"]] += item["value"]
-                        self.increment_purchase_count(user_id, item_key)
+                        self.increment_purchase_count(self, user_id, item_key)
                         self.save_game_data(data)
 
                         effect_message = {
