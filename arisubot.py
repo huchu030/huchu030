@@ -366,19 +366,19 @@ class rpg:
                         data["current_enemies"][user_id] = self.get_enemy_for_level(player["level"])
 
                         if enemy["name"] == 쨈미몬:
-                        result += (f"\n \n레벨 업! 현재 레벨 : {player['level']}\n"
-                                   f"( new! ) {inc_stat}이 강화되었습니다.\n"
-                                   "...\n"
-                                   "헉.. 쨈미몬이 더 강해져서 돌아왔어요! 끄앙\n"
-                                   f"현재 {enemy['name']}의 체력 : {data['current_enemies'][user_id]['hp']}"
-                                   )
+                            result += (f"\n \n레벨 업! 현재 레벨 : {player['level']}\n"
+                                       f"( new! ) {inc_stat}이 강화되었습니다.\n"
+                                       "...\n"
+                                       "헉.. 쨈미몬이 더 강해져서 돌아왔어요! 끄앙\n"
+                                       f"현재 {enemy['name']}의 체력 : {data['current_enemies'][user_id]['hp']}"
+                                       )
                         else:
-                        result += (f"\n \n레벨 업! 현재 레벨 : {player['level']}\n"
-                                   f"( new! ) {inc_stat}이 강화되었습니다.\n"
-                                   "...\n"
-                                   "헉.. 새로운 적이 나타났어요! 끄앙\n"
-                                   f"현재 {enemy['name']}의 체력 : {data['current_enemies'][user_id]['hp']}"
-                                   )
+                            result += (f"\n \n레벨 업! 현재 레벨 : {player['level']}\n"
+                                       f"( new! ) {inc_stat}이 강화되었습니다.\n"
+                                       "...\n"
+                                       "헉.. 새로운 적이 나타났어요! 끄앙\n"
+                                       f"현재 {enemy['name']}의 체력 : {data['current_enemies'][user_id]['hp']}"
+                                       )
          
                     else:
                         enemy["hp"] = 40 + 10 * player["level"]
