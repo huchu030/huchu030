@@ -271,7 +271,7 @@ class rpg:
             del data["purchase_counts"][user_id]
             self.save_game_data(data)
 
-    def get_enemy_for_level(self, level):
+    def get_enemy_for_level(self, level, user_id):
         data = self.load_game_data()
         player = data["players"][user_id]
         enemy = data["current_enemies"][user_id]
