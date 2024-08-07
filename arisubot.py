@@ -272,10 +272,10 @@ class rpg:
             self.save_game_data(data)
 
     def get_enemy_for_level(self, level):
+        data = self.load_game_data()
+        player = data["players"][user_id]
+        enemy = data["current_enemies"][user_id]
 
-        base_hp = 40
-        hp = base_hp + level * 10
-        
         if level % 10 == 0:
             enemies = self.enemies["10+"]
         else:
@@ -286,7 +286,7 @@ class rpg:
             else:
                 return random.choice(self.enemies["1-3"])
 
-        enemy["hp"] = hp
+        enemy["hp"] = enemy["hp"] = 40 + 10 * player["level"]
             
     async def start_game(self, interaction: discord.Interaction):
         user_id = str(interaction.user.id)
