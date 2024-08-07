@@ -516,7 +516,7 @@ class rpg:
                 f"3. 고양이 : {enemy_data['name']}이 좋아합니다. 방어력이 1 증가합니다. ( {self.items['defense']['cost']} coins )\n"
                 f"4. 네잎클로버 : 행운을 불러옵니다. 회피 확률이 1%p 증가합니다. ( {self.items['evasionchance']['cost']} coins )\n"
                 f"5. 헬스장 월간이용권 : 회원님 한개만 더! 공격 성공 확률이 1%p 증가합니다. ( {self.items['attackchance']['cost']} coins )\n"
-                f"6. 안경 : 시력이 상승합니다. 크리티컬 확률이  1%p 증가합니다. ( {self.items['criticalchance']['cost']} coins )\n"
+                f"6. 안경 : 시력이 상승합니다. 크리티컬 확률이 1%p 증가합니다. ( {self.items['criticalchance']['cost']} coins )\n"
                 f"7. 민트초코 : {enemy_data['name']}이 극혐합니다. 크리티컬 데미지가 5%p 증가합니다. ( {self.items['criticaldamage']['cost']} coins )\n"
                 f"8. 수학의 정석 : 책이 공격을 대신 받아줍니다. 찢어지면 다시 쓸 수 없으며, 여러 개 구매할 수 있습니다. ( {self.items['evasionitems']['cost']} coins )\n",                 
                 view=view
@@ -526,12 +526,12 @@ class rpg:
                 "코인이 없습니다. `/rpg`로 게임을 시작해보세요!"
             )
 
+
     async def handle_shop_interaction(self, interaction: discord.Interaction):
         try:
             custom_id = interaction.data.get('custom_id', '')
             item_key = custom_id.split('_')[1]
             print(f"[DEBUG] Item key extracted: {item_key}")
-
 
             data = self.load_game_data()
             user_id = str(interaction.user.id)
@@ -539,18 +539,17 @@ class rpg:
             user_nickname = get_user_nickname(guild, interaction.user.id)
             player_data = data["players"].get(user_id, None)
 
-
             if player_data:
                 item = self.items.get(item_key, None)
                 print(f"[DEBUG] Item details: {item}")
 
                 if item:
-                    item_cost = item["base_cost"] + (self.get_purchase_count(item_key) * item["price_increment"])
+                    item_cost = item["base_cost"] + (self.get_purchase_count(user_id, item_key) * item["price_increment"])
                     
                     if item["effect"] == "evasionchance" and player_data["evasionchance"] >= 50:
                         await interaction.response.send_message("스탯 최대치에 도달했습니다!")
                         return
-                        
+                    
                     if item["effect"] == "attackchance" and player_data["attackchance"] >= 50:
                         await interaction.response.send_message("스탯 최대치에 도달했습니다!")
                         return
@@ -604,7 +603,7 @@ class rpg:
                     if interaction.response.is_done():
                         await interaction.followup.send("[ERROR] 아이템이 품절되었습니다.")
                     else:
-                        await interaction.response.send_message("[ERROR] 아이템이 품절되었습니다.")
+                        await interaction.response.send_message("[ERROR] 아이템이 품절되었습니다.")    
             else:
                 if interaction.response.is_done():
                     await interaction.followup.send("코인이 없습니다. `/rpg`로 게임을 시작해보세요!")
