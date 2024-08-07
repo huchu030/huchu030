@@ -507,7 +507,7 @@ class rpg:
         if player_data:
             for item_key, item in self.items.items():
                 purchase_count = self.get_purchase_count(user_id, item_key)
-                item["cost"] = item["base_cost"] + (item["price_increment"])
+                self.items[item_key]["cost"] = item["base_cost"] + (self.get_purchase_count(user_id, item_key) * item["price_increment"])
                 buttons.append(
                     ui.Button(label=item["label"], style=ButtonStyle.primary, custom_id=f'buy_{item_key}')
                 )
@@ -518,14 +518,14 @@ class rpg:
 
             self.shop_message = await interaction.response.send_message(
                 "뽜밤뽜밤-! 아리스 상점에 오신 것을 환영합니다!\n"
-                f"\n1. 마시멜로 : 맛있습니다. 일시적으로 체력을 50 회복합니다. ( {item['cost']} coins )\n"
-                f"2. 버섯 : {enemy_data['name']}이 싫어합니다. 공격력이 1 증가합니다. ( {item['cost']} coins )\n"
-                f"3. 고양이 : {enemy_data['name']}이 좋아합니다. 방어력이 1 증가합니다. ( {item['cost']} coins )\n"
-                f"4. 네잎클로버 : 행운을 불러옵니다. 회피 확률이 1%p 증가합니다. ( {item['cost']} coins )\n"
-                f"5. 헬스장 월간이용권 : 회원님 한개만 더! 공격 성공 확률이 1%p 증가합니다. ( {item['cost']} coins )\n"
-                f"6. 안경 : 시력이 상승합니다. 크리티컬 확률이 1%p 증가합니다. ( {item['cost']} coins )\n"
-                f"7. 민트초코 : {enemy_data['name']}이 극혐합니다. 크리티컬 데미지가 5%p 증가합니다. ( {item['cost']} coins )\n"
-                f"8. 수학의 정석 : 책이 공격을 대신 받아줍니다. 찢어지면 다시 쓸 수 없으며, 여러 개 구매할 수 있습니다. ( {item['cost']} coins )\n",                 
+                f"\n1. 마시멜로 : 맛있습니다. 일시적으로 체력을 50 회복합니다. ( {self.items['hp']['cost']} coins )\n"
+                f"2. 버섯 : {enemy_data['name']}이 싫어합니다. 공격력이 1 증가합니다. ( {self.items['attack']['cost']} coins )\n"
+                f"3. 고양이 : {enemy_data['name']}이 좋아합니다. 방어력이 1 증가합니다. ( {self.items['defense']['cost']} coins )\n"
+                f"4. 네잎클로버 : 행운을 불러옵니다. 회피 확률이 1%p 증가합니다. ( {self.items['hp']['evasionchance']} coins )\n"
+                f"5. 헬스장 월간이용권 : 회원님 한개만 더! 공격 성공 확률이 1%p 증가합니다. ( {self.items['attackchance']['cost']} coins )\n"
+                f"6. 안경 : 시력이 상승합니다. 크리티컬 확률이 1%p 증가합니다. ( {self.items['criticalchance']['cost']} coins )\n"
+                f"7. 민트초코 : {enemy_data['name']}이 극혐합니다. 크리티컬 데미지가 5%p 증가합니다. ( {self.items['criticaldamage']['cost']} coins )\n"
+                f"8. 수학의 정석 : 책이 공격을 대신 받아줍니다. 찢어지면 다시 쓸 수 없으며, 여러 개 구매할 수 있습니다. ( {evasionitems['hp']['cost']} coins )\n",                 
                 view=view
             )
         else:
@@ -550,7 +550,7 @@ class rpg:
                 purchase_count = self.get_purchase_count(user_id, item_key)
 
                 if item:
-                    item["cost"] = item["base_cost"] + (item["price_increment"])
+                    item_cost = item["base_cost"] + (self.get_purchase_count(user_id, item_key) * item["price_increment"])
 
                     if item["effect"] == "evasionchance" and player_data["evasionchance"] >= 50:
                         await interaction.response.send_message("스탯 최대치에 도달했습니다!")
@@ -568,8 +568,8 @@ class rpg:
                         await interaction.response.send_message("스탯 최대치에 도달했습니다!")
                         return
 
-                    if player_data["coins"] >= item["cost"]:
-                        player_data["coins"] -= item["cost"]
+                    if player_data["coins"] >= item_cost:
+                        player_data["coins"] -= item_cost
 
                         player_data[item["effect"]] += item["value"]
                         self.increment_purchase_count(user_id, item_key)
