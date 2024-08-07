@@ -547,24 +547,24 @@ class rpg:
                     item_cost = item["base_cost"] + (self.get_purchase_count(item_key) * item["price_increment"])
 
                     if item["effect"] == "evasionchance":
-                            if player_data["evasionchance"] >= 50:
-                                await interaction.response.send_message("스탯 최대치에 도달했습니다!")
-                                return
+                        if player_data["evasionchance"] >= 50:
+                            await interaction.response.send_message("스탯 최대치에 도달했습니다!")
+                            return
                         
-                        if item["effect"] == "attackchance":
-                            if player_data["attackchance"] >= 50:
-                                await interaction.response.send_message("스탯 최대치에 도달했습니다!")
-                                return
+                    if item["effect"] == "attackchance":
+                        if player_data["attackchance"] >= 50:
+                            await interaction.response.send_message("스탯 최대치에 도달했습니다!")
+                            return
 
-                        if item["effect"] == "criticalchance":
-                            if player_data["criticalchance"] >= 50:
-                                await interaction.response.send_message("스탯 최대치에 도달했습니다!")
-                                return
+                    if item["effect"] == "criticalchance":
+                        if player_data["criticalchance"] >= 50:
+                            await interaction.response.send_message("스탯 최대치에 도달했습니다!")
+                            return
 
-                        if item["effect"] == "criticaldamage":
-                            if player_data["criticaldamage"] >= 1:
-                                await interaction.response.send_message("스탯 최대치에 도달했습니다!")
-                                return
+                    if item["effect"] == "criticaldamage":
+                        if player_data["criticaldamage"] >= 1:
+                            await interaction.response.send_message("스탯 최대치에 도달했습니다!")
+                            return
                 
                     if player_data["coins"] >= item_cost:
                         player_data["coins"] -= item_cost
