@@ -182,14 +182,14 @@ class rpg:
 
     def __init__(self):
         self.items = {
-            "hp": {"label": "마시멜로", "base_cost": 100, "cost": 100, "effect": "hp", "value": 50, "price_increment": 10},
-            "attack": {"label": "버섯", "base_cost": 100, "cost": 100, "effect": "attack", "value": 1, "price_increment": 10},
-            "defense": {"label": "고양이", "base_cost": 100, "cost": 100, "effect": "defense", "value": 1, "price_increment": 10},
-            "evasionchance": {"label": "네잎클로버", "base_cost": 150, "cost": 150, "effect": "evasionchance", "value": 1, "price_increment": 20},
-            "attackchance": {"label": "헬스장 월간이용권", "base_cost": 150, "cost": 150, "effect": "attackchance", "value": 1, "price_increment": 20},
-            "criticalchance": {"label": "안경", "base_cost": 150, "cost": 150, "effect": "criticalchance", "value": 1, "price_increment": 20},
-            "criticaldamage": {"label": "민트초코", "base_cost": 150, "cost": 150, "effect": "criticaldamage", "value": 0.05, "price_increment": 20},
-            "evasionitems": {"label": "수학의 정석", "base_cost": 200, "cost": 200, "effect": "evasionitems", "value": 1, "price_increment": 20}
+            "hp": {"label": "마시멜로", "cost": 100, "effect": "hp", "value": 50, "price_increase": 10},
+            "attack": {"label": "버섯", "cost": 100, "effect": "attack", "value": 1, "price_increase": 10},
+            "defense": {"label": "고양이", "cost": 100, "effect": "defense", "value": 1, "price_increase": 10},
+            "evasion_chance": {"label": "네잎클로버", "cost": 150, "effect": "evasion_chance", "value": 1, "price_increase": 20},
+            "attack_chance": {"label": "헬스장 월간이용권", "cost": 150, "effect": "attack_chance", "value": 1, "price_increase": 20},
+            "criticalchance": {"label": "안경", "cost": 150, "effect": "criticalchance", "value": 1, "price_increase": 20},
+            "criticaldamage": {"label": "민트초코", "cost": 150, "effect": "criticaldamage", "value": 0.05, "price_increase": 20},
+            "evasion_items": {"label": "수학의 정석", "cost": 200, "effect": "evasion_items", "value": 1, "price_increase": 20}
         }
         self.enemies = {"1-3": [{"name": "쨈미몬", "hp":50, "id": 1}
                                 ],
@@ -208,7 +208,7 @@ class rpg:
             default_data = {
                 "players": {},
                 "current_enemies": {},
-                "purchase_counts": {}
+                "purchases": {}
             }
             with open(data_file, 'w') as f:
                 json.dump(default_data, f, indent=4)
@@ -219,7 +219,7 @@ class rpg:
                 return json.load(f)
         except Exception as e:
             print(f"[ERROR] Error loading game data: {e}")
-            return {"players": {}, "current_enemies": {}, "purchase_counts": {}}
+            return {"players": {}, "current_enemies": {}}
 
     def save_game_data(self, data):
         try:
@@ -251,7 +251,7 @@ class rpg:
                 "evasionitems": 0
             }
             data["current_enemies"][user_id] = random.choice(self.enemies["1-3"])
-            data["purchase_counts"][user_id] = {item_key: 0 for item_key in self.items.keys()}
+            data["purchases"][user_id] = {key: 0 for key in self.items.keys()}  
 
             print(f"[DEBUG] Saving data: {data}")
             
@@ -268,7 +268,7 @@ class rpg:
         if user_id in data["players"]:
             del data["players"][user_id]
             del data["current_enemies"][user_id]
-            del data["purchase_counts"][user_id]
+            del data["purchases"][user_id]
             self.save_game_data(data)
 
     def get_enemy_for_level(self, level, user_id):
@@ -485,29 +485,15 @@ class rpg:
         except Exception as e:
             await interaction.response.send_message(f"[ERROR] 오류 발생: {str(e)}")
 
-    def get_purchase_count(self, user_id, item_key):
-        data = self.load_game_data()
-        count = data.get("purchase_counts", {}).get(user_id, {}).get(item_key, 0)
-        return count
-
-    def increment_purchase_count(self, user_id, item_key):
-        data = self.load_game_data()
-        data["purchase_counts"][user_id][item_key] += 1
-        
-        self.save_game_data(data)
-    
     async def shop(self, interaction: discord.Interaction):
         data = self.load_game_data()
         user_id = str(interaction.user.id)
-        player_data = data.get("players", {}).get(user_id, None)
-        enemy_data = data.get("current_enemies", {}).get(user_id, None)
-        
-        buttons = []
+        player_data = data["players"].get(user_id, None)
 
+        buttons = []
+        
         if player_data:
             for item_key, item in self.items.items():
-                purchase_count = self.get_purchase_count(user_id, item_key)
-                self.items[item_key]["cost"] = item["base_cost"] + (purchase_count * item["price_increment"])
                 buttons.append(
                     ui.Button(label=item["label"], style=ButtonStyle.primary, custom_id=f'buy_{item_key}')
                 )
@@ -518,14 +504,14 @@ class rpg:
 
             self.shop_message = await interaction.response.send_message(
                 "뽜밤뽜밤-! 아리스 상점에 오신 것을 환영합니다!\n"
-                f"\n1. 마시멜로 : 맛있습니다. 일시적으로 체력을 50 회복합니다. ( {self.items['hp']['cost']} coins )\n"
-                f"2. 버섯 : {enemy_data['name']}이 싫어합니다. 공격력이 1 증가합니다. ( {self.items['attack']['cost']} coins )\n"
-                f"3. 고양이 : {enemy_data['name']}이 좋아합니다. 방어력이 1 증가합니다. ( {self.items['defense']['cost']} coins )\n"
-                f"4. 네잎클로버 : 행운을 불러옵니다. 회피 확률이 1%p 증가합니다. ( {self.items['evasionchance']['cost']} coins )\n"
-                f"5. 헬스장 월간이용권 : 회원님 한개만 더! 공격 성공 확률이 1%p 증가합니다. ( {self.items['attackchance']['cost']} coins )\n"
-                f"6. 안경 : 시력이 상승합니다. 크리티컬 확률이 1%p 증가합니다. ( {self.items['criticalchance']['cost']} coins )\n"
-                f"7. 민트초코 : {enemy_data['name']}이 극혐합니다. 크리티컬 데미지가 5%p 증가합니다. ( {self.items['criticaldamage']['cost']} coins )\n"
-                f"8. 수학의 정석 : 책이 공격을 대신 받아줍니다. 찢어지면 다시 쓸 수 없으며, 여러 개 구매할 수 있습니다. ( {evasionitems['hp']['cost']} coins )\n",                 
+                "\n1. 마시멜로 : 맛있습니다. 일시적으로 체력을 50 회복합니다. ( 100 coins )\n"
+                f"2. 버섯 : {enemy_data['name']}이 싫어합니다. 공격력이 1 증가합니다. ( 100 coins )\n"
+                f"3. 고양이 : {enemy_data['name']}이 좋아합니다. 방어력이 1 증가합니다. ( 100 coins )\n"
+                "4. 네잎클로버 : 행운을 불러옵니다. 회피 확률이 1%p 증가합니다. ( 150 coins )\n"
+                "5. 헬스장 월간이용권 : 회원님 한개만 더! 공격 성공 확률이 1%p 증가합니다. ( 150 coins )\n"
+                "6. 안경 : 시력이 상승합니다. 크리티컬 확률이 1%p 증가합니다. ( 150 coins )\n"
+                f"7. 민트초코 : {enemy_data['name']}이 극혐합니다. 크리티컬 데미지가 5%p 증가합니다. ( 150 coins )\n"
+                "8. 수학의 정석 : 책이 공격을 대신 받아줍니다. 찢어지면 다시 쓸 수 없으며, 여러 개 구매할 수 있습니다. ( 200 coins )\n",                 
                 view=view
             )
         else:
@@ -534,23 +520,31 @@ class rpg:
             )
 
 
+    def get_item_cost(self, item_key, purchase_count):
+        base_cost = self.items[item_key]["cost"]
+        price_increase = self.items[item_key]["price_increase"]
+        purchase_data = data["purchases"].get(user_id, None)
+        purchase_count = purchase_data.get(item_key, 0)
+        return base_cost + (price_increase * purchase_count)
+
+
     async def handle_shop_interaction(self, interaction: discord.Interaction):
         try:
             custom_id = interaction.data.get('custom_id', '')
             item_key = custom_id.split('_')[1]
-
             data = self.load_game_data()
             user_id = str(interaction.user.id)
             guild = interaction.guild
             user_nickname = get_user_nickname(guild, interaction.user.id)
             player_data = data["players"].get(user_id, None)
+            purchase_data = data["purchases"].get(user_id, None)
+            item_cost = self.get_item_cost(item_key, purchase_count)
 
-            if player_data:
+            if player_data and purchase_data:
                 item = self.items.get(item_key, None)
-                purchase_count = self.get_purchase_count(user_id, item_key)
+                purchase_count = purchase_data.get(item_key, 0)
 
                 if item:
-                    item_cost = item["base_cost"] + (purchase_count * item["price_increment"])
 
                     if item["effect"] == "evasionchance" and player_data["evasionchance"] >= 50:
                         await interaction.response.send_message("스탯 최대치에 도달했습니다!")
@@ -570,9 +564,8 @@ class rpg:
 
                     if player_data["coins"] >= item_cost:
                         player_data["coins"] -= item_cost
-
                         player_data[item["effect"]] += item["value"]
-                        self.increment_purchase_count(user_id, item_key)
+                        purchase_data[item_key] += 1
                         self.save_game_data(data)
 
                         effect_message = {
