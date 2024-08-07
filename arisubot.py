@@ -325,9 +325,6 @@ class rpg:
 
             if attack_success:
 
-                if enemy["id"] == 1:
-                    total_damage += 10
-
                 if critical_hit:
                     critical_bonus = damage * player["criticaldamage"]
                     total_damage += round(critical_bonus)
@@ -401,6 +398,9 @@ class rpg:
             else:
                 evasion = random.randint(1, 100) <= player["evasionchance"]
                 actual_damage = max(10, damage - player["defense"])
+
+                if enemy["id"] == 2:
+                    actual_damage += 10
             
                 if player["evasionitems"] > 0:
                     player["evasionitems"] -= 1
