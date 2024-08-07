@@ -185,11 +185,11 @@ class rpg:
             "hp": {"label": "마시멜로", "cost": 100, "effect": "hp", "value": 50, "price_increase": 10},
             "attack": {"label": "버섯", "cost": 100, "effect": "attack", "value": 1, "price_increase": 10},
             "defense": {"label": "고양이", "cost": 100, "effect": "defense", "value": 1, "price_increase": 10},
-            "evasion_chance": {"label": "네잎클로버", "cost": 150, "effect": "evasion_chance", "value": 1, "price_increase": 20},
-            "attack_chance": {"label": "헬스장 월간이용권", "cost": 150, "effect": "attack_chance", "value": 1, "price_increase": 20},
+            "evasionchance": {"label": "네잎클로버", "cost": 150, "effect": "evasionchance", "value": 1, "price_increase": 20},
+            "attackchance": {"label": "헬스장 월간이용권", "cost": 150, "effect": "attackchance", "value": 1, "price_increase": 20},
             "criticalchance": {"label": "안경", "cost": 150, "effect": "criticalchance", "value": 1, "price_increase": 20},
             "criticaldamage": {"label": "민트초코", "cost": 150, "effect": "criticaldamage", "value": 0.05, "price_increase": 20},
-            "evasion_items": {"label": "수학의 정석", "cost": 200, "effect": "evasion_items", "value": 1, "price_increase": 20}
+            "evasionitems": {"label": "수학의 정석", "cost": 200, "effect": "evasionitems", "value": 1, "price_increase": 20}
         }
         self.enemies = {"1-3": [{"name": "쨈미몬", "hp":50, "id": 1}
                                 ],
@@ -538,12 +538,11 @@ class rpg:
             guild = interaction.guild
             user_nickname = get_user_nickname(guild, interaction.user.id)
             player_data = data["players"].get(user_id, None)
-            purchase_data = data["purchases"].get(user_id, None)
-            item_cost = self.get_item_cost(item_key, purchase_count)
+            item_cost = self.get_item_cost(item_key, user_id)
 
-            if player_data and purchase_data:
+            if player_data:
                 item = self.items.get(item_key, None)
-                purchase_count = purchase_data.get(item_key, 0)
+                purchase_count = data["purchases"].get(user_id, {}).get(item_key, 0)
 
                 if item:
 
