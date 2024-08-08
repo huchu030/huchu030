@@ -672,8 +672,8 @@ class pvp:
                 opponent_id = next((uid for uid in data["pvp"] if uid != user_id and data["pvp"][uid]["in_battle"]), None)
                 if opponent_id:
                     opponent_nickname = get_user_nickname(guild, int(opponent_id))
-                    await interactionresponse.send_message(f"{user_nickname}님은 현재 {opponent_nickname}님과 전투 중입니다!")
-                    returnd
+                    await interaction.response.send_message(f"{user_nickname}님은 현재 {opponent_nickname}님과 전투 중입니다!")
+                    return
 
             self.initialize_player(user_id)
 
@@ -694,7 +694,7 @@ class pvp:
                 await interaction.response.send_message("현재 맞짱 뜰 상대가 없습니다.")
                 return
 
-            select.menu = discord.ui.Select(
+            select_menu = discord.ui.Select(
                 placeholder="맞짱 뜰 상대를 선택하세요!",
                 options=options
             )          
