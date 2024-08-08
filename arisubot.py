@@ -703,15 +703,13 @@ class pvp:
     
             
             async def select_callback(select_interaction: discord.Interaction):
-                print("Select Interaction Data:", select_interaction.data) 
+
                 values = select_interaction.data.get('values', [])
-                if not values:
-                    await select_interaction.response.send_message("선택된 상대가 없습니다. 다시 시도해 주세요.")
-                    return
 
                 opponent_id = values[0]
-                print(f"Selected opponent ID: {opponent_id}")
                 challenger_id = str(select_interaction.user.id)
+
+                self.initialize_player(opponent_id)
 
                 if opponent_id == challenger_id:
                     await select_interaction.response.send_message("자기 자신과의 싸움은 언제나 어려운 법입니다.")
@@ -722,10 +720,6 @@ class pvp:
                     await select_interaction.response.send_message(f"{opponent_nickname}님은 현재 다른 사람과 전투 중입니다.\n"
                                                                    "다른 상대를 골라보세요!")
                     return
-
-
-                # Initialize opponent data
-                self.initialize_player(opponent_id)
 
                 data["pvp"][opponent_id]["in_battle"] = True
                 data["pvp"][challenger_id]["in_battle"] = True
