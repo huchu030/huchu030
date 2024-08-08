@@ -742,7 +742,7 @@ class pvp:
                     
                     opponent_nickname = get_user_nickname(select_interaction.guild, int(opponent_id))
 
-                    accept_button = discord.ui.Button(label="수락", style=discord.ButtonStyle.success)
+                    accept_button = discord.ui.Button(label="수락", style=discord.ButtonStyle.primary)
                     
                     async def accept_button_callback(button_interaction: discord.Interaction):
                         if str(button_interaction.user.id) != opponent_id:
