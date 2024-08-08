@@ -756,23 +756,21 @@ class pvp:
             print(f"[ERROR] start_game: {e}")
             await interaction.response.send_message(f"{e}")
 
-    async def give_up(self, user_id):
+    async def give_up(self, interaction: discord.Interaction):
+        user_id = str(interaction.user.id)
+        guild = interaction.guild
+
         data = GameDataManager.load_game_data()
 
-        user_id = str(interaction.user.id)
         opponent_id = next((uid for uid in data["pvp"] if uid != user_id and data["pvp"][uid]["in_battle"]), None)
 
-        guild = interaction.guild
-        user_nickname = get_user_nickname(guild, interaction.user.id)
-        opponent_nickname = get_user_nickname(select_interaction.guild, int(opponent_id))
-       
         if user_id in data["pvp"]:
             data["pvp"][user_id]["hp"] = 100
             data["pvp"][user_id]["pvp_lose"] += 1
             data["pvp"][user_id]["in_battle"] = False
             data["pvp"][user_id]["turn"] = False
- 
-        if opponent_id in data["players"]:
+
+        if opponent_id in data["pvp"]:
             data["pvp"][opponent_id]["hp"] = 100
             data["pvp"][opponent_id]["pvp_win"] += 1
             data["pvp"][opponent_id]["in_battle"] = False
@@ -780,8 +778,10 @@ class pvp:
 
         GameDataManager.save_game_data(data)
 
-        await interaction.response.send_message(f"{user_id}님이 {opponent_id}님에게 항복했습니다!")
+        user_nickname = get_user_nickname(guild, interaction.user.id)
+        opponent_nickname = get_user_nickname(guild, int(opponent_id))
 
+        await interaction.response.send_message(f"{user_nickname}님이 {opponent_nickname}님에게 항복했습니다!")
 
     async def attack(self, interaction: discord.Interaction):
         guild = interaction.guild
