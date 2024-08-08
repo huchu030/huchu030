@@ -677,16 +677,11 @@ class pvp:
 
             self.initialize_player(user_id)
 
-            available_options = [uid for uid in data["pvp"] if uid != user_id]
-
-            if not available_options:
-                await interaction.response.send_message("현재 맞짱 뜰 상대가 없습니다.")
-                return
-
+            all_members = [member for member in guild.members if not member.bot and str(member.id) != user_id]
 
             options = [
                 discord.SelectOption(label=get_user_nickname(interaction.guild, int(uid)), value=uid)
-                for uid in available_options
+                for uid in all_members
             ]
             
             select = discord.ui.Select(
