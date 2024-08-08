@@ -679,15 +679,25 @@ class pvp:
 
             all_members = [member for member in guild.members if not member.bot and str(member.id) != user_id]
 
-            options = [
-                discord.SelectOption(label=get_user_nickname(interaction.guild, int(uid)), value=uid)
-                for uid in all_members
-            ]
-            
+            options = []
+            for member in all_members:
+                member_id = str(member.id)
+                if member_id in data["pvp"] and data["pvp"][member_id]["in_battle"]:
+                    label = f"{get_user_nickname(guild, member.id)} (전투 중)"
+                    description = "전투 중인 유저입니다."
+                    options.append(discord.SelectOption(label=label, value=member_id, description=description, default=True, emoji="⚔️"))
+                else:
+                    label = get_user_nickname(guild, member.id)
+                    options.append(discord.SelectOption(label=label, value=member_id))
+
+            if not options:
+                await interaction.response.send_message("현재 맞짱 뜰 상대가 없습니다.")
+                return
+
             select = discord.ui.Select(
                 placeholder="맞짱 뜰 상대를 선택하세요!",
                 options=options
-            )            
+            )          
     
             
             async def select_callback(select_interaction: discord.Interaction):
