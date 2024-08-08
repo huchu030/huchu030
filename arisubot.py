@@ -262,9 +262,9 @@ class rpg:
                 "evasionitems": 0
             }
             data["current_enemies"][user_id] = random.choice(self.enemies["1-3"])
-            data["purchases"][user_id] = {key: 0 for key in self.items.keys()}  
+            data["purchases"][user_id] = {key: 0 for key in self.items.keys()}
 
-            print(f"[DEBUG] Saving data: {data}")
+            data["current_enemies"][user_id]["hp"] = 50
             
             GameDataManager.save_game_data(data)
         else:
@@ -298,11 +298,6 @@ class rpg:
             weights=[enemy["weight"] for enemy in enemies],
             k=1
             )[0]
-        
-        if enemy["id"] == 3:
-            enemy["hp"] = 50 * player["level"]
-        else:
-            enemy["hp"] = 40 + 10 * player["level"]
 
         return enemy
             
@@ -767,7 +762,6 @@ class pvp:
                                                                    "상대방이 수락하면 전투가 시작됩니다!", ephemeral=False)
                     await select_interaction.channel.send(f"<@{opponent_id}>님, {user_nickname}님의 전투 요청이 도착했습니다!",
                                                           view=view)
-                    
                 except Exception as e:
                     print(f"[ERROR] select_callback: {e}")
                     await select_interaction.response.send_message(f"{e}")
@@ -830,17 +824,29 @@ class pvp:
             return
 
         opponent = data["pvp"][opponent_id]
-        challenger = data["pvp"][user_id]
+        player = data["pvp"][user_id]
 
         opponent_nickname = get_user_nickname(guild, int(opponent_id))
+
+
+
+
+
+
+        
 
         damage = random.randint(30, 50)
         opponent["hp"] = max(opponent["hp"] - damage, 0)
         await interaction.response.send_message(f"{user_nickname}님이 {opponent_nickname}님에게 {damage}의 피해를 입혔습니다!\n"
                                                 f"{user_nickname}님의 체력: {challenger['hp']}, {opponent_nickname}님의 체력: {opponent['hp']}")
         challenger["turn"] = False
-        opponent["turn"] = True
+        player["turn"] = True
         GameDataManager.save_game_data(data)
+
+
+
+
+        
 
         if opponent["hp"] <= 0:
             winner_id = user_id
