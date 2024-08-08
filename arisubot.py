@@ -713,7 +713,7 @@ class pvp:
                         return
 
                     opponent_id = values[0]
-                    challenger_id = str(select_interaction.user.id)
+                    user_id = str(select_interaction.user.id)
 
                     self.initialize_player(opponent_id)
 
@@ -724,7 +724,7 @@ class pvp:
                             await select_interaction.response.send_message(f"{user_nickname}님은 현재 {opponent_nickname}님과 전투 중입니다!")
                             return
                 
-                    if opponent_id == challenger_id:
+                    if opponent_id == user_id:
                         await select_interaction.response.send_message("자기 자신과의 싸움은 언제나 어려운 법입니다.")
                         return
 
@@ -735,9 +735,9 @@ class pvp:
                         return
 
                     data["pvp"][opponent_id]["in_battle"] = True
-                    data["pvp"][challenger_id]["in_battle"] = True
+                    data["pvp"][user_id]["in_battle"] = True
                     data["pvp"][opponent_id]["turn"] = False
-                    data["pvp"][challenger_id]["turn"] = True
+                    data["pvp"][user_id]["turn"] = True
 
                     GameDataManager.save_game_data(data)
                     
@@ -756,7 +756,33 @@ class pvp:
             print(f"[ERROR] start_game: {e}")
             await interaction.response.send_message(f"{e}")
 
-    
+    async def give_up(self, user_id):
+        data = GameDataManager.load_game_data()
+
+        user_id = str(interaction.user.id)
+        opponent_id = next((uid for uid in data["pvp"] if uid != user_id and data["pvp"][uid]["in_battle"]), None)
+
+        guild = interaction.guild
+        user_nickname = get_user_nickname(guild, interaction.user.id)
+        opponent_nickname = get_user_nickname(select_interaction.guild, int(opponent_id))
+       
+        if user_id in data["pvp"]:
+            data["pvp"][user_id]["hp"] = 100
+            data["pvp"][user_id]["pvp_lose"] += 1
+            data["pvp"][user_id]["in_battle"] = False
+            data["pvp"][user_id]["turn"] = False
+ 
+        if opponent_id in data["players"]:
+            data["pvp"][opponent_id]["hp"] = 100
+            data["pvp"][opponent_id]["pvp_win"] += 1
+            data["pvp"][opponent_id]["in_battle"] = False
+            data["pvp"][opponent_id]["turn"] = False
+
+        GameDataManager.save_game_data(data)
+
+        await interaction.response.send_message(f"{user_id}님이 {opponent_id}님에게 항복했습니다!")
+
+
     async def attack(self, interaction: discord.Interaction):
         guild = interaction.guild
         user_nickname = get_user_nickname(guild, interaction.user.id)
@@ -819,8 +845,8 @@ class pvp:
         data["pvp"][loser_id]["hp"] = 100
         data["pvp"][winner_id]["in_battle"] = False
         data["pvp"][loser_id]["in_battle"] = False
-        data["pvp"][winner_id]["turn"] = None
-        data["pvp"][loser_id]["turn"] = None
+        data["pvp"][winner_id]["turn"] = False
+        data["pvp"][loser_id]["turn"] = False
         
         GameDataManager.save_game_data(data)
 
@@ -1036,6 +1062,10 @@ async def pvp(interaction: discord.Interaction):
 @bot.tree.command(name="맞짱", description="pvp - 상대를 공격합니다")
 async def 맞짱(interaction: discord.Interaction):
     await bot.pvp.attack(interaction)
+
+@bot.tree.command(name="항복", description="pvp - 상대에게 항복합니다")
+async def 항복(interaction: discord.Interaction):
+    await bot.pvp.give_up(interaction)
         
 # 로또                                                     
 
