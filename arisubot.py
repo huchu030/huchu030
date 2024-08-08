@@ -493,7 +493,6 @@ class rpg:
         purchase_data = data["purchases"].get(user_id, {})
         purchase_count = purchase_data.get(item_key, 0)
         return base_cost + (price_increase * purchase_count)
-
     
     async def shop(self, interaction: discord.Interaction):
         data = self.load_game_data()
@@ -515,14 +514,14 @@ class rpg:
 
             self.shop_message = await interaction.response.send_message(
                 "뽜밤뽜밤-! 아리스 상점에 오신 것을 환영합니다!\n"
-                "\n1. 마시멜로 : 맛있습니다. 일시적으로 체력을 50 회복합니다. ( 100 coins )\n"
-                f"2. 버섯 : {enemy_data['name']}이 싫어합니다. 공격력이 1 증가합니다. ( 100 coins )\n"
-                f"3. 고양이 : {enemy_data['name']}이 좋아합니다. 방어력이 1 증가합니다. ( 100 coins )\n"
-                "4. 네잎클로버 : 행운을 불러옵니다. 회피 확률이 1%p 증가합니다. ( 150 coins )\n"
-                "5. 헬스장 월간이용권 : 회원님 한개만 더! 공격 성공 확률이 1%p 증가합니다. ( 150 coins )\n"
-                "6. 안경 : 시력이 상승합니다. 크리티컬 확률이 1%p 증가합니다. ( 150 coins )\n"
-                f"7. 민트초코 : {enemy_data['name']}이 극혐합니다. 크리티컬 데미지가 5%p 증가합니다. ( 150 coins )\n"
-                "8. 수학의 정석 : 책이 공격을 대신 받아줍니다. 찢어지면 다시 쓸 수 없으며, 여러 개 구매할 수 있습니다. ( 200 coins )\n",                 
+                f"\n1. 마시멜로 : 맛있습니다. 일시적으로 체력을 50 회복합니다. ( {self.get_item_cost('hp', user_id)} coins )\n"
+                f"2. 버섯 : {enemy_data['name']}이 싫어합니다. 공격력이 1 증가합니다. ( {self.get_item_cost('attack', user_id)} coins )\n"
+                f"3. 고양이 : {enemy_data['name']}이 좋아합니다. 방어력이 1 증가합니다. ( {self.get_item_cost('defense', user_id)} coins )\n"
+                f"4. 네잎클로버 : 행운을 불러옵니다. 회피 확률이 1%p 증가합니다. ( {self.get_item_cost('evasionchance', user_id)} coins )\n"
+                f"5. 헬스장 월간이용권 : 회원님 한개만 더! 공격 성공 확률이 1%p 증가합니다. ( {self.get_item_cost('attackchance', user_id)} coins )\n"
+                f"6. 안경 : 시력이 상승합니다. 크리티컬 확률이 1%p 증가합니다. ( {self.get_item_cost('criticalchance', user_id)} coins )\n"
+                f"7. 민트초코 : {enemy_data['name']}이 극혐합니다. 크리티컬 데미지가 5%p 증가합니다. ( {self.get_item_cost('criticaldamage', user_id)} coins )\n"
+                f"8. 수학의 정석 : 책이 공격을 대신 받아줍니다. 찢어지면 다시 쓸 수 없으며, 여러 개 구매할 수 있습니다. ( {self.get_item_cost('evasionitems', user_id)} coins )\n",                 
                 view=view
             )
         else:
@@ -545,11 +544,15 @@ class rpg:
                 item = self.items.get(item_key, None)
 
                 if item:
-                    if player_data["coins"] >= item["cost"]:
-                        player_data["coins"] -= item["cost"]
+                    item_cost = self.get_item_cost(item_key, user_id)
+                    
+                    if player_data["coins"] >= item_cost:
+                        player_data["coins"] -= item_cost
                         player_data[item["effect"]] += item["value"]
-                        self.save_game_data(data)
                         
+                        data["purchases"][user_id][item_key] += 1
+                        self.save_game_data(data)
+
                         effect_message = {
                             "hp": "체력을 50 회복했습니다!",
                             "attack": "공격력이 1 증가했습니다!",
