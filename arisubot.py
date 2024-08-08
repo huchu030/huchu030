@@ -634,9 +634,11 @@ class rpg:
             print(f"[ERROR] Error handling shop interaction: {str(e)}")
 
             if interaction.response.is_done():
-                await interaction.followup.send("상점이 폐업했습니다. 쟌넨")
+                await interaction.followup.send(f"{e}\n"
+                                                "상점이 폐업했습니다. 쟌넨")
             else:
-                await interaction.response.send_message("상점이 폐업했습니다. 쟌넨")
+                await interaction.response.send_message(f"{e}\n"
+                                                        "상점이 폐업했습니다. 쟌넨")
 
 # pvp
 
