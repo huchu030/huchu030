@@ -1111,11 +1111,11 @@ async def 항복(interaction: discord.Interaction):
 
 @bot.tree.command(name="전적", description="pvp - 자신의 전적을 조회합니다")
 async def 전적(interaction: discord.Interaction):
-    await bot.pvp.get_stats(interaction)
+    await bot.pvp.stats(interaction)
 
 @bot.tree.command(name="pvp_순위", description="pvp - 유저들의 순위를 확인합니다")
 async def pvp_순위(interaction: discord.Interaction):
-    await bot.pvp.get_leaderboard(interaction)
+    await bot.pvp.leaderboard(interaction)
 
         
 # 로또                                                     
