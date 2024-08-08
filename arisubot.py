@@ -851,7 +851,7 @@ class pvp:
         GameDataManager.save_game_data(data)
 
 
-    async def get_stats(self, interaction: discord.Interaction):
+    async def stats(self, interaction: discord.Interaction):
         user_id = str(interaction.user.id)
         guild = interaction.guild
 
@@ -864,18 +864,14 @@ class pvp:
         player_data = data["pvp"][user_id]
         user_nickname = get_user_nickname(guild, interaction.user.id)
 
-        embed = discord.Embed(
-            title=f"{user_nickname}님의 전적",
-            color=discord.Color.blue()
-        )
-        embed.add_field(name="체력", value=f"{player_data['hp']}", inline=False)
-        embed.add_field(name="승리 수", value=f"{player_data['pvp_win']}", inline=False)
-        embed.add_field(name="패배 수", value=f"{player_data['pvp_lose']}", inline=False)
-
-        await interaction.response.send_message(embed=embed)
+        await interaction.response.send_message(f"[{user_nickname}님의 전적] \n"
+                                                f"\n{player_data['pvp_win']}승 {player_data['pvp_lose']}패")
 
 
-    async def get_leaderboard(self, interaction: discord.Interaction):
+    async def leaderboard(self, interaction: discord.Interaction):
+        data = GameDataManager.load_game_data()
+        
+        user_nickname = get_user_nickname(guild, interaction.user.id) 
         data = GameDataManager.load_game_data()
 
         pvp_data = data.get("pvp", {})
@@ -883,22 +879,20 @@ class pvp:
             await interaction.response.send_message("전적 정보가 없습니다. `/pvp`로 전투를 시작해보세요!")
             return
 
-        # 승리 수를 기준으로 사용자 정렬
-        sorted_users = sorted(pvp_data.items(), key=lambda x: x[1]["pvp_win"], reverse=True)
-
-        embed = discord.Embed(
-            title="PVP 순위",
-            color=discord.Color.gold()
+        sorted_users = sorted(
+            pvp_data.items(), 
+            key=lambda x: (x[1]["pvp_win"], -x[1]["pvp_lose"]), 
+            reverse=True
         )
 
-        for rank, (user_id, stats) in enumerate(sorted_users, start=1):
-            user_nickname = get_user_nickname(interaction.guild, int(user_id))
-            embed.add_field(name=f"#{rank} {user_nickname}", 
-                            value=f"승리: {stats['pvp_win']} 패배: {stats['pvp_lose']}", 
-                            inline=False)
+        leaderboard_message = "PVP 순위:\n"
+        for rank, (user_id, player) in enumerate(sorted_players, start=1):
+            user_nickname = get_user_nickname(guild, int(user_id))
+            leaderboard_message += f"{rank}. {user_nickname} - {player_data['pvp_win']}승 {player_data['pvp_lose']}패\n"
+
+        await interaction.response.send_message(leaderboard_message)
 
 
-    
 # 봇 설정
 
 class MyBot(commands.Bot):
