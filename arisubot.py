@@ -728,7 +728,7 @@ class pvp:
                 opponent_nickname = get_user_nickname(select_interaction.guild, int(opponent_id))
                 await select_interaction.response.send_message(f"{opponent_nickname}님과의 전투가 시작되었습니다.\n"
                                                                "`/맞짱`으로 상대를 공격해보세요!")                            
-            select.callback = select_callback
+            select_menu.callback = select_callback
             view = discord.ui.View()
             view.add_item(select_menu)
             await interaction.response.send_message("테스트", view=view)
