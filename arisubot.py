@@ -798,7 +798,7 @@ class MyBot(commands.Bot):
         self.number_guessing = NumberGuessing()
         self.rpg = rpg()
         self.pvp = pvp()
-        self.gamedatamanager = GameDataManager()
+        self.GameDataManager = GameDataManager()
         
     async def on_ready(self):
         print(f'봇이 로그인되었습니다: {self.user.name}')
