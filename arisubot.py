@@ -656,6 +656,8 @@ class pvp:
             GameDataManager.save_game_data(game_data)
 
     async def start_game(self, interaction: discord.Interaction):
+        GameDataManager.initialize_game_data()
+        
         guild = interaction.guild
         user_nickname = get_user_nickname(guild, interaction.user.id)
         
