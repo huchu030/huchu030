@@ -9,6 +9,7 @@ import random
 import asyncio
 import json
 import os
+import copy
 
 # 토큰, 채널 ID
 
