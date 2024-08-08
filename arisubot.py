@@ -1035,15 +1035,15 @@ async def 숫자야구_포기(interaction: discord.Interaction):
 # 숫자게임 명령어
 
 @bot.tree.command(name="숫자게임", description="아리스와 숫자 맞히기 게임을 시작합니다")
-async def 숫자추측(interaction: discord.Interaction):
+async def 숫자게임(interaction: discord.Interaction):
     await bot.number_guessing.start_game_interaction(interaction)
 
 @bot.tree.command(name="숫자게임_추측", description="숫자게임 - 숫자를 추측합니다")
-async def 숫자추측_추측(interaction: discord.Interaction, guess: str):
+async def 숫자게임_추측(interaction: discord.Interaction, guess: str):
     await bot.number_guessing.guess_number(interaction, guess)
 
 @bot.tree.command(name="숫자게임_포기", description="숫자게임 - 게임을 포기합니다")
-async def 숫자추측_포기(interaction: discord.Interaction):
+async def 숫자게임_포기(interaction: discord.Interaction):
     await bot.number_guessing.give_up(interaction)
 
 # rpg 명령어
