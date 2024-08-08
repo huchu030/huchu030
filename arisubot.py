@@ -225,6 +225,7 @@ class rpg:
                 "pvp_win": 0,
                 "pvp_lose": 0,
                 "in_battle": False
+                "turn": False
             }
             self.save_game_data(game_data)
 
