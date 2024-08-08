@@ -850,6 +850,54 @@ class pvp:
         
         GameDataManager.save_game_data(data)
 
+
+    async def get_stats(self, interaction: discord.Interaction):
+        user_id = str(interaction.user.id)
+        guild = interaction.guild
+
+        data = GameDataManager.load_game_data()
+
+        if user_id not in data["pvp"]:
+            await interaction.response.send_message("전적 정보가 없습니다. `/pvp`로 전투를 시작해보세요!")
+            return
+
+        player_data = data["pvp"][user_id]
+        user_nickname = get_user_nickname(guild, interaction.user.id)
+
+        embed = discord.Embed(
+            title=f"{user_nickname}님의 전적",
+            color=discord.Color.blue()
+        )
+        embed.add_field(name="체력", value=f"{player_data['hp']}", inline=False)
+        embed.add_field(name="승리 수", value=f"{player_data['pvp_win']}", inline=False)
+        embed.add_field(name="패배 수", value=f"{player_data['pvp_lose']}", inline=False)
+
+        await interaction.response.send_message(embed=embed)
+
+
+    async def get_leaderboard(self, interaction: discord.Interaction):
+        data = GameDataManager.load_game_data()
+
+        pvp_data = data.get("pvp", {})
+        if not pvp_data:
+            await interaction.response.send_message("전적 정보가 없습니다. `/pvp`로 전투를 시작해보세요!")
+            return
+
+        # 승리 수를 기준으로 사용자 정렬
+        sorted_users = sorted(pvp_data.items(), key=lambda x: x[1]["pvp_win"], reverse=True)
+
+        embed = discord.Embed(
+            title="PVP 순위",
+            color=discord.Color.gold()
+        )
+
+        for rank, (user_id, stats) in enumerate(sorted_users, start=1):
+            user_nickname = get_user_nickname(interaction.guild, int(user_id))
+            embed.add_field(name=f"#{rank} {user_nickname}", 
+                            value=f"승리: {stats['pvp_win']} 패배: {stats['pvp_lose']}", 
+                            inline=False)
+
+
     
 # 봇 설정
 
@@ -1020,8 +1068,8 @@ async def 공격(interaction: discord.Interaction, damage: str):
 async def 스탯(interaction: discord.Interaction):
     await bot.rpg.stats(interaction)
 
-@bot.tree.command(name="순위", description="rpg - 유저들의 순위를 확인합니다")
-async def 순위(interaction: discord.Interaction):
+@bot.tree.command(name="rpg_순위", description="rpg - 유저들의 순위를 확인합니다")
+async def rpg_순위(interaction: discord.Interaction):
     await bot.rpg.leaderboard(interaction)
 
 @bot.tree.command(name="상점", description="rpg - 상점으로 들어갑니다")
@@ -1066,6 +1114,15 @@ async def 맞짱(interaction: discord.Interaction):
 @bot.tree.command(name="항복", description="pvp - 상대에게 항복합니다")
 async def 항복(interaction: discord.Interaction):
     await bot.pvp.give_up(interaction)
+
+@bot.tree.command(name="전적", description="pvp - 자신의 전적을 조회합니다")
+async def 전적(interaction: discord.Interaction):
+    await bot.pvp.get_stats(interaction)
+
+@bot.tree.command(name="pvp_순위", description="pvp - 유저들의 순위를 확인합니다")
+async def pvp_순위(interaction: discord.Interaction):
+    await bot.pvp.get_leaderboard(interaction)
+
         
 # 로또                                                     
 
