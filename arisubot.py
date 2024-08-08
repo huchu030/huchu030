@@ -182,14 +182,14 @@ class rpg:
 
     def __init__(self):
         self.items = {
-            "hp": {"label": "마시멜로", "cost": 100, "effect": "hp", "value": 50, "price_increase": 10},
-            "attack": {"label": "버섯", "cost": 100, "effect": "attack", "value": 1, "price_increase": 10},
-            "defense": {"label": "고양이", "cost": 100, "effect": "defense", "value": 1, "price_increase": 10},
-            "evasionchance": {"label": "네잎클로버", "cost": 150, "effect": "evasionchance", "value": 1, "price_increase": 20},
-            "attackchance": {"label": "헬스장 월간이용권", "cost": 150, "effect": "attackchance", "value": 1, "price_increase": 20},
-            "criticalchance": {"label": "안경", "cost": 150, "effect": "criticalchance", "value": 1, "price_increase": 20},
-            "criticaldamage": {"label": "민트초코", "cost": 150, "effect": "criticaldamage", "value": 0.05, "price_increase": 20},
-            "evasionitems": {"label": "수학의 정석", "cost": 200, "effect": "evasionitems", "value": 1, "price_increase": 20}
+            "hp": {"label": "마시멜로", "cost": 200, "effect": "hp", "value": 50, "price_increase": 100},
+            "attack": {"label": "버섯", "cost": 100, "effect": "attack", "value": 1, "price_increase": 20},
+            "defense": {"label": "고양이", "cost": 100, "effect": "defense", "value": 1, "price_increase": 20},
+            "evasionchance": {"label": "네잎클로버", "cost": 150, "effect": "evasionchance", "value": 1, "price_increase": 50},
+            "attackchance": {"label": "헬스장 월간이용권", "cost": 150, "effect": "attackchance", "value": 1, "price_increase": 50},
+            "criticalchance": {"label": "안경", "cost": 150, "effect": "criticalchance", "value": 1, "price_increase": 50},
+            "criticaldamage": {"label": "민트초코", "cost": 150, "effect": "criticaldamage", "value": 0.05, "price_increase": 50},
+            "evasionitems": {"label": "수학의 정석", "cost": 500, "effect": "evasionitems", "value": 1, "price_increase": 200}
         }
         self.enemies = {"1-3": [{"name": "쨈미몬", "hp":50, "id": 1}
                                 ],
