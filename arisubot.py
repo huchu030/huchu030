@@ -785,6 +785,7 @@ class pvp:
         data["pvp"][loser_id]["in_battle"] = False
         data["pvp"][winner_id]["turn"] = None
         data["pvp"][loser_id]["turn"] = None
+        
         self.save_game_data(data)
 
     
