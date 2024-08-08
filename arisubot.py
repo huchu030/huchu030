@@ -786,7 +786,7 @@ class pvp:
 
         opponent_nickname = get_user_nickname(guild, int(opponent_id))
 
-        damage = random.randint(5, 20)
+        damage = random.randint(30, 50)
         opponent["hp"] = max(opponent["hp"] - damage, 0)
         await interaction.response.send_message(f"{user_nickname}님이 {opponent_nickname}님에게 {damage}의 피해를 입혔습니다!\n"
                                                 f"{user_nickname}님의 체력: {challenger['hp']}, {opponent_nickname}님의 체력: {opponent['hp']}")
