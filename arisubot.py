@@ -274,22 +274,21 @@ class rpg:
     def get_enemy_for_level(self, level, user_id):
         data = self.load_game_data()
         player = data["players"][user_id]
-        enemy = data["current_enemies"][user_id]
 
-        if level % 10 == 0:
-            enemies = self.enemies["10+"]
-        else:
-            if 1 <= level <= 3:
-                return random.choice(self.enemies["1-3"])
-            elif 4 <= level:
-                return random.choice(self.enemies["4-1000"])
+    if level % 10 == 0:
+                enemies = self.enemies["10+"]
+            elif level >= 4:
+                enemies = self.enemies["4-1000"]
             else:
-                return random.choice(self.enemies["1-3"])
+                enemies = self.enemies["1-3"]
 
-        enemy["hp"] = 40 + 10 * player["level"]
+            enemy = random.choice(enemies)
+            enemy["hp"] = 40 + 10 * player["level"]
 
-        if enemy["id"] == 3:
-            enemy["hp"] = 50 * player["level"]
+            if enemy["id"] == 3:
+                enemy["hp"] = 50 * player["level"]
+
+            return enemy
             
     async def start_game(self, interaction: discord.Interaction):
         user_id = str(interaction.user.id)
@@ -375,8 +374,9 @@ class rpg:
                             inc_stat = "크리티컬 확률"
                         
                         
-                        data["current_enemies"][user_id] = self.get_enemy_for_level(player["level"])
-
+                        new_enemy = self.get_enemy_for_level(player["level"], user_id)
+                        data["current_enemies"][user_id] = new_enemy
+                        
                         if enemy["id"] == 1:
                             result += (f"\n \n레벨 업! 현재 레벨 : {player['level']}\n"
                                        f"( new! ) {inc_stat}이 강화되었습니다.\n"
