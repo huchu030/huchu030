@@ -694,7 +694,7 @@ class pvp:
                 await interaction.response.send_message("현재 맞짱 뜰 상대가 없습니다.")
                 return
 
-            select = discord.ui.Select(
+            select.opponent = discord.ui.Select(
                 placeholder="맞짱 뜰 상대를 선택하세요!",
                 options=options
             )          
@@ -730,7 +730,7 @@ class pvp:
                                                                "`/맞짱`으로 상대를 공격해보세요!")                            
             select.callback = select_callback
             view = discord.ui.View()
-            view.add_item(select)
+            view.add_item(select_menu)
             await interaction.response.send_message("테스트", view=view)
                 
         except Exception as e:
