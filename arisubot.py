@@ -412,6 +412,7 @@ class rpg:
                         
                         new_enemy = self.get_enemy_for_level(player["level"], user_id)
                         data["current_enemies"][user_id] = new_enemy
+                        enemy = data["current_enemies"][user_id] 
                         
                         if enemy["id"] == old_id:
                             result += (f"\n \n레벨 업! 현재 레벨 : {player['level']}\n"
