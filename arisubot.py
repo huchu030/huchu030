@@ -864,7 +864,7 @@ class pvp:
 
         player_data = data["pvp"][user_id]
         await interaction.response.send_message(f"[{user_nickname}님의 전적] \n"
-                                                f"\n{player_data['pvp_win']}승 {player_data['pvp_lose']}패")
+                                                f"{player_data['pvp_win']}승 {player_data['pvp_lose']}패")
 
 
     async def leaderboard(self, interaction: discord.Interaction):
