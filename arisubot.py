@@ -298,6 +298,11 @@ class rpg:
             weights=[enemy["weight"] for enemy in enemies],
             k=1
             )[0]
+        
+        if enemy["id"] == 3:
+            enemy["hp"] = 50 * player["level"]
+        else:
+            enemy["hp"] = 40 + 10 * player["level"]
 
         return enemy
             
