@@ -293,14 +293,12 @@ class rpg:
         else:
             enemies = self.enemies["1-3"]
     
-        
-
-        enemy = random.choices(
+        enemy = copy.deepcopy(random.choices(
             population=enemies,
             weights=[enemy["weight"] for enemy in enemies],
             k=1
-        )[0]
-        
+        )[0])
+
         if enemy["id"] == 3:
             enemy["hp"] = 50 * player["level"]
         else:
