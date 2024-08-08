@@ -731,7 +731,7 @@ class pvp:
             select.callback = select_callback
             view = discord.ui.View()
             view.add_item(select)
-            await interaction.response.send_message("", view=view)
+            await interaction.response.send_message("테스트", view=view)
                 
         except Exception as e:
             print(f"[ERROR] start_game: {e}")
