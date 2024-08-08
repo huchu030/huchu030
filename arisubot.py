@@ -359,7 +359,19 @@ class rpg:
                     if player["exp"] >= player["level"] * 100:
                         player["level"] += 1
 
-                        stat_to_increase = random.choice(["attack", "defense", "evasionchance", "criticalchance"])
+                        stat_weights = {
+                            "attack": 0.3,
+                            "defense": 0.3,
+                            "evasionchance": 0.2,
+                            "lcriticalchance": 0.2
+                        }
+
+                        stat_to_increase = random.choices(
+                            population=list(stat_weights.keys()),
+                            weights=list(stat_weights.values()),
+                            k=1
+                        )[0]
+
                         if stat_to_increase == "attack":
                             player["attack"] += 1
                             inc_stat = "공격력"
