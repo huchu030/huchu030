@@ -694,7 +694,7 @@ class pvp:
                 await interaction.response.send_message("현재 맞짱 뜰 상대가 없습니다.")
                 return
 
-            select.opponent = discord.ui.Select(
+            select.menu = discord.ui.Select(
                 placeholder="맞짱 뜰 상대를 선택하세요!",
                 options=options
             )          
