@@ -703,12 +703,6 @@ class pvp:
     
             
             async def select_callback(select_interaction: discord.Interaction):
-            guild = interaction.guild
-            user_nickname = get_user_nickname(guild, interaction.user.id)
-            
-            user_id = str(interaction.user.id)
-            data = GameDataManager.load_game_data()
-            
                 try:
                     values = select_interaction.data.get('values', [])
 
@@ -718,13 +712,12 @@ class pvp:
                     self.initialize_player(opponent_id)
 
 
-                    if user_id in data["pvp"] and data["pvp"][user_id]["in_battle"]:
+                    if data["pvp"][user_id]["in_battle"]:
                         opponent_id = next((uid for uid in data["pvp"] if uid != user_id and data["pvp"][uid]["in_battle"]), None)
                         if opponent_id:
                             opponent_nickname = get_user_nickname(guild, int(opponent_id))
                             await interaction.response.send_message(f"{user_nickname}님은 현재 {opponent_nickname}님과 전투 중입니다!")
                             return
-
                 
                     if opponent_id == challenger_id:
                         await select_interaction.response.send_message("자기 자신과의 싸움은 언제나 어려운 법입니다.")
