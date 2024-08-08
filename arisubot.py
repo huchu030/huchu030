@@ -699,7 +699,7 @@ class pvp:
                     return
         except Exception as e:
             print(f"[ERROR] start_game: {e}")
-            await interaction.response.send_message("error")
+            await interaction.response.send_message(f"{e}")
 
             # Initialize opponent data
             self.initialize_player(opponent_id)
