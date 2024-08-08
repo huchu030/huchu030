@@ -683,18 +683,17 @@ class pvp:
             options=options
         )
         
-        async def select_callback(interaction: discord.Interaction):
-            opponent = interaction.data['values'][0]
-            opponent_id = str(opponent)
-            challenger_id = str(interaction.user.id)
+        async def select_callback(select_interaction: discord.Interaction):
+            opponent_id = select_interaction.data['values'][0]
+            challenger_id = str(select_interaction.user.id)
 
             if opponent_id == challenger_id:
-                await interaction.response.send_message("자기 자신과의 싸움은 언제나 어려운 법입니다.")
+                await select_interaction.response.send_message("자기 자신과의 싸움은 언제나 어려운 법입니다.")
                 return
 
             if data["pvp"][opponent_id]["in_battle"]:
-                opponent_nickname = get_user_nickname(interaction.guild, int(opponent_id))
-                await interaction.response.send_message(f"{opponent_nickname}님은 현재 다른 사람과 전투 중입니다.\n"
+                opponent_nickname = get_user_nickname(select_interaction.guild, int(opponent_id))
+                await select_interaction.response.send_message(f"{opponent_nickname}님은 현재 다른 사람과 전투 중입니다.\n"
                                                         "다른 상대를 골라보세요!")
                 return
 
@@ -708,9 +707,9 @@ class pvp:
 
             GameDataManager.save_game_data(data)
             
-            opponent_nickname = get_user_nickname(interaction.guild, int(opponent_id))
-            await interaction.response.send_message(f"{opponent_nickname}님과의 전투가 시작되었습니다.\n"
-                                                    "`/맞짱`으로 상대를 공격해보세요!")
+            opponent_nickname = get_user_nickname(select_interaction.guild, int(opponent_id))
+            await select_interaction.response.send_message(f"{opponent_nickname}님과의 전투가 시작되었습니다.\n"
+                                                           "`/맞짱`으로 상대를 공격해보세요!")                            
         select.callback = select_callback
         view = discord.ui.View()
         view.add_item(select)
@@ -760,7 +759,7 @@ class pvp:
             await self.end_battle(interaction, winner_id, loser_id)
             return
 
-        await interaction.followup.send(f"이제 {opponent_nickname}님의 턴입니다. 빨리 복수하세요!")
+        await interaction.followup.send(f"\n\n이제 {opponent_nickname}님의 턴입니다. 빨리 복수하세요!")
 
     async def end_battle(self, interaction, winner_id, loser_id):
         data = GameDataManager.load_game_data()
@@ -771,8 +770,8 @@ class pvp:
         data["pvp"][winner_id]["pvp_win"] += 1
         data["pvp"][loser_id]["pvp_lose"] += 1
         
-        await interaction.response.send_message(f"\n\n 뽜밤뽜밤-! {winner_nickname}님이 승리했습니다!\n"
-                                                f"{loser_nickname}님은 패배했습니다. 쟌넨")
+        await interaction.followup.send(f"\n\n 뽜밤뽜밤-! {winner_nickname}님이 승리했습니다!\n"
+                                        f"{loser_nickname}님은 패배했습니다. 쟌넨")
 
         data["pvp"][winner_id]["hp"] = 100
         data["pvp"][loser_id]["hp"] = 100
