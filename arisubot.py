@@ -199,8 +199,11 @@ class GameDataManager:
                 return json.load(f)
         except Exception as e:
             print(f"[ERROR] Error loading game data: {e}")
-            return {"pvp": {}}
-
+            return {"players": {},
+                    "current_enemies": {},
+                    "purchases": {},
+                    "pvp": {}
+                    }
     @staticmethod
     def save_game_data(data):
         try:
@@ -233,6 +236,8 @@ class rpg:
                         "10+": [{"name": "쨈미쨈미몬", "hp":50, "weight": 1, "id": 3}
                                 ],
                         }
+        
+        GameDataManager.initialize_game_data()
 
     def add_new_player(self, user_id):
         data = GameDataManager.load_game_data()
@@ -637,9 +642,11 @@ class rpg:
 
 # pvp
 
-data_file = 'game_data.json'
 
 class pvp:
+    def __init__(self):
+        GameDataManager.initialize_game_data()
+        
     def initialize_player(self, user_id):
         game_data = GameDataManager.load_game_data()
         if "pvp" not in game_data:
@@ -791,6 +798,7 @@ class MyBot(commands.Bot):
         self.number_guessing = NumberGuessing()
         self.rpg = rpg()
         self.pvp = pvp()
+        self.gamedatamanager = GameDataManager()
         
     async def on_ready(self):
         print(f'봇이 로그인되었습니다: {self.user.name}')
