@@ -361,7 +361,7 @@ class rpg:
                         exp_gain = 100
                     if enemy["id"] == 4:
                         exp_gain = 100
-                        coin_gain = player["level"]*100
+                        coin_gain = player["level"]*50
                     
                     player["hp"] = 100
                     player["exp"] += exp_gain
