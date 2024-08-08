@@ -816,7 +816,7 @@ class pvp:
         user_id = str(interaction.user.id)
         data = GameDataManager.load_game_data()
 
-        if user_id not in data["pvp"] or if not data["pvp"][user_id]["in_battle"]:
+        if user_id not in data["pvp"] or not data["pvp"][user_id]["in_battle"]:
             await interaction.response.send_message("현재 전투 중이 아닙니다. `/pvp`로 전투를 시작해보세요!")
             return
         
@@ -1116,7 +1116,7 @@ async def rpg_규칙(interaction: discord.Interaction):
 
 # pvp 명령어
 
-@bot.tree.command(name="pvp", description="선택한 상대와 pvp 대결을 시작합니다")
+@bot.tree.command(name="pvp", description="선택한 상대와 pvp 전투를 시작합니다")
 async def pvp(interaction: discord.Interaction):
     await bot.pvp.start_game(interaction)
 
