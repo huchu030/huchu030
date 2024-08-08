@@ -854,6 +854,7 @@ class pvp:
     async def stats(self, interaction: discord.Interaction):
         user_id = str(interaction.user.id)
         guild = interaction.guild
+        user_nickname = get_user_nickname(guild, interaction.user.id)
 
         data = GameDataManager.load_game_data()
 
@@ -862,8 +863,6 @@ class pvp:
             return
 
         player_data = data["pvp"][user_id]
-        user_nickname = get_user_nickname(guild, interaction.user.id)
-
         await interaction.response.send_message(f"[{user_nickname}님의 전적] \n"
                                                 f"\n{player_data['pvp_win']}승 {player_data['pvp_lose']}패")
 
@@ -886,7 +885,7 @@ class pvp:
         )
 
         leaderboard_message = "PVP 순위:\n"
-        for rank, (user_id, player) in enumerate(sorted_players, start=1):
+        for rank, (user_id, player) in enumerate(sorted_users, start=1):
             user_nickname = get_user_nickname(guild, int(user_id))
             leaderboard_message += f"{rank}. {user_nickname} - {player_data['pvp_win']}승 {player_data['pvp_lose']}패\n"
 
