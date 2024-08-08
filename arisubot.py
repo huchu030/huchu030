@@ -440,7 +440,6 @@ class rpg:
                                        "헉.. 새로운 적이 나타났어요! 끄앙\n"
                                        f"현재 {enemy['name']}의 체력 : {enemy['hp']}"
                                        )
-         
                     else:
                         enemy["hp"] = 40 + 10 * player["level"]
                         result += ("\n...\n" 
@@ -662,8 +661,6 @@ class pvp:
             GameDataManager.save_game_data(game_data)
 
     async def start_game(self, interaction: discord.Interaction):
-        GameDataManager.initialize_game_data()
-        
         guild = interaction.guild
         user_nickname = get_user_nickname(guild, interaction.user.id)
         
