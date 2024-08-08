@@ -703,6 +703,10 @@ class pvp:
     
             
             async def select_callback(select_interaction: discord.Interaction):
+                if not select_interaction.data['values']:
+                    await select_interaction.response.send_message("선택된 상대가 없습니다. 다시 시도해 주세요.")
+                    return
+
                 opponent_id = select_interaction.data['values'][0]
                 challenger_id = str(select_interaction.user.id)
 
