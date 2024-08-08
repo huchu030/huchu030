@@ -398,15 +398,16 @@ class rpg:
                             player["criticalchance"] += 1
                             inc_stat = "크리티컬 확률"
                         
+                        old_id = enemy["id"]
                         
                         new_enemy = self.get_enemy_for_level(player["level"], user_id)
                         data["current_enemies"][user_id] = new_enemy
                         
-                        if enemy["id"] == 1:
+                        if enemy["id"] == old_id:
                             result += (f"\n \n레벨 업! 현재 레벨 : {player['level']}\n"
                                        f"( new! ) {inc_stat}이 강화되었습니다.\n"
                                        "...\n"
-                                       "헉.. 쨈미몬이 더 강해져서 돌아왔어요! 끄앙\n"
+                                       f"헉.. {enemy['name']}이 더 강해져서 돌아왔어요! 끄앙\n"
                                        f"현재 {enemy['name']}의 체력 : {enemy['hp']}"
                                        )
                         elif enemy["id"] == 3:
@@ -414,6 +415,13 @@ class rpg:
                                        f"( new! ) {inc_stat}이 강화되었습니다.\n"
                                        "...\n"
                                        "헉.. 쨈미쨈미몬이 등장했어요! 끄앙\n"
+                                       f"현재 {enemy['name']}의 체력 : {enemy['hp']}"
+                                       )
+                        elif enemy["id"] == 4:
+                            result += (f"\n \n레벨 업! 현재 레벨 : {player['level']}\n"
+                                       f"( new! ) {inc_stat}이 강화되었습니다.\n"
+                                       "...\n"
+                                       "우왓!! 희귀 몬스터 토끼몬이 등장했어요!!!\n"
                                        f"현재 {enemy['name']}의 체력 : {enemy['hp']}"
                                        )
                         else:
