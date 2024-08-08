@@ -868,11 +868,10 @@ class pvp:
 
 
     async def leaderboard(self, interaction: discord.Interaction):
-        data = GameDataManager.load_game_data()
-        
-        user_nickname = get_user_nickname(guild, interaction.user.id) 
+        guild = interaction.guild
         data = GameDataManager.load_game_data()
 
+        user_nickname = get_user_nickname(guild, interaction.user.id) 
         pvp_data = data.get("pvp", {})
         if not pvp_data:
             await interaction.response.send_message("전적 정보가 없습니다. `/pvp`로 전투를 시작해보세요!")
@@ -885,7 +884,7 @@ class pvp:
         )
 
         leaderboard_message = "PVP 순위:\n"
-        for rank, (user_id, pvp) in enumerate(sorted_users, start=1):
+        for rank, (user_id, player) in enumerate(sorted_users, start=1):
             user_nickname = get_user_nickname(guild, int(user_id))
             leaderboard_message += f"{rank}. {user_nickname} - {player['pvp_win']}승 {player['pvp_lose']}패\n"
 
