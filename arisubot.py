@@ -750,7 +750,7 @@ class pvp:
 
             select_menu.callback = select_callback
 
-            await interaction.response.send_message(" ", view=view)
+            await interaction.response.send_message("선택한 상대와 배틀을 시작합니다.", view=view)
 
         except Exception as e:
             print(f"[ERROR] start_game: {e}")
