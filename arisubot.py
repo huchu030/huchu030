@@ -379,7 +379,7 @@ class rpg:
                             "attack": 0.3,
                             "defense": 0.3,
                             "evasionchance": 0.2,
-                            "lcriticalchance": 0.2
+                            "criticalchance": 0.2
                         }
 
                         stat_to_increase = random.choices(
