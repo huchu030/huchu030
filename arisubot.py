@@ -9,7 +9,6 @@ import random
 import asyncio
 import json
 import os
-import copy
 
 # 토큰, 채널 ID
 
@@ -294,16 +293,11 @@ class rpg:
         else:
             enemies = self.enemies["1-3"]
     
-        enemy = copy.deepcopy(random.choices(
+        enemy = random.choices(
             population=enemies,
             weights=[enemy["weight"] for enemy in enemies],
             k=1
-        )[0])
-
-        if enemy["id"] == 3:
-            enemy["hp"] = 50 * player["level"]
-        else:
-            enemy["hp"] = 40 + 10 * player["level"]
+            )[0]
 
         return enemy
             
@@ -413,6 +407,7 @@ class rpg:
                         data["current_enemies"][user_id] = enemy
 
                         if enemy["id"] == 4:
+                            enemy["hp"] = 40 + 10 * player["level"]
                             result += (f"\n \n레벨 업! 현재 레벨 : {player['level']}\n"
                                        f"( new! ) {inc_stat}이 강화되었습니다.\n"
                                        "...\n"
@@ -421,6 +416,7 @@ class rpg:
                                        )
                         
                         elif enemy["id"] == old_id:
+                            enemy["hp"] = 40 + 10 * player["level"]
                             result += (f"\n \n레벨 업! 현재 레벨 : {player['level']}\n"
                                        f"( new! ) {inc_stat}이 강화되었습니다.\n"
                                        "...\n"
@@ -429,6 +425,7 @@ class rpg:
                                        )
                             
                         elif enemy["id"] == 3:
+                            enemy["hp"] = 50 * player["level"]
                             result += (f"\n \n레벨 업! 현재 레벨 : {player['level']}\n"
                                        f"( new! ) {inc_stat}이 강화되었습니다.\n"
                                        "...\n"
@@ -436,6 +433,7 @@ class rpg:
                                        f"현재 {enemy['name']}의 체력 : {enemy['hp']}"
                                        )
                         else:
+                            enemy["hp"] = 40 + 10 * player["level"]
                             result += (f"\n \n레벨 업! 현재 레벨 : {player['level']}\n"
                                        f"( new! ) {inc_stat}이 강화되었습니다.\n"
                                        "...\n"
