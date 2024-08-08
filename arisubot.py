@@ -301,10 +301,10 @@ class rpg:
             k=1
         )[0]
         
-        enemy["hp"] = 40 + 10 * player["level"]
-
         if enemy["id"] == 3:
             enemy["hp"] = 50 * player["level"]
+        else:
+            enemy["hp"] = 40 + 10 * player["level"]
 
         return enemy
             
@@ -410,9 +410,8 @@ class rpg:
                         
                         old_id = enemy["id"]
                         
-                        new_enemy = self.get_enemy_for_level(player["level"], user_id)
-                        data["current_enemies"][user_id] = new_enemy
-                        enemy = data["current_enemies"][user_id] 
+                        enemy = self.get_enemy_for_level(player["level"], user_id)
+                        data["current_enemies"][user_id] = enemy 
                         
                         if enemy["id"] == old_id:
                             result += (f"\n \n레벨 업! 현재 레벨 : {player['level']}\n"
