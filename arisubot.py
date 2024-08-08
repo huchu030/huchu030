@@ -643,15 +643,16 @@ class rpg:
 # pvp
 
 
+
 class pvp:
     def __init__(self):
         GameDataManager.initialize_game_data()
-        
+
     def initialize_player(self, user_id):
         game_data = GameDataManager.load_game_data()
         if "pvp" not in game_data:
             game_data["pvp"] = {}
-        
+
         if user_id not in game_data["pvp"]:
             game_data["pvp"][user_id] = {
                 "hp": 100,
@@ -686,8 +687,7 @@ class pvp:
                 member_id = str(member.id)
                 if member_id in data["pvp"] and data["pvp"][member_id]["in_battle"]:
                     label = f"{get_user_nickname(guild, member.id)} (전투 중)"
-                    description = "전투 중인 유저입니다."
-                    options.append(discord.SelectOption(label=label, value=member_id, description=description, default=True, emoji="⚔️"))
+                    options.append(discord.SelectOption(label=label, value=member_id, default=True, emoji="⚔️"))
                 else:
                     label = get_user_nickname(guild, member.id)
                     options.append(discord.SelectOption(label=label, value=member_id))
@@ -701,10 +701,16 @@ class pvp:
                 options=options
             )          
     
-            
+            view = discord.ui.View()
+            view.add_item(select_menu)
+
             async def select_callback(select_interaction: discord.Interaction):
                 try:
                     values = select_interaction.data.get('values', [])
+
+                    if not values:
+                        await select_interaction.response.send_message("상대가 선택되지 않았습니다.")
+                        return
 
                     opponent_id = values[0]
                     challenger_id = str(select_interaction.user.id)
@@ -739,18 +745,18 @@ class pvp:
                     await select_interaction.response.send_message(f"{opponent_nickname}님과의 전투가 시작되었습니다.\n"
                                                                    "`/맞짱`으로 상대를 공격해보세요!")
                 except Exception as e:
-                    print(f"[ERROR] start_game: {e}")
-                    await interaction.response.send_message(f"{e}")
-                
-                select_menu.callback = select_callback
-                view = discord.ui.View()
-                view.add_item(select_menu)
-                await interaction.response.send_message("테스트", view=view)
-        
+                    print(f"[ERROR] select_callback: {e}")
+                    await select_interaction.response.send_message(f"{e}")
+
+            select_menu.callback = select_callback
+
+            await interaction.response.send_message(" ", view=view)
+
         except Exception as e:
             print(f"[ERROR] start_game: {e}")
             await interaction.response.send_message(f"{e}")
-            
+
+    
     async def attack(self, interaction: discord.Interaction):
         guild = interaction.guild
         user_nickname = get_user_nickname(guild, interaction.user.id)
