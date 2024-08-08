@@ -191,12 +191,13 @@ class rpg:
             "criticaldamage": {"label": "민트초코", "cost": 150, "effect": "criticaldamage", "value": 0.05, "price_increase": 50},
             "evasionitems": {"label": "수학의 정석", "cost": 500, "effect": "evasionitems", "value": 1, "price_increase": 200}
         }
-        self.enemies = {"1-3": [{"name": "쨈미몬", "hp":50, "id": 1}
+        self.enemies = {"1-3": [{"name": "쨈미몬", "hp":50, "weight": 1, "id": 1}
                                 ],
-                        "4-1000": [{"name": "쨈미몬", "hp":50, "id": 1},
-                                {"name": "쨈쨈몬", "hp":50, "id": 2}
+                        "4-1000": [{"name": "쨈미몬", "hp":50, "weight": 0.5, "id": 1},
+                                   {"name": "쨈쨈몬", "hp":50, "weight": 0.45, "id": 2},
+                                   {"name": "토끼몬", "hp":50, "weight": 0.05, "id": 4} 
                                 ],
-                        "10+": [{"name": "쨈미쨈미몬", "hp":50, "id": 3}
+                        "10+": [{"name": "쨈미쨈미몬", "hp":50, "weight": 1, "id": 3}
                                 ],
                         }
 
@@ -281,8 +282,15 @@ class rpg:
             enemies = self.enemies["4-1000"]
         else:
             enemies = self.enemies["1-3"]
+    
+        
 
-        enemy = random.choice(enemies)
+        enemy = random.choices(
+            population=enemies,
+            weights=[enemy["weight"] for enemy in enemies],
+            k=1
+        )[0]
+        
         enemy["hp"] = 40 + 10 * player["level"]
 
         if enemy["id"] == 3:
@@ -347,9 +355,14 @@ class rpg:
 
                 if enemy["hp"] <= 0:
                     exp_gain = random.randint(30, 40)
+                    coin_gain = random.randint(player["level"]*10, player["level"]*10+20)
+                    
                     if enemy["id"] == 3:
                         exp_gain = 100
-                    coin_gain = random.randint(player["level"]*10, player["level"]*10+20)
+                    if enemy["id"] == 4:
+                        exp_gain = 100
+                        coin_gain = player["level"]*100
+                    
                     player["hp"] = 100
                     player["exp"] += exp_gain
                     player["coins"] += coin_gain
