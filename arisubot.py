@@ -174,9 +174,42 @@ class NumberGuessing:
             game.game_active = False
             await interaction.response.send_message(f"게임을 포기했습니다. 정답은 {game.secret_number}입니다! \n"
                                                     "아리스랑 놀아주세요...")
-# rpg
+# 게임 데이터 관리
 
 data_file = 'game_data.json'
+
+class GameDataManager:
+    @staticmethod
+    def initialize_game_data():
+        if not os.path.exists(data_file) or os.path.getsize(data_file) == 0:
+            default_data = {
+                "players": {},
+                "current_enemies": {},
+                "purchases": {},
+                "pvp": {}
+            }
+            with open(data_file, 'w') as f:
+                json.dump(default_data, f, indent=4)
+            print(f"Initialized game data with default values in {data_file}")
+
+    @staticmethod
+    def load_game_data():
+        try:
+            with open(data_file, 'r') as f:
+                return json.load(f)
+        except Exception as e:
+            print(f"[ERROR] Error loading game data: {e}")
+            return {"pvp": {}}
+
+    @staticmethod
+    def save_game_data(data):
+        try:
+            with open(data_file, 'w') as f:
+                json.dump(data, f, indent=4)
+        except Exception as e:
+            print(f"[ERROR] Error saving game data: {e}")
+     
+# rpg
 
 class rpg:
 
@@ -201,36 +234,8 @@ class rpg:
                                 ],
                         }
 
-        
-        self.initialize_game_data()
-
-    def initialize_game_data(self):
-        if not os.path.exists(data_file) or os.path.getsize(data_file) == 0:
-            default_data = {
-                "players": {},
-                "current_enemies": {},
-                "purchases": {}
-            }
-            with open(data_file, 'w') as f:
-                json.dump(default_data, f, indent=4)
-
-    def load_game_data(self):
-        try:
-            with open(data_file, 'r') as f:
-                return json.load(f)
-        except Exception as e:
-            print(f"[ERROR] Error loading game data: {e}")
-            return {"players": {}, "current_enemies": {}}
-
-    def save_game_data(self, data):
-        try:
-            with open(data_file, 'w') as f:
-                json.dump(data, f, indent=4)
-        except Exception as e:
-            print(f"[ERROR] Error saving game data: {e}")
-
     def add_new_player(self, user_id):
-        data = self.load_game_data()
+        data = GameDataManager.load_game_data()
 
         print(f"[DEBUG] Loaded data: {data}")
 
@@ -256,24 +261,24 @@ class rpg:
 
             print(f"[DEBUG] Saving data: {data}")
             
-            self.save_game_data(data)
+            GameDataManager.save_game_data(data)
         else:
             print(f"[DEBUG] Player with ID {user_id} already exists.")
 
     def is_player_in_game(self, user_id):
-        data = self.load_game_data()
+        data = GameDataManager.load_game_data()
         return user_id in data["players"]
             
     def delete_player_data(self, user_id):
-        data = self.load_game_data()
+        data = GameDataManager.load_game_data()
         if user_id in data["players"]:
             del data["players"][user_id]
             del data["current_enemies"][user_id]
             del data["purchases"][user_id]
-            self.save_game_data(data)
+            GameDataManager.save_game_data(data)
 
     def get_enemy_for_level(self, level, user_id):
-        data = self.load_game_data()
+        data = GameDataManager.load_game_data()
         player = data["players"][user_id]
 
         if level % 10 == 0:
@@ -310,7 +315,7 @@ class rpg:
         
     async def attack(self, interaction: discord.Interaction, damage: str):
         try:
-            data = self.load_game_data()
+            data = GameDataManager.load_game_data()
             guild = interaction.guild
             user_nickname = get_user_nickname(guild, interaction.user.id)
             user_id = str(interaction.user.id)
@@ -464,14 +469,14 @@ class rpg:
                         await interaction.response.send_message(result)
                         return
                     
-            self.save_game_data(data)
+            GameDataManager.save_game_data(data)
             await interaction.response.send_message(result)
         except Exception as e:
             print(f"[ERROR] 공격 명령어 오류: {e}")
             await interaction.response.send_message("[ERROR] 공격 도중 오류가 발생했습니다. 쨈미에게 문의해주세요.")
 
     async def stats(self, interaction: discord.Interaction):
-        data = self.load_game_data()
+        data = GameDataManager.load_game_data()
         guild = interaction.guild
         user_nickname = get_user_nickname(guild, interaction.user.id)
         user_id = str(interaction.user.id)
@@ -501,7 +506,7 @@ class rpg:
         try:
             guild = interaction.guild
             user_nickname = get_user_nickname(guild, interaction.user.id) 
-            data = self.load_game_data()
+            data = GameDataManager.load_game_data()
 
             sorted_players = sorted(
                 [(user_id, player) for user_id, player in data["players"].items()],
@@ -520,7 +525,7 @@ class rpg:
 
 
     def get_item_cost(self, item_key, user_id):
-        data = self.load_game_data()
+        data = GameDataManager.load_game_data()
         base_cost = self.items[item_key]["cost"]
         price_increase = self.items[item_key]["price_increase"]
         purchase_data = data["purchases"].get(user_id, {})
@@ -528,7 +533,7 @@ class rpg:
         return base_cost + (price_increase * purchase_count)
     
     async def shop(self, interaction: discord.Interaction):
-        data = self.load_game_data()
+        data = GameDataManager.load_game_data()
         user_id = str(interaction.user.id)
         player_data = data.get("players", {}).get(user_id, None)
         enemy_data = data.get("current_enemies", {}).get(user_id, None)
@@ -567,7 +572,7 @@ class rpg:
             custom_id = interaction.data.get('custom_id', '')
             item_key = custom_id.split('_')[1]
 
-            data = self.load_game_data()
+            data = GameDataManager.load_game_data()
             user_id = str(interaction.user.id)
             guild = interaction.guild
             user_nickname = get_user_nickname(guild, interaction.user.id)
@@ -584,7 +589,7 @@ class rpg:
                         player_data[item["effect"]] += item["value"]
                         
                         data["purchases"][user_id][item_key] += 1
-                        self.save_game_data(data)
+                        GameDataManager.save_game_data(data)
 
                         effect_message = {
                             "hp": "체력을 50 회복했습니다!",
@@ -636,7 +641,7 @@ data_file = 'game_data.json'
 
 class pvp:
     def initialize_player(self, user_id):
-        game_data = self.load_game_data()
+        game_data = GameDataManager.load_game_data()
         if "pvp" not in game_data:
             game_data["pvp"] = {}
         
@@ -648,29 +653,14 @@ class pvp:
                 "in_battle": False,
                 "turn": False
             }
-            self.save_game_data(game_data)
-
-    def load_game_data(self):
-        try:
-            with open(data_file, 'r') as f:
-                return json.load(f)
-        except Exception as e:
-            print(f"[ERROR] Error loading game data: {e}")
-            return {"pvp": {}}
-
-    def save_game_data(self, data):
-        try:
-            with open(data_file, 'w') as f:
-                json.dump(data, f, indent=4)
-        except Exception as e:
-            print(f"[ERROR] Error saving game data: {e}")
+            GameDataManager.save_game_data(game_data)
 
     async def start_game(self, interaction: discord.Interaction):
         guild = interaction.guild
         user_nickname = get_user_nickname(guild, interaction.user.id)
         
         user_id = str(interaction.user.id)
-        data = self.load_game_data()
+        data = GameDataManager.load_game_data()
 
         if user_id in data["pvp"] and data["pvp"][user_id]["in_battle"]:
             opponent_id = next((uid for uid in data["pvp"] if uid != user_id and data["pvp"][uid]["in_battle"]), None)
@@ -711,7 +701,7 @@ class pvp:
             data["pvp"][opponent_id]["turn"] = False
             data["pvp"][challenger_id]["turn"] = True
 
-            self.save_game_data(data)
+            GameDataManager.save_game_data(data)
             
             opponent_nickname = get_user_nickname(interaction.guild, int(opponent_id))
             await interaction.response.send_message(f"{opponent_nickname}님과의 전투가 시작되었습니다.\n"
@@ -726,7 +716,7 @@ class pvp:
         user_nickname = get_user_nickname(guild, interaction.user.id)
         
         user_id = str(interaction.user.id)
-        data = self.load_game_data()
+        data = GameDataManager.load_game_data()
 
         if user_id not in data["pvp"]:
             await interaction.response.send_message("현재 전투 중이 아닙니다. `/pvp`로 전투를 시작해보세요!")
@@ -757,7 +747,7 @@ class pvp:
 
         challenger["turn"] = False
         opponent["turn"] = True
-        self.save_game_data(data)
+        GameDataManager.save_game_data(data)
 
         if opponent["hp"] <= 0:
             winner_id = user_id
@@ -768,7 +758,7 @@ class pvp:
         await interaction.followup.send(f"이제 {opponent_nickname}님의 턴입니다. 빨리 복수하세요!")
 
     async def end_battle(self, interaction, winner_id, loser_id):
-        data = self.load_game_data()
+        data = GameDataManager.load_game_data()
         
         winner_nickname = get_user_nickname(interaction.guild, int(winner_id))
         loser_nickname = get_user_nickname(interaction.guild, int(loser_id))
@@ -786,7 +776,7 @@ class pvp:
         data["pvp"][winner_id]["turn"] = None
         data["pvp"][loser_id]["turn"] = None
         
-        self.save_game_data(data)
+        GameDataManager.save_game_data(data)
 
     
 # 봇 설정
