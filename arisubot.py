@@ -333,14 +333,13 @@ class rpg:
             damage = int(damage)
 
             success_chance = random.randint(10, 90) + player["attackchance"]
+            if player["level"] <= 3:
+                success_chance = random.randint(50, 90) + player["attackchance"]
             actual_chance = random.randint(10, 90)
             attack_success = actual_chance <= success_chance
         
             critical_hit = random.randint(1, 100) <= player["criticalchance"]
             total_damage = damage + player["attack"]
-
-            if player["level"] <= 3:
-                success_chance = random.randint(50, 90) + player["attackchance"]
 
             result = ""
 
