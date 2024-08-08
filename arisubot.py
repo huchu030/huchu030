@@ -816,7 +816,7 @@ class pvp:
         user_id = str(interaction.user.id)
         data = GameDataManager.load_game_data()
 
-        if user_id not in data["pvp"]: or if not data["pvp"][user_id]["in_battle"]:
+        if user_id not in data["pvp"] or if not data["pvp"][user_id]["in_battle"]:
             await interaction.response.send_message("현재 전투 중이 아닙니다. `/pvp`로 전투를 시작해보세요!")
             return
         
