@@ -703,6 +703,12 @@ class pvp:
     
             
             async def select_callback(select_interaction: discord.Interaction):
+            guild = interaction.guild
+            user_nickname = get_user_nickname(guild, interaction.user.id)
+            
+            user_id = str(interaction.user.id)
+            data = GameDataManager.load_game_data()
+            
                 try:
                     values = select_interaction.data.get('values', [])
 
