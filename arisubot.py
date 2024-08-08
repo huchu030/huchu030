@@ -743,11 +743,11 @@ class pvp:
                     print(f"[ERROR] start_game: {e}")
                     await interaction.response.send_message(f"{e}")
                 
-            select_menu.callback = select_callback
-            view = discord.ui.View()
-            view.add_item(select_menu)
-            await interaction.response.send_message("테스트", view=view)
-                
+                select_menu.callback = select_callback
+                view = discord.ui.View()
+                view.add_item(select_menu)
+                await interaction.response.send_message("테스트", view=view)
+        
         except Exception as e:
             print(f"[ERROR] start_game: {e}")
             await interaction.response.send_message(f"{e}")
