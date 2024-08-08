@@ -476,7 +476,8 @@ class rpg:
             await interaction.response.send_message(result)
         except Exception as e:
             print(f"[ERROR] 공격 명령어 오류: {e}")
-            await interaction.response.send_message("[ERROR] 공격 도중 오류가 발생했습니다. 쨈미에게 문의해주세요.")
+            await interaction.response.send_message(f"{e}"
+                                                    "[ERROR] 공격 도중 오류가 발생했습니다. 쨈미에게 문의해주세요.")
 
     async def stats(self, interaction: discord.Interaction):
         data = GameDataManager.load_game_data()
