@@ -878,6 +878,8 @@ class pvp:
             await interaction.response.send_message("전적 정보가 없습니다. `/pvp`로 전투를 시작해보세요!")
             return
 
+        player_data = data["pvp"][user_id]
+
         sorted_users = sorted(
             pvp_data.items(), 
             key=lambda x: (x[1]["pvp_win"], -x[1]["pvp_lose"]), 
@@ -885,7 +887,7 @@ class pvp:
         )
 
         leaderboard_message = "PVP 순위:\n"
-        for rank, (user_id, player) in enumerate(sorted_users, start=1):
+        for rank, (user_id, pvp) in enumerate(sorted_users, start=1):
             user_nickname = get_user_nickname(guild, int(user_id))
             leaderboard_message += f"{rank}. {user_nickname} - {player_data['pvp_win']}승 {player_data['pvp_lose']}패\n"
 
