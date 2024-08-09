@@ -961,8 +961,10 @@ class pvp:
         data = GameDataManager.load_game_data()
         player = data["pvp"][user_id]
 
-        await interaction.response.send_message(f"{user_nickname}님의 사용 가능 포인트 : {player['points'] + player['store']}\n"
-                                                "주의 : 자신의 턴일 때 조회해야 실제 값이 나옵니다!", ephemeral=True)
+        if player['turn']:
+            await interaction.response.send_message(f"{user_nickname}님의 사용 가능 포인트 : {player['points'] + player['store']}" , ephemeral=True)
+        else:
+            await interaction.response.send_message("자신의 턴이 돌아오면 조회해주세요!" , ephemeral=True)
                                             
     async def stats(self, interaction: discord.Interaction):
         user_id = str(interaction.user.id)
