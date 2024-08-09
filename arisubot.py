@@ -763,7 +763,7 @@ class pvp:
 
                             await button_interaction.response.send_message(f"{opponent_nickname}님과의 전투가 시작되었습니다.\n"
                                                                            "`/행동`으로 포인트를 사용하세요!")
-                            await update_points(button_interaction)
+                            await self.update_points(button_interaction)
                             
                         except Exception as e:
                             print(f"[ERROR] accept_button_callback: {e}")
