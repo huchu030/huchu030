@@ -823,7 +823,7 @@ class pvp:
 
             if attack + defense + store != player['points']+player['store']:
                 await interaction.response.send_message("포인트 분배가 올바르지 않습니다. 다시 입력해 주세요.\n"
-                                                        f"현재 사용 가능 포인트 : {player['points']}", ephemeral=True)
+                                                        f"현재 사용 가능 포인트 : {player['points']+player['store']}", ephemeral=True)
                 return
 
             
