@@ -764,13 +764,7 @@ class pvp:
                         await button_interaction.response.send_message(f"{opponent_nickname}님과의 전투가 시작되었습니다.\n"
                                                                        "`/행동`으로 포인트를 사용하세요!")
                         await self.update_points(button_interaction)
-                        
-                    except Exception as e:
-                        print(f"[ERROR] accept_button_callback: {e}")
-                        await button_interaction.response.send_message(f"{e}\n"
-                                                                       "게임 시작 중 오류가 발생했습니다.", ephemeral=True)
-
-                    
+ 
                 accept_button.callback = accept_button_callback
 
                 view = discord.ui.View()
