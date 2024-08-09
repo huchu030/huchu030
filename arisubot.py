@@ -759,12 +759,12 @@ class pvp:
                         data["pvp"][opponent_id]["turn"] = False
                         data["pvp"][user_id]["turn"] = True
                         data["pvp"][opponent_id]["id"] = 2
+                        data["pvp"][user_id]["points"] = 1
 
                         GameDataManager.save_game_data(data)
 
                         await button_interaction.response.send_message(f"{opponent_nickname}님과의 전투가 시작되었습니다.\n"
                                                                        "`/행동`으로 포인트를 사용하세요!")
-                        await self.give_point(interaction)
                             
                     accept_button.callback = accept_button_callback
 
@@ -796,24 +796,21 @@ class pvp:
         player = data["pvp"][user_id]
         opponent = data["pvp"][opponent_id]
 
-        if player["id"] == 2:
-            if player["points"] == 0:
-                player["points"] = 2
-            elif player["points"] < 4:
-                player["points"] += 1
+        if opponent["id"] == 2:
+            if opponent["points"] == 0:
+                opponent["points"] = 2
+            elif opponent["points"] < 4:
+                opponent["points"] += 1
             else:
-                player["points"] = 4
+                opponent["points"] = 4
 
         else:
-            if player["points"] < 4:
-                player["points"] += 1
+            if opponent["points"] < 4:
+                opponent["points"] += 1
             else:
-                player["points"] = 4
+                opponent["points"] = 4
 
         GameDataManager.save_game_data(data)
-
-
-
 
     async def attack(self, interaction: discord.Interaction, attack: int, defense: int, store: int):
         try:
@@ -867,6 +864,7 @@ class pvp:
 
             player["turn"] = False
             opponent["turn"] = True
+            player["points"] = 0
 
             await self.give_point(interaction)
 
@@ -901,11 +899,21 @@ class pvp:
                                         f"{loser_nickname}님은 패배했습니다. 쟌넨")
 
         data["pvp"][winner_id]["hp"] = 100
-        data["pvp"][loser_id]["hp"] = 100
         data["pvp"][winner_id]["in_battle"] = False
-        data["pvp"][loser_id]["in_battle"] = False
         data["pvp"][winner_id]["turn"] = False
+        data["pvp"][winner_id]["points"] = 0
+        data["pvp"][winner_id]["store"] = 0
+        data["pvp"][winner_id]["defense"] = 0
+        data["pvp"][winner_id]["id"] = 1
+        
+        data["pvp"][loser_id]["hp"] = 100
+        data["pvp"][loser_id]["in_battle"] = False
         data["pvp"][loser_id]["turn"] = False
+        data["pvp"][loser_id]["points"] = 0
+        data["pvp"][loser_id]["store"] = 0
+        data["pvp"][loser_id]["defense"] = 0
+        data["pvp"][loser_id]["id"] = 1
+
         
         GameDataManager.save_game_data(data)
 
@@ -923,12 +931,20 @@ class pvp:
             data["pvp"][user_id]["pvp_lose"] += 1
             data["pvp"][user_id]["in_battle"] = False
             data["pvp"][user_id]["turn"] = False
+            data["pvp"][user_id]["points"] = 0
+            data["pvp"][user_id]["store"] = 0
+            data["pvp"][user_id]["defense"] = 0
+            data["pvp"][user_id]["id"] = 1
 
         if opponent_id in data["pvp"]:
             data["pvp"][opponent_id]["hp"] = 100
             data["pvp"][opponent_id]["pvp_win"] += 1
             data["pvp"][opponent_id]["in_battle"] = False
             data["pvp"][opponent_id]["turn"] = False
+            data["pvp"][opponent_id]["points"] = 0
+            data["pvp"][opponent_id]["store"] = 0
+            data["pvp"][opponent_id]["defense"] = 0
+            data["pvp"][opponent_id]["id"] = 1
 
         GameDataManager.save_game_data(data)
 
