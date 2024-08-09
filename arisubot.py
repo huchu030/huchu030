@@ -767,7 +767,8 @@ class pvp:
                             
                         except Exception as e:
                             print(f"[ERROR] accept_button_callback: {e}")
-                            await button_interaction.response.send_message(f"{e}", ephemeral=True)
+                            await button_interaction.response.send_message(f"{e}\n"
+                                                                           "게임 시작 중 오류가 발생했습니다.", ephemeral=True)
 
                         
                     accept_button.callback = accept_button_callback
@@ -813,7 +814,7 @@ class pvp:
             else:
                 player_data["points"] = 4
 
-        await interaction.response.send_message(f"현재 {user_nickname}님의 턴입니다.`/행동`으로 포인트를 사용하세요.")
+        await interaction.followup.send_message(f"현재 {user_nickname}님의 턴입니다.`/행동`으로 포인트를 사용하세요.")
 
     async def action(self, interaction, attack_points: int, defense_points: int, store_points: int):
         game_data = GameDataManager.load_game_data()
