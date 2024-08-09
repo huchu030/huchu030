@@ -663,7 +663,13 @@ class pvp:
                 "pvp_win": 0,
                 "pvp_lose": 0,
                 "in_battle": False,
-                "turn": False
+                "turn": False,
+                "pvp_win": 0,
+                "pvp_lose": 0,
+                "points": 0,
+                "store": 0,
+                "defense": 0,
+                "id" : 1
             }
             GameDataManager.save_game_data(game_data)
 
@@ -758,7 +764,7 @@ class pvp:
 
                         await button_interaction.response.send_message(f"{opponent_nickname}님과의 전투가 시작되었습니다.\n"
                                                                        "`/행동`으로 포인트를 사용하세요!")
-                        await self.handle_turn(interaction)
+                        await self.give_point(interaction)
                             
                     accept_button.callback = accept_button_callback
 
@@ -783,13 +789,12 @@ class pvp:
             await interaction.response.send_message(f"{e}")
             
 
-    async def handle_turn(self, interaction: discord.Interaction):
+    async def give_point(self, interaction: discord.Interaction):
         user_id = str(interaction.user.id)
         data = GameDataManager.load_game_data()
         opponent_id = next((uid for uid in data["pvp"] if uid != user_id and data["pvp"][uid]["in_battle"]), None)
         player = data["pvp"][user_id]
         opponent = data["pvp"][opponent_id]
-
 
         if player["id"] == 2:
             if player["points"] == 0:
@@ -805,8 +810,10 @@ class pvp:
             else:
                 player["points"] = 4
 
+        GameDataManager.save_game_data(data)
 
-    async def attack(self, interaction: discord.Interaction):
+
+    async def attack(self, interaction: discord.Interaction, attack: int, defense: int, store: int):
         data = GameDataManager.load_game_data()
         guild = interaction.guild
         
@@ -823,20 +830,39 @@ class pvp:
             await interaction.response.send_message("현재 전투 중이 아닙니다. `/pvp`로 전투를 시작해보세요!")
             return
         
-        if not data["pvp"][user_id]["in_battle"]:
+        if not player["in_battle"]:
             await interaction.response.send_message("현재 전투 중이 아닙니다. `/pvp`로 전투를 시작해보세요!")
             return
         
-        if not data["pvp"][user_id]["turn"]:
+        if not player["turn"]:
             await interaction.response.send_message(f"지금은 {user_nickname}님의 턴이 아닙니다. 인내심을 가지세요!")
             return
 
+        if attack + defense + store != player_data['points']:
+            await interaction.response.send_message("포인트 분배가 올바르지 않습니다. 다시 입력해 주세요.\n"
+                                                    f"현재 사용 가능 포인트 : {player['points']}", ephemeral = True)
+            return
 
+        player["store"] += store
 
+        if player["store"] > 4:
+            player["store"] -= store
+            await interaction.response.send_message("저장된 포인트의 합계는 최대 4입니다. 다시 입력해 주세요.\n"
+                                                    f"현재 저장된 포인트 : {player['points']}", ephemeral = True)
+            return
 
+        player["defense"] = defense
+
+        damage = attack*10
+        damage -= opponent["defense"] * 10
+        if damage < 0:
+            damage = 0
+        opponent["hp"] -= damage
 
         player["turn"] = False
         opponent["turn"] = True
+        
+        await self.give_point(interaction)
 
         
         GameDataManager.save_game_data(data)
