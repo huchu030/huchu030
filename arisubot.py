@@ -862,16 +862,18 @@ class pvp:
             GameDataManager.save_game_data(data)
 
             if opponent["hp"] <= 0:
+                opponent["hp"] = 0
                 winner_id = user_id
                 loser_id = opponent_id
                 await self.end_battle(interaction, winner_id, loser_id)
+                await interaction.response.send_message(f"\n\n 뽜밤뽜밤-! {winner_nickname}님이 승리했습니다!\n"
+                                                        f"{loser_nickname}님은 패배했습니다. ")
                 return
 
-            await interaction.response.defer()
-            await interaction.followup.send(f"{user_nickname}님이 공격에 {attack}포인트를 사용했습니다.\n"
-                                            f"{opponent_nickname}님이 {damage}의 데미지를 입었습니다.\n"
-                                            f"{user_nickname}님의 체력 : {player['hp']}, {opponent_nickname}님의 체력 : {opponent['hp']}\n"
-                                            f"\n이제 {opponent_nickname}님의 턴입니다!")
+            await interaction.response.send_message(f"{user_nickname}님이 공격에 {attack}포인트를 사용했습니다.\n"
+                                                    f"{opponent_nickname}님이 {damage}의 데미지를 입었습니다.\n"
+                                                    f"{user_nickname}님의 체력 : {player['hp']}, {opponent_nickname}님의 체력 : {opponent['hp']}\n"
+                                                    f"\n이제 {opponent_nickname}님의 턴입니다!")
 
         except Exception as e:
             print(f"[ERROR in attack]: {e}")
@@ -887,8 +889,7 @@ class pvp:
         data["pvp"][winner_id]["pvp_win"] += 1
         data["pvp"][loser_id]["pvp_lose"] += 1
         
-        await interaction.followup.send(f"\n\n 뽜밤뽜밤-! {winner_nickname}님이 승리했습니다!\n"
-                                        f"{loser_nickname}님은 패배했습니다. 쟌넨")
+        
 
         data["pvp"][winner_id]["hp"] = 100
         data["pvp"][winner_id]["in_battle"] = False
