@@ -669,7 +669,8 @@ class pvp:
                 "points": 0,
                 "store": 0,
                 "defense": 0,
-                "id" : 1
+                "id" : 1,
+                "round": 0
             }
             GameDataManager.save_game_data(game_data)
 
@@ -760,6 +761,7 @@ class pvp:
                         data["pvp"][user_id]["turn"] = True
                         data["pvp"][opponent_id]["id"] = 2
                         data["pvp"][user_id]["points"] = 1
+                        data["pvp"][user_id]["round"] = 1
 
                         GameDataManager.save_game_data(data)
 
@@ -843,18 +845,24 @@ class pvp:
 
             player["turn"] = False
             opponent["turn"] = True
+            opponent["round"] += 1
 
             if opponent["id"] == 2:
-                if opponent["points"] == 0:
+                if opponent["round"] == 1:
                     opponent["points"] = 2
-                elif opponent["points"] < 4:
-                    opponent["points"] += 1
+                elif opponent["round"] == 2:
+                    opponent["points"] = 2
+                elif opponent["round"] == 3:
+                    opponent["points"] = 3
                 else:
                     opponent["points"] = 4
-
             else:
-                if opponent["points"] < 4:
-                    opponent["points"] += 1
+                if opponent["round"] == 1:
+                    opponent["points"] = 1
+                elif opponent["round"] == 2:
+                    opponent["points"] = 2
+                elif opponent["round"] == 3:
+                    opponent["points"] = 3
                 else:
                     opponent["points"] = 4
 
@@ -869,7 +877,7 @@ class pvp:
                 return
 
             await interaction.response.send_message(f"{user_nickname}님이 공격에 {attack}포인트를 사용했습니다.\n"
-                                                    f"{opponent_nickname}님이 {damage}의 데미지를 입었습니다.\n"
+                                                    f"{opponent_nickname}님이 방어 {opponent['defense']}를 사용해 {damage}의 데미지를 입었습니다.\n"
                                                     f"{user_nickname}님의 체력 : {player['hp']}, {opponent_nickname}님의 체력 : {opponent['hp']}\n"
                                                     f"\n이제 {opponent_nickname}님의 턴입니다!")
         except Exception as e:
@@ -893,6 +901,7 @@ class pvp:
         data["pvp"][user_id]["store"] = 0
         data["pvp"][user_id]["defense"] = 0
         data["pvp"][user_id]["id"] = 1
+        data["pvp"][user_id]["round"] = 0
         
         data["pvp"][opponent_id]["hp"] = 100
         data["pvp"][opponent_id]["in_battle"] = False
@@ -901,6 +910,7 @@ class pvp:
         data["pvp"][opponent_id]["store"] = 0
         data["pvp"][opponent_id]["defense"] = 0
         data["pvp"][opponent_id]["id"] = 1
+        data["pvp"][opponent_id]["round"] = 0
 
         
         GameDataManager.save_game_data(data)
@@ -923,6 +933,7 @@ class pvp:
             data["pvp"][user_id]["store"] = 0
             data["pvp"][user_id]["defense"] = 0
             data["pvp"][user_id]["id"] = 1
+            data["pvp"][user_id]["round"] = 0
 
         if opponent_id in data["pvp"]:
             data["pvp"][opponent_id]["hp"] = 100
@@ -933,6 +944,7 @@ class pvp:
             data["pvp"][opponent_id]["store"] = 0
             data["pvp"][opponent_id]["defense"] = 0
             data["pvp"][opponent_id]["id"] = 1
+            data["pvp"][opponent_id]["round"] = 0
 
         GameDataManager.save_game_data(data)
 
