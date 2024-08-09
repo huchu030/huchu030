@@ -645,138 +645,256 @@ class rpg:
             else:
                 await interaction.response.send_message(f"{e}\n"
                                                         "상점이 폐업했습니다. 쟌넨")
-
-
 # pvp
 
 
 class pvp:
     def __init__(self):
-        self.game_data = GameDataManager.load_game_data()
+        GameDataManager.initialize_game_data()
 
-    def save_game_data(self):
-        GameDataManager.save_game_data(self.game_data)
+    def initialize_player(self, user_id):
+        game_data = GameDataManager.load_game_data()
+        if "pvp" not in game_data:
+            game_data["pvp"] = {}
 
-    def initialize_player(self, user):
-        if str(user.id) not in self.game_data['pvp']:
-            self.game_data['pvp'][str(user.id)] = {
-                'hp': 100,
-                'in_battle': False,
-                'turn': False,
-                'win': 0,
-                'lose': 0,
-                'points': 0,
-                'store': 0,
-                'defense': 0,
-                'id': 1
+        if user_id not in game_data["pvp"]:
+            game_data["pvp"][user_id] = {
+                "hp": 100,
+                "pvp_win": 0,
+                "pvp_lose": 0,
+                "in_battle": False,
+                "turn": False
             }
+            GameDataManager.save_game_data(game_data)
 
-    def start_battle(self, player1, player2):
-        self.initialize_player(player1)
-        self.initialize_player(player2)
-        if self.game_data['pvp'][str(player1.id)]['in_battle'] or self.game_data['pvp'][str(player2.id)]['in_battle']:
-            return False, "One of the players is already in a battle."
-        
-        self.game_data['pvp'][str(player1.id)]['in_battle'] = True
-        self.game_data['pvp'][str(player2.id)]['in_battle'] = True
-        self.game_data['pvp'][str(player1.id)]['turn'] = True
-        self.game_data['pvp'][str(player2.id)]['turn'] = False
-        self.game_data['pvp'][str(player1.id)]['points'] = 1
-        self.game_data['pvp'][str(player2.id)]['points'] = 2
-        self.game_data['pvp'][str(player2.id)]['id'] = 2
+    async def start_game(self, interaction: discord.Interaction):
+        try:
+            guild = interaction.guild
+            user_nickname = get_user_nickname(guild, interaction.user.id)
+            
+            user_id = str(interaction.user.id)
+            data = GameDataManager.load_game_data()
 
-        self.save_game_data()
-        return True, "Battle started!"
+            if user_id in data["pvp"] and data["pvp"][user_id]["in_battle"]:
+                opponent_id = next((uid for uid in data["pvp"] if uid != user_id and data["pvp"][uid]["in_battle"]), None)
+                if opponent_id:
+                    opponent_nickname = get_user_nickname(guild, int(opponent_id))
+                    await interaction.response.send_message(f"{user_nickname}님은 현재 {opponent_nickname}님과 전투 중입니다!")
+                    return
 
-    def end_battle(self, winner, loser):
-        self.game_data['pvp'][str(winner.id)]['in_battle'] = False
-        self.game_data['pvp'][str(loser.id)]['in_battle'] = False
-        self.game_data['pvp'][str(winner.id)]['win'] += 1
-        self.game_data['pvp'][str(loser.id)]['lose'] += 1
-        self.save_game_data()
+            self.initialize_player(user_id)
 
-    def execute_action(self, player, action_points):
-        player_data = self.game_data['pvp'][str(player.id)]
-        opponent_id = self.find_opponent(player)
-        
-        if not opponent_id:
-            return False, "Opponent not found."
-        
-        opponent_data = self.game_data['pvp'][str(opponent_id)]
+            all_members = [member for member in guild.members if not member.bot and str(member.id) != user_id]
 
-        if not player_data['turn']:
-            return False, "It's not your turn."
+            options = []
+            for member in all_members:
+                member_id = str(member.id)
+                if member_id in data["pvp"] and data["pvp"][member_id]["in_battle"]:
+                    label = f"{get_user_nickname(guild, member.id)} (전투 중)"
+                    options.append(discord.SelectOption(label=label, value=member_id, default=True, emoji="⚔️"))
+                else:
+                    label = get_user_nickname(guild, member.id)
+                    options.append(discord.SelectOption(label=label, value=member_id))
 
-        total_points = sum(action_points.values()) + player_data['store']
-        if total_points > 8:
-            return False, "You cannot use more than 8 points in total."
+            if not options:
+                await interaction.response.send_message("현재 맞짱 뜰 상대가 없습니다.")
+                return
 
-        attack_points = action_points['attack']
-        defense_points = action_points['defense']
-        store_points = action_points['store']
-
-        # 공격
-        damage = attack_points * 10
-        defense = opponent_data['defense']
-        net_damage = max(0, damage - defense)
-        opponent_data['hp'] -= net_damage
-
-        # 방어와 저장
-        player_data['defense'] = defense_points * 10
-        player_data['store'] = store_points
-
-        # 턴 종료 및 포인트 계산
-        player_data['turn'] = False
-        opponent_data['turn'] = True
-        player_data['points'] = min(4, player_data['points'] + 1)
-        opponent_data['points'] = min(4, opponent_data['points'] + 1)
-
-        self.save_game_data()
-
-        if opponent_data['hp'] <= 0:
-            self.end_battle(player, opponent_data)
-            return True, f"{player.name} wins! {opponent_data['name']} has been defeated."
-
-        return True, f"{player.name} has dealt {net_damage} damage to {opponent_data['name']}."
-
-
-
-    def surrender(self, player):
-        if not self.game_data['pvp'][str(player.id)]['in_battle']:
-            return False, "You are not in a battle."
-        
-        opponent_id = self.find_opponent(player)
-        if not opponent_id:
-            return False, "Opponent not found."
-
-        opponent = discord.utils.get(player.guild.members, id=opponent_id)
-        self.end_battle(opponent, player)
-        return True, f"{player.name} has surrendered. {opponent.name} wins!"
+            select_menu = discord.ui.Select(
+                placeholder="맞짱 뜰 상대를 선택하세요!",
+                options=options
+            )          
     
+            view = discord.ui.View()
+            view.add_item(select_menu)
+
+            async def select_callback(select_interaction: discord.Interaction):
+                try:
+                    values = select_interaction.data.get('values', [])
+
+                    if not values:
+                        await select_interaction.response.send_message("상대가 선택되지 않았습니다.")
+                        return
+
+                    opponent_id = values[0]
+                    user_id = str(select_interaction.user.id)
+
+                    self.initialize_player(opponent_id)
+
+                    if data["pvp"][user_id]["in_battle"]:
+                        opponent_id = next((uid for uid in data["pvp"] if uid != user_id and data["pvp"][uid]["in_battle"]), None)
+                        if opponent_id:
+                            opponent_nickname = get_user_nickname(guild, int(opponent_id))
+                            await select_interaction.response.send_message(f"{user_nickname}님은 현재 {opponent_nickname}님과 전투 중입니다!")
+                            return
+                
+                    if opponent_id == user_id:
+                        await select_interaction.response.send_message("자기 자신과의 싸움은 언제나 어려운 법입니다.")
+                        return
+
+                    if data["pvp"][opponent_id]["in_battle"]:
+                        opponent_nickname = get_user_nickname(select_interaction.guild, int(opponent_id))
+                        await select_interaction.response.send_message(f"{opponent_nickname}님은 현재 다른 사람과 전투 중입니다.\n"
+                                                                       "다른 상대를 골라보세요!")
+                        return
+
+                    data["pvp"][opponent_id]["in_battle"] = True
+                    data["pvp"][user_id]["in_battle"] = True
+                    data["pvp"][opponent_id]["turn"] = False
+                    data["pvp"][user_id]["turn"] = True
+
+                    GameDataManager.save_game_data(data)
+                    
+                    opponent_nickname = get_user_nickname(select_interaction.guild, int(opponent_id))
+                    await select_interaction.response.send_message(f"{opponent_nickname}님과의 전투가 시작되었습니다.\n"
+                                                                   "`/맞짱`으로 상대를 공격해보세요!")
+                except Exception as e:
+                    print(f"[ERROR] select_callback: {e}")
+                    await select_interaction.response.send_message(f"{e}")
+
+            select_menu.callback = select_callback
+
+            await interaction.response.send_message("선택한 상대와 배틀을 시작합니다.", view=view)
+
+        except Exception as e:
+            print(f"[ERROR] start_game: {e}")
+            await interaction.response.send_message(f"{e}")
+
+    async def attack(self, interaction: discord.Interaction):
+        guild = interaction.guild
+        user_nickname = get_user_nickname(guild, interaction.user.id)
+        
+        user_id = str(interaction.user.id)
+        data = GameDataManager.load_game_data()
+
+        if user_id not in data["pvp"]:
+            await interaction.response.send_message("현재 전투 중이 아닙니다. `/pvp`로 전투를 시작해보세요!")
+            return
+        
+        if not data["pvp"][user_id]["in_battle"]:
+            await interaction.response.send_message("현재 전투 중이 아닙니다. `/pvp`로 전투를 시작해보세요!")
+            return
+        
+        if not data["pvp"][user_id]["turn"]:
+            await interaction.response.send_message(f"지금은 {user_nickname}님의 턴이 아닙니다. 인내심을 가지세요!")
+            return
+
+        opponent_id = next((uid for uid in data["pvp"] if uid != user_id and data["pvp"][uid]["in_battle"]), None)
+        if opponent_id is None:
+            await interaction.response.send_message("[ERROR] 상대를 찾을 수 없습니다.")
+            return
+
+        opponent = data["pvp"][opponent_id]
+        challenger = data["pvp"][user_id]
+
+        opponent_nickname = get_user_nickname(guild, int(opponent_id))
+
+        damage = random.randint(30, 50)
+        opponent["hp"] = max(opponent["hp"] - damage, 0)
+        await interaction.response.send_message(f"{user_nickname}님이 {opponent_nickname}님에게 {damage}의 피해를 입혔습니다!\n"
+                                                f"{user_nickname}님의 체력: {challenger['hp']}, {opponent_nickname}님의 체력: {opponent['hp']}")
+
+        challenger["turn"] = False
+        opponent["turn"] = True
+        GameDataManager.save_game_data(data)
+
+        if opponent["hp"] <= 0:
+            winner_id = user_id
+            loser_id = opponent_id
+            await self.end_battle(interaction, winner_id, loser_id)
+            return
+
+        await interaction.followup.send(f"\n\n이제 {opponent_nickname}님의 턴입니다. 빨리 복수하세요!")
+
+    async def end_battle(self, interaction, winner_id, loser_id):
+        data = GameDataManager.load_game_data()
+        
+        winner_nickname = get_user_nickname(interaction.guild, int(winner_id))
+        loser_nickname = get_user_nickname(interaction.guild, int(loser_id))
+
+        data["pvp"][winner_id]["pvp_win"] += 1
+        data["pvp"][loser_id]["pvp_lose"] += 1
+        
+        await interaction.followup.send(f"\n\n 뽜밤뽜밤-! {winner_nickname}님이 승리했습니다!\n"
+                                        f"{loser_nickname}님은 패배했습니다. 쟌넨")
+
+        data["pvp"][winner_id]["hp"] = 100
+        data["pvp"][loser_id]["hp"] = 100
+        data["pvp"][winner_id]["in_battle"] = False
+        data["pvp"][loser_id]["in_battle"] = False
+        data["pvp"][winner_id]["turn"] = False
+        data["pvp"][loser_id]["turn"] = False
+        
+        GameDataManager.save_game_data(data)
 
 
-    def find_opponent(self, player):
-        for opponent_id, data in self.game_data['pvp'].items():
-            if data['in_battle'] and data['id'] != self.game_data['pvp'][str(player.id)]['id']:
-                return int(opponent_id)
-        return None
+    async def surrender(self, interaction: discord.Interaction):
+        user_id = str(interaction.user.id)
+        guild = interaction.guild
 
-    def get_stats(self, player):
-        player_data = self.game_data['pvp'][str(player.id)]
-        embed = discord.Embed(title=f"{player.name}'s Stats")
-        embed.add_field(name="Wins", value=player_data['win'])
-        embed.add_field(name="Losses", value=player_data['lose'])
-        return embed
+        data = GameDataManager.load_game_data()
 
-    def get_rankings(self):
-        rankings = sorted(self.game_data['pvp'].items(), key=lambda x: (-x[1]['win'], x[1]['lose']))
-        embed = discord.Embed(title="PvP Rankings")
-        for rank, (player_id, data) in enumerate(rankings, start=1):
-            player = discord.utils.get(bot.get_all_members(), id=int(player_id))
-            if player:
-                embed.add_field(name=f"{rank}. {player.name}", value=f"Wins: {data['win']}, Losses: {data['lose']}", inline=False)
-        return embed
+        opponent_id = next((uid for uid in data["pvp"] if uid != user_id and data["pvp"][uid]["in_battle"]), None)
 
+        if user_id in data["pvp"]:
+            data["pvp"][user_id]["hp"] = 100
+            data["pvp"][user_id]["pvp_lose"] += 1
+            data["pvp"][user_id]["in_battle"] = False
+            data["pvp"][user_id]["turn"] = False
+
+        if opponent_id in data["pvp"]:
+            data["pvp"][opponent_id]["hp"] = 100
+            data["pvp"][opponent_id]["pvp_win"] += 1
+            data["pvp"][opponent_id]["in_battle"] = False
+            data["pvp"][opponent_id]["turn"] = False
+
+        GameDataManager.save_game_data(data)
+
+        user_nickname = get_user_nickname(guild, interaction.user.id)
+        opponent_nickname = get_user_nickname(guild, int(opponent_id))
+
+        await interaction.response.send_message(f"{user_nickname}님이 {opponent_nickname}님에게 항복했습니다!")
+
+
+
+    async def stats(self, interaction: discord.Interaction):
+        user_id = str(interaction.user.id)
+        guild = interaction.guild
+        user_nickname = get_user_nickname(guild, interaction.user.id)
+
+        data = GameDataManager.load_game_data()
+
+        if user_id not in data["pvp"]:
+            await interaction.response.send_message("전적 정보가 없습니다. `/pvp`로 전투를 시작해보세요!")
+            return
+
+        player_data = data["pvp"][user_id]
+        await interaction.response.send_message(f"[{user_nickname}님의 전적] \n"
+                                                f"{player_data['pvp_win']}승 {player_data['pvp_lose']}패")
+
+
+    async def leaderboard(self, interaction: discord.Interaction):
+        guild = interaction.guild
+        data = GameDataManager.load_game_data()
+
+        user_nickname = get_user_nickname(guild, interaction.user.id) 
+        pvp_data = data.get("pvp", {})
+        if not pvp_data:
+            await interaction.response.send_message("전적 정보가 없습니다. `/pvp`로 전투를 시작해보세요!")
+            return
+
+        sorted_users = sorted(
+            pvp_data.items(), 
+            key=lambda x: (x[1]["pvp_win"], -x[1]["pvp_lose"]), 
+            reverse=True
+        )
+
+        leaderboard_message = "PVP 순위:\n"
+        for rank, (user_id, player) in enumerate(sorted_users, start=1):
+            user_nickname = get_user_nickname(guild, int(user_id))
+            leaderboard_message += f"{rank}. {user_nickname} - {player['pvp_win']}승 {player['pvp_lose']}패\n"
+
+        await interaction.response.send_message(leaderboard_message)
 
 
 
@@ -984,7 +1102,25 @@ async def rpg_규칙(interaction: discord.Interaction):
 
 # pvp 명령어
 
+@bot.tree.command(name="pvp", description="선택한 상대와 pvp 대결을 시작합니다")
+async def pvp(interaction: discord.Interaction):
+    await bot.pvp.start_game(interaction)
 
+@bot.tree.command(name="행동", description="pvp - 포인트를 사용합니다")
+async def 행동(interaction: discord.Interaction):
+    await bot.pvp.attack(interaction)
+
+@bot.tree.command(name="항복", description="pvp - 상대에게 항복합니다")
+async def 항복(interaction: discord.Interaction):
+    await bot.pvp.surrender(interaction)
+
+@bot.tree.command(name="전적", description="pvp - 자신의 전적을 조회합니다")
+async def 전적(interaction: discord.Interaction):
+    await bot.pvp.stats(interaction)
+
+@bot.tree.command(name="pvp_순위", description="pvp - 유저들의 순위를 확인합니다")
+async def pvp_순위(interaction: discord.Interaction):
+    await bot.pvp.leaderboard(interaction)
 
         
 # 로또                                                     
@@ -1018,113 +1154,6 @@ async def 쓰담(interaction: discord.Interaction):
     user_nickname = get_user_nickname(guild, interaction.user.id)
     await interaction.response.send_message(f"{user_nickname}님, 아리스는 행복합니다..")
 
-
-
-# pvpvppvpvppvpv
-
-
-
-
-
-
-
-
-
-
-@bot.tree.command(name="pvp", description="Start a PvP match with another player.")
-async def pvp_command(interaction: discord.Interaction):
-    player = interaction.user
-    bot.pvp.initialize_player(player)
-    
-    # 서버 내 모든 유저를 선택할 수 있는 Select 메뉴 생성
-    options = []
-    for member in interaction.guild.members:
-        if not member.bot and member.id != player.id:  # 봇과 자기 자신을 제외한 멤버
-            options.append(discord.SelectOption(label=member.name, value=str(member.id)))
-
-    if not options:
-        await interaction.response.send_message("No available members to challenge.")
-        return
-
-    select = discord.ui.Select(placeholder="Choose an opponent", options=options)
-
-    async def select_callback(select_interaction: discord.Interaction):
-        opponent_id = int(select.values[0])
-        opponent = interaction.guild.get_member(opponent_id)
-
-        success, message = bot.pvp.start_battle(player, opponent)
-        if not success:
-            await select_interaction.response.send_message(message)
-            return
-
-        accept_button = discord.ui.Button(label="Accept", style=discord.ButtonStyle.green)
-
-        async def accept_button_callback(accept_interaction: discord.Interaction):
-            if accept_interaction.user.id != opponent.id:
-                await accept_interaction.response.send_message("Only the challenged player can accept!")
-                return
-
-            await accept_interaction.response.send_message(f"PvP battle started between {player.mention} and {opponent.mention}!")
-
-        accept_button.callback = accept_button_callback
-
-        view = discord.ui.View()
-        view.add_item(accept_button)
-
-        await select_interaction.response.send_message(f"{opponent.mention}, you have been challenged to a PvP battle!", view=view)
-
-    select.callback = select_callback
-
-    view = discord.ui.View()
-    view.add_item(select)
-
-    await interaction.response.send_message("Select a player to challenge:", view=view)
-
-@bot.tree.command(name="행동", description="Take action in your turn.")
-async def action_command(interaction: discord.Interaction, 공격: int, 방어: int, 저장: int):
-    player = interaction.user
-    success, message = bot.pvp.execute_action(player, {'attack': 공격, 'defense': 방어, 'store': 저장})
-    if not success:
-        await interaction.response.send_message(message)
-        return
-
-    await interaction.response.send_message(message)
-
-
-@bot.tree.command(name="항복", description="Surrender the current PvP battle.")
-async def surrender_command(interaction: discord.Interaction):
-    player = interaction.user
-    success, message = bot.pvp.surrender(player)
-    await interaction.response.send_message(message)
-
-
-@bot.tree.command(name="전적", description="Check your PvP stats.")
-async def stats_command(interaction: discord.Interaction):
-    player = interaction.user
-    stats = bot.pvp.get_stats(player)
-    await interaction.response.send_message(embed=stats)
-
-
-@bot.tree.command(name="순위", description="Check the PvP rankings.")
-async def rankings_command(interaction: discord.Interaction):
-    rankings = bot.pvp.get_rankings()
-    await interaction.response.send_message(embed=rankings)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
 
 # 봇 실행
 
