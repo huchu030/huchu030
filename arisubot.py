@@ -838,42 +838,48 @@ class pvp:
             await interaction.response.send_message(f"지금은 {user_nickname}님의 턴이 아닙니다. 인내심을 가지세요!")
             return
 
-        if attack + defense + store != player_data['points']:
-            await interaction.response.send_message("포인트 분배가 올바르지 않습니다. 다시 입력해 주세요.\n"
-                                                    f"현재 사용 가능 포인트 : {player['points']}", ephemeral = True)
-            return
+        try:
 
-        player["store"] += store
+            if attack + defense + store != player_data['points']:
+                await interaction.response.send_message("포인트 분배가 올바르지 않습니다. 다시 입력해 주세요.\n"
+                                                        f"현재 사용 가능 포인트 : {player['points']}", ephemeral = True)
+                return
 
-        if player["store"] > 4:
-            player["store"] -= store
-            await interaction.response.send_message("저장된 포인트의 합계는 최대 4입니다. 다시 입력해 주세요.\n"
-                                                    f"현재 저장된 포인트 : {player['points']}", ephemeral = True)
-            return
+            player["store"] += store
 
-        player["defense"] = defense
+            if player["store"] > 4:
+                player["store"] -= store
+                await interaction.response.send_message("저장된 포인트의 합계는 최대 4입니다. 다시 입력해 주세요.\n"
+                                                        f"현재 저장된 포인트 : {player['points']}", ephemeral = True)
+                return
 
-        damage = attack*10
-        damage -= opponent["defense"] * 10
-        if damage < 0:
-            damage = 0
-        opponent["hp"] -= damage
+            player["defense"] = defense
 
-        player["turn"] = False
-        opponent["turn"] = True
-        
-        await self.give_point(interaction)
+            damage = attack*10
+            damage -= opponent["defense"] * 10
+            if damage < 0:
+                damage = 0
+            opponent["hp"] -= damage
 
-        
-        GameDataManager.save_game_data(data)
+            player["turn"] = False
+            opponent["turn"] = True
+            
+            await self.give_point(interaction)
 
-        if opponent["hp"] <= 0:
-            winner_id = user_id
-            loser_id = opponent_id
-            await self.end_battle(interaction, winner_id, loser_id)
-            return
+            
+            GameDataManager.save_game_data(data)
 
-        await interaction.followup.send(f"\n이제 {opponent_nickname}님의 턴입니다!")
+            if opponent["hp"] <= 0:
+                winner_id = user_id
+                loser_id = opponent_id
+                await self.end_battle(interaction, winner_id, loser_id)
+                return
+
+            await interaction.followup.send(f"\n이제 {opponent_nickname}님의 턴입니다!")
+            
+        except Exception as e:
+            print(f"[ERROR] action: {e}")
+            await interaction.response.send_message(f"{e}")
 
     async def end_battle(self, interaction, winner_id, loser_id):
         data = GameDataManager.load_game_data()
