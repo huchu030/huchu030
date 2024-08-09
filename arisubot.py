@@ -888,7 +888,7 @@ class pvp:
 
 
 
-       async def end_battle(self, interaction, winner_id, loser_id):
+    async def end_battle(self, interaction, winner_id, loser_id):
         data = GameDataManager.load_game_data()
         
         winner_nickname = get_user_nickname(interaction.guild, int(winner_id))
