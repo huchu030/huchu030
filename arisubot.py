@@ -789,28 +789,6 @@ class pvp:
             await interaction.response.send_message(f"{e}")
             
 
-    async def give_point(self, interaction: discord.Interaction):
-        user_id = str(interaction.user.id)
-        data = GameDataManager.load_game_data()
-        opponent_id = next((uid for uid in data["pvp"] if uid != user_id and data["pvp"][uid]["in_battle"]), None)
-        player = data["pvp"][user_id]
-        opponent = data["pvp"][opponent_id]
-
-        if opponent["id"] == 2:
-            if opponent["points"] == 0:
-                opponent["points"] = 2
-            elif opponent["points"] < 4:
-                opponent["points"] += 1
-            else:
-                opponent["points"] = 4
-
-        else:
-            if opponent["points"] < 4:
-                opponent["points"] += 1
-            else:
-                opponent["points"] = 4
-
-        GameDataManager.save_game_data(data)
 
     async def attack(self, interaction: discord.Interaction, attack: int, defense: int, store: int):
         try:
@@ -864,7 +842,21 @@ class pvp:
 
             player["turn"] = False
             opponent["turn"] = True
-            player["points"] = 0
+
+            if opponent["id"] == 2:
+                if opponent["points"] == 0:
+                    opponent["points"] = 2
+                elif opponent["points"] < 4:
+                    opponent["points"] += 1
+                else:
+                    opponent["points"] = 4
+
+            else:
+                if opponent["points"] < 4:
+                    opponent["points"] += 1
+                else:
+                    opponent["points"] = 4
+
 
             await self.give_point(interaction)
 
