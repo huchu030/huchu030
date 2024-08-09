@@ -817,11 +817,11 @@ class pvp:
         data = GameDataManager.load_game_data()
         guild = interaction.guild
         
-        user_id = str(ctx.author.id)
-        opponent_id = next(uid for uid in game_data["pvp"] if uid != user_id and game_data["pvp"][uid]["in_battle"])
+        user_id = str(interaction.user.id)
+        opponent_id = next(uid for uid in data["pvp"] if uid != user_id and game_data["pvp"][uid]["in_battle"])
 
         player = data["pvp"][user_id]
-        opponent = gdata["pvp"][opponent_id]
+        opponent = data["pvp"][opponent_id]
 
         user_nickname = get_user_nickname(guild, interaction.user.id)
         opponent_nickname = get_user_nickname(guild, int(opponent_id))
@@ -840,9 +840,9 @@ class pvp:
 
         try:
 
-            if attack + defense + store != player_data['points']:
+            if attack + defense + store != player['points']:
                 await interaction.response.send_message("포인트 분배가 올바르지 않습니다. 다시 입력해 주세요.\n"
-                                                        f"현재 사용 가능 포인트 : {player['points']}", ephemeral = True)
+                                                        f"현재 사용 가능 포인트 : {player['points']}", ephemeral=True)
                 return
 
             player["store"] += store
@@ -850,7 +850,7 @@ class pvp:
             if player["store"] > 4:
                 player["store"] -= store
                 await interaction.response.send_message("저장된 포인트의 합계는 최대 4입니다. 다시 입력해 주세요.\n"
-                                                        f"현재 저장된 포인트 : {player['points']}", ephemeral = True)
+                                                        f"현재 저장된 포인트 : {player['points']}", ephemeral=True)
                 return
 
             player["defense"] = defense
@@ -878,7 +878,7 @@ class pvp:
             await interaction.followup.send(f"\n이제 {opponent_nickname}님의 턴입니다!")
             
         except Exception as e:
-            print(f"[ERROR] action: {e}")
+            print(f"[ERROR] : {e}")
             await interaction.response.send_message(f"{e}")
 
     async def end_battle(self, interaction, winner_id, loser_id):
@@ -1183,7 +1183,6 @@ async def pvp(interaction: discord.Interaction):
 
 @bot.tree.command(name="행동", description="pvp - 포인트를 사용합니다")
 async def 행동(interaction: discord.Interaction, attack: int, defense: int, store: int):
-    
     await bot.pvp.attack(interaction)
 
 @bot.tree.command(name="항복", description="pvp - 상대에게 항복합니다")
