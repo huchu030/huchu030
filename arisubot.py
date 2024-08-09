@@ -876,7 +876,8 @@ class pvp:
                                                         f"{opponent_nickname}님은 패배했습니다. ")
                 return
 
-            await interaction.response.send_message(f"{user_nickname}님이 공격에 {attack}포인트를 사용했습니다.\n"
+            await interaction.response.send_message(f"[ {player['round']}라운드 ]\n"
+                                                    f"\n{user_nickname}님이 공격에 {attack}포인트를 사용했습니다.\n"
                                                     f"{opponent_nickname}님이 방어 {opponent['defense']}를 사용해 {damage}의 데미지를 입었습니다.\n"
                                                     f"{user_nickname}님의 체력 : {player['hp']}, {opponent_nickname}님의 체력 : {opponent['hp']}\n"
                                                     f"\n이제 {opponent_nickname}님의 턴입니다!")
