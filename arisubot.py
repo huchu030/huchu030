@@ -745,21 +745,30 @@ class pvp:
                     accept_button = discord.ui.Button(label="수락", style=discord.ButtonStyle.primary, custom_id=f"accept_{user_id}_{opponent_id}")
                     
                     async def accept_button_callback(button_interaction: discord.Interaction):
-                        if str(button_interaction.user.id) != opponent_id:
-                            await button_interaction.response.send_message("이 버튼은 상대방이 눌러야 합니다!")
-                            return
+                        try:
+                            custom_id = button_interaction.data.get('custom_id', '')
+                            _, request_user_id, opponent_id = custom_id.split('_')
+                                
+                            if str(button_interaction.user.id) != opponent_id:
+                                await button_interaction.response.send_message("이 버튼은 상대방이 눌러야 합니다!")
+                                return
 
-                        data["pvp"][opponent_id]["in_battle"] = True
-                        data["pvp"][user_id]["in_battle"] = True
-                        data["pvp"][opponent_id]["turn"] = False
-                        data["pvp"][user_id]["turn"] = True
-                        data["pvp"][user_id]["id"] = 1
+                            data["pvp"][opponent_id]["in_battle"] = True
+                            data["pvp"][user_id]["in_battle"] = True
+                            data["pvp"][opponent_id]["turn"] = False
+                            data["pvp"][user_id]["turn"] = True
+                            data["pvp"][user_id]["id"] = 1
 
-                        GameDataManager.save_game_data(data)
+                            GameDataManager.save_game_data(data)
 
-                        await button_interaction.response.send_message(f"{opponent_nickname}님과의 전투가 시작되었습니다.\n"
-                                                                       "`/행동`으로 포인트를 사용하세요!")
-                        await update_points(button_interaction)
+                            await button_interaction.response.send_message(f"{opponent_nickname}님과의 전투가 시작되었습니다.\n"
+                                                                           "`/행동`으로 포인트를 사용하세요!")
+                            await update_points(button_interaction)
+                            
+                        except Exception as e:
+                            print(f"[ERROR] accept_button_callback: {e}")
+                            await button_interaction.response.send_message(f"{e}", ephemeral=True)
+
                         
                     accept_button.callback = accept_button_callback
 
