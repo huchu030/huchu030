@@ -1219,7 +1219,7 @@ async def pvp_순위(interaction: discord.Interaction):
 
 @bot.tree.command(name="포인트", description="pvp - 사용 가능 포인트를 확인합니다")
 async def 포인트(interaction: discord.Interaction):
-    await interaction.response.send_message("뽜밤뽜밤-!")
+    await bot.pvp.points(interaction)
 
         
 # 로또                                                     
