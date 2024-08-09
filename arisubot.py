@@ -767,8 +767,8 @@ class pvp:
  
                     accept_button.callback = accept_button_callback
 
-                view = discord.ui.View()
-                view.add_item(accept_button)
+                    view = discord.ui.View()
+                    view.add_item(accept_button)
 
                 await select_interaction.response.send_message(f"{opponent_nickname}님에게 전투 요청을 보냈습니다.\n"
                                                                "상대방이 수락하면 전투가 시작됩니다.")
