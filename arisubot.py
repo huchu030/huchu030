@@ -821,19 +821,19 @@ class pvp:
                 await interaction.response.send_message(f"지금은 {user_nickname}님의 턴이 아닙니다. 인내심을 가지세요!")
                 return
 
-            if attack + defense + store != player['points']:
+            if attack + defense + store != player['points']+player['store']:
                 await interaction.response.send_message("포인트 분배가 올바르지 않습니다. 다시 입력해 주세요.\n"
                                                         f"현재 사용 가능 포인트 : {player['points']}", ephemeral=True)
                 return
 
-            player["store"] += store
+            
 
-            if player["store"] > 4:
-                player["store"] -= store
-                await interaction.response.send_message("저장된 포인트의 합계는 최대 4입니다. 다시 입력해 주세요.\n"
+            if player["store"] + store > 4:
+                await interaction.response.send_message("저장에 할당할 수 있는 포인트는 최대 4입니다. 다시 입력해 주세요.\n"
                                                         f"현재 저장된 포인트 : {player['points']}", ephemeral=True)
                 return
-
+            
+            player["store"] = store
             player["defense"] = defense
 
             damage = attack * 10 - opponent["defense"] * 10
@@ -951,7 +951,7 @@ class pvp:
         data = GameDataManager.load_game_data()
         player = data["pvp"][user_id]
 
-        await interaction.response.send_message(f"{user_nickname}님의 사용 가능 포인트 : {player['points']}", ephemeral=True)
+        await interaction.response.send_message(f"{user_nickname}님의 사용 가능 포인트 : {player['points']+player['store']}", ephemeral=True)
                                             
     async def stats(self, interaction: discord.Interaction):
         user_id = str(interaction.user.id)
