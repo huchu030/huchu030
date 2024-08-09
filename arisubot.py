@@ -863,11 +863,9 @@ class pvp:
 
             if opponent["hp"] <= 0:
                 opponent["hp"] = 0
-                winner_id = user_id
-                loser_id = opponent_id
-                await self.end_battle(interaction, winner_id, loser_id)
-                await interaction.response.send_message(f"\n\n 뽜밤뽜밤-! {winner_nickname}님이 승리했습니다!\n"
-                                                        f"{loser_nickname}님은 패배했습니다. ")
+                await self.end_battle(interaction, user_id, opponent_id)
+                await interaction.response.send_message(f"\n\n 뽜밤뽜밤-! {user_nickname}님이 승리했습니다!\n"
+                                                        f"{opponent_nickname}님은 패배했습니다. ")
                 return
 
             await interaction.response.send_message(f"{user_nickname}님이 공격에 {attack}포인트를 사용했습니다.\n"
@@ -879,33 +877,30 @@ class pvp:
             await interaction.response.send_message(f"오류 발생: {str(e)}")
 
 
-    async def end_battle(self, interaction, winner_id, loser_id):
+    async def end_battle(self, interaction, user_id, opponent_id):
         guild = interaction.guild
         data = GameDataManager.load_game_data()
-        
-        winner_nickname = get_user_nickname(guild, interaction.winner_id)
-        loser_nickname = get_user_nickname(guild, interaction.loser_id)
 
-        data["pvp"][winner_id]["pvp_win"] += 1
-        data["pvp"][loser_id]["pvp_lose"] += 1
+        data["pvp"][user_id]["pvp_win"] += 1
+        data["pvp"][opponent_id]["pvp_lose"] += 1
         
         
 
-        data["pvp"][winner_id]["hp"] = 100
-        data["pvp"][winner_id]["in_battle"] = False
-        data["pvp"][winner_id]["turn"] = False
-        data["pvp"][winner_id]["points"] = 0
-        data["pvp"][winner_id]["store"] = 0
-        data["pvp"][winner_id]["defense"] = 0
-        data["pvp"][winner_id]["id"] = 1
+        data["pvp"][user_id]["hp"] = 100
+        data["pvp"][user_id]["in_battle"] = False
+        data["pvp"][user_id]["turn"] = False
+        data["pvp"][user_id]["points"] = 0
+        data["pvp"][user_id]["store"] = 0
+        data["pvp"][user_id]["defense"] = 0
+        data["pvp"][user_id]["id"] = 1
         
-        data["pvp"][loser_id]["hp"] = 100
-        data["pvp"][loser_id]["in_battle"] = False
-        data["pvp"][loser_id]["turn"] = False
-        data["pvp"][loser_id]["points"] = 0
-        data["pvp"][loser_id]["store"] = 0
-        data["pvp"][loser_id]["defense"] = 0
-        data["pvp"][loser_id]["id"] = 1
+        data["pvp"][opponent_id]["hp"] = 100
+        data["pvp"][opponent_id]["in_battle"] = False
+        data["pvp"][opponent_id]["turn"] = False
+        data["pvp"][opponent_id]["points"] = 0
+        data["pvp"][opponent_id]["store"] = 0
+        data["pvp"][opponent_id]["defense"] = 0
+        data["pvp"][opponent_id]["id"] = 1
 
         
         GameDataManager.save_game_data(data)
