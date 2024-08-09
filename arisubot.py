@@ -818,11 +818,12 @@ class pvp:
         guild = interaction.guild
         
         user_id = str(interaction.user.id)
-        opponent_id = next(uid for uid in data["pvp"] if uid != user_id and data["pvp"][uid]["in_battle"])
-                
+        opponent_id = next((uid for uid in data["pvp"] if uid != user_id and data["pvp"][uid]["in_battle"]), None)
+                        
         if opponent_id is None:
             await interaction.response.send_message("현재 전투 중인 상대방이 없습니다.")
             return
+
 
         player = data["pvp"][user_id]
         opponent = data["pvp"][opponent_id]
@@ -878,9 +879,10 @@ class pvp:
                 loser_id = opponent_id
                 await self.end_battle(interaction, winner_id, loser_id)
                 return
-            
-            await interaction.response.send_message(f"{user_nickname}님이 공격에 {attack}포인트를 사용했습니다.\n"
-                                                    f"{opponent_nickname}님이 {damage}의 데미지를 입었습니다.")
+
+            await interaction.response.defer()
+            await interaction.followup.send(f"{user_nickname}님이 공격에 {attack}포인트를 사용했습니다.\n"
+                                            f"{opponent_nickname}님이 {damage}의 데미지를 입었습니다.")
             await interaction.followup.send(f"\n이제 {opponent_nickname}님의 턴입니다!")
             
         except Exception as e:
