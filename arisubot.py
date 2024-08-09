@@ -774,10 +774,6 @@ class pvp:
                                                                "상대방이 수락하면 전투가 시작됩니다.")
                     await select_interaction.channel.send(f"<@{opponent_id}>님, {user_nickname}님의 전투 요청이 도착했습니다!",
                                                       view=view)
-                    select_menu.callback = select_callback
-                    view = discord.ui.View()
-                    view.add_item(select_menu)
-                    await interaction.response.send_message("맞짱 뜰 상대를 선택하세요!", view=view)
                 
                 except Exception as e:
                     print(f"[ERROR] start_game: {e}")
@@ -874,8 +870,8 @@ class pvp:
         data["pvp"][winner_id]["pvp_win"] += 1
         data["pvp"][loser_id]["pvp_lose"] += 1
         
-        await ctx.send(f"\n\n 뽜밤뽜밤-! {winner_nickname}님이 승리했습니다!\n"
-                       f"{loser_nickname}님은 패배했습니다. ㅜㅜ")
+        await interaction.send(f"\n\n 뽜밤뽜밤-! {winner_nickname}님이 승리했습니다!\n"
+                       f"{loser_nickname}님은 패배했습니다.")
 
         data["pvp"][winner_id]["hp"] = 100
         data["pvp"][winner_id]["in_battle"] = False
