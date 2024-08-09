@@ -858,8 +858,6 @@ class pvp:
                     opponent["points"] = 4
 
 
-            await self.give_point(interaction)
-
             GameDataManager.save_game_data(data)
 
             if opponent["hp"] <= 0:
