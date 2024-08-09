@@ -874,7 +874,9 @@ class pvp:
                 loser_id = opponent_id
                 await self.end_battle(interaction, winner_id, loser_id)
                 return
-
+            
+            await interaction.response.send_message(f"{user_nickname}님이 공격에 {attack}포인트를 사용했습니다.\n"
+                                                    f"{opponent_nickname}님이 {damage}의 데미지를 입었습니다.")
             await interaction.followup.send(f"\n이제 {opponent_nickname}님의 턴입니다!")
             
         except Exception as e:
