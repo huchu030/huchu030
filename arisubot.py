@@ -831,8 +831,7 @@ class pvp:
             
 
             if store > 4:
-                await interaction.response.send_message("저장에 할당할 수 있는 포인트는 최대 4입니다. 다시 입력해 주세요.\n"
-                                                        f"현재 저장된 포인트 : {player['points']}", ephemeral=True)
+                await interaction.response.send_message("저장에 할당할 수 있는 포인트는 최대 4입니다. 다시 입력해 주세요.\n", ephemeral=True)
                 return
             
             player["store"] = store
