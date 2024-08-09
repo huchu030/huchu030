@@ -1176,7 +1176,8 @@ async def pvp(interaction: discord.Interaction):
     await bot.pvp.start_game(interaction)
 
 @bot.tree.command(name="행동", description="pvp - 포인트를 사용합니다")
-async def 행동(interaction: discord.Interaction):
+async def 행동(interaction: discord.Interaction, attack: int, defense: int, store: int):
+    
     await bot.pvp.attack(interaction)
 
 @bot.tree.command(name="항복", description="pvp - 상대에게 항복합니다")
