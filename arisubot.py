@@ -647,9 +647,135 @@ class rpg:
                                                         "상점이 폐업했습니다. 쟌넨")
 
 
+# pvp
+
+
+class pvp:
+    def __init__(self):
+        self.game_data = GameDataManager.load_game_data()
+
+    def save_game_data(self):
+        GameDataManager.save_game_data(self.game_data)
+
+    def initialize_player(self, user):
+        if str(user.id) not in self.game_data['pvp']:
+            self.game_data['pvp'][str(user.id)] = {
+                'hp': 100,
+                'in_battle': False,
+                'turn': False,
+                'win': 0,
+                'lose': 0,
+                'points': 0,
+                'store': 0,
+                'defense': 0,
+                'id': 1
+            }
+
+    def start_battle(self, player1, player2):
+        self.initialize_player(player1)
+        self.initialize_player(player2)
+        if self.game_data['pvp'][str(player1.id)]['in_battle'] or self.game_data['pvp'][str(player2.id)]['in_battle']:
+            return False, "One of the players is already in a battle."
+        
+        self.game_data['pvp'][str(player1.id)]['in_battle'] = True
+        self.game_data['pvp'][str(player2.id)]['in_battle'] = True
+        self.game_data['pvp'][str(player1.id)]['turn'] = True
+        self.game_data['pvp'][str(player2.id)]['turn'] = False
+        self.game_data['pvp'][str(player1.id)]['points'] = 1
+        self.game_data['pvp'][str(player2.id)]['points'] = 2
+        self.game_data['pvp'][str(player2.id)]['id'] = 2
+
+        self.save_game_data()
+        return True, "Battle started!"
+
+    def end_battle(self, winner, loser):
+        self.game_data['pvp'][str(winner.id)]['in_battle'] = False
+        self.game_data['pvp'][str(loser.id)]['in_battle'] = False
+        self.game_data['pvp'][str(winner.id)]['win'] += 1
+        self.game_data['pvp'][str(loser.id)]['lose'] += 1
+        self.save_game_data()
+
+    def execute_action(self, player, action_points):
+        player_data = self.game_data['pvp'][str(player.id)]
+        opponent_id = self.find_opponent(player)
+        
+        if not opponent_id:
+            return False, "Opponent not found."
+        
+        opponent_data = self.game_data['pvp'][str(opponent_id)]
+
+        if not player_data['turn']:
+            return False, "It's not your turn."
+
+        total_points = sum(action_points.values()) + player_data['store']
+        if total_points > 8:
+            return False, "You cannot use more than 8 points in total."
+
+        attack_points = action_points['attack']
+        defense_points = action_points['defense']
+        store_points = action_points['store']
+
+        # 공격
+        damage = attack_points * 10
+        defense = opponent_data['defense']
+        net_damage = max(0, damage - defense)
+        opponent_data['hp'] -= net_damage
+
+        # 방어와 저장
+        player_data['defense'] = defense_points * 10
+        player_data['store'] = store_points
+
+        # 턴 종료 및 포인트 계산
+        player_data['turn'] = False
+        opponent_data['turn'] = True
+        player_data['points'] = min(4, player_data['points'] + 1)
+        opponent_data['points'] = min(4, opponent_data['points'] + 1)
+
+        self.save_game_data()
+
+        if opponent_data['hp'] <= 0:
+            self.end_battle(player, opponent_data)
+            return True, f"{player.name} wins! {opponent_data['name']} has been defeated."
+
+        return True, f"{player.name} has dealt {net_damage} damage to {opponent_data['name']}."
 
 
 
+    def surrender(self, player):
+        if not self.game_data['pvp'][str(player.id)]['in_battle']:
+            return False, "You are not in a battle."
+        
+        opponent_id = self.find_opponent(player)
+        if not opponent_id:
+            return False, "Opponent not found."
+
+        opponent = discord.utils.get(player.guild.members, id=opponent_id)
+        self.end_battle(opponent, player)
+        return True, f"{player.name} has surrendered. {opponent.name} wins!"
+    
+
+
+    def find_opponent(self, player):
+        for opponent_id, data in self.game_data['pvp'].items():
+            if data['in_battle'] and data['id'] != self.game_data['pvp'][str(player.id)]['id']:
+                return int(opponent_id)
+        return None
+
+    def get_stats(self, player):
+        player_data = self.game_data['pvp'][str(player.id)]
+        embed = discord.Embed(title=f"{player.name}'s Stats")
+        embed.add_field(name="Wins", value=player_data['win'])
+        embed.add_field(name="Losses", value=player_data['lose'])
+        return embed
+
+    def get_rankings(self):
+        rankings = sorted(self.game_data['pvp'].items(), key=lambda x: (-x[1]['win'], x[1]['lose']))
+        embed = discord.Embed(title="PvP Rankings")
+        for rank, (player_id, data) in enumerate(rankings, start=1):
+            player = discord.utils.get(bot.get_all_members(), id=int(player_id))
+            if player:
+                embed.add_field(name=f"{rank}. {player.name}", value=f"Wins: {data['win']}, Losses: {data['lose']}", inline=False)
+        return embed
 
 
 
@@ -896,131 +1022,11 @@ async def 쓰담(interaction: discord.Interaction):
 
 # pvpvppvpvppvpv
 
-class pvp:
-    def __init__(self):
-        self.game_data = GameDataManager.load_game_data()
-
-    def save_game_data(self):
-        GameDataManager.save_game_data(self.game_data)
-
-    def initialize_player(self, user):
-        if str(user.id) not in self.game_data['pvp']:
-            self.game_data['pvp'][str(user.id)] = {
-                'hp': 100,
-                'in_battle': False,
-                'turn': False,
-                'win': 0,
-                'lose': 0,
-                'points': 0,
-                'store': 0,
-                'defense': 0,
-                'id': 1
-            }
-
-    def start_battle(self, player1, player2):
-        self.initialize_player(player1)
-        self.initialize_player(player2)
-        if self.game_data['pvp'][str(player1.id)]['in_battle'] or self.game_data['pvp'][str(player2.id)]['in_battle']:
-            return False, "One of the players is already in a battle."
-        
-        self.game_data['pvp'][str(player1.id)]['in_battle'] = True
-        self.game_data['pvp'][str(player2.id)]['in_battle'] = True
-        self.game_data['pvp'][str(player1.id)]['turn'] = True
-        self.game_data['pvp'][str(player2.id)]['turn'] = False
-        self.game_data['pvp'][str(player1.id)]['points'] = 1
-        self.game_data['pvp'][str(player2.id)]['points'] = 2
-        self.game_data['pvp'][str(player2.id)]['id'] = 2
-
-        self.save_game_data()
-        return True, "Battle started!"
-
-    def end_battle(self, winner, loser):
-        self.game_data['pvp'][str(winner.id)]['in_battle'] = False
-        self.game_data['pvp'][str(loser.id)]['in_battle'] = False
-        self.game_data['pvp'][str(winner.id)]['win'] += 1
-        self.game_data['pvp'][str(loser.id)]['lose'] += 1
-        self.save_game_data()
-
-    def execute_action(self, player, action_points):
-        player_data = self.game_data['pvp'][str(player.id)]
-        opponent_id = self.find_opponent(player)
-        
-        if not opponent_id:
-            return False, "Opponent not found."
-        
-        opponent_data = self.game_data['pvp'][str(opponent_id)]
-
-        if not player_data['turn']:
-            return False, "It's not your turn."
-
-        total_points = sum(action_points.values()) + player_data['store']
-        if total_points > 8:
-            return False, "You cannot use more than 8 points in total."
-
-        attack_points = action_points['attack']
-        defense_points = action_points['defense']
-        store_points = action_points['store']
-
-        # 공격
-        damage = attack_points * 10
-        defense = opponent_data['defense']
-        net_damage = max(0, damage - defense)
-        opponent_data['hp'] -= net_damage
-
-        # 방어와 저장
-        player_data['defense'] = defense_points * 10
-        player_data['store'] = store_points
-
-        # 턴 종료 및 포인트 계산
-        player_data['turn'] = False
-        opponent_data['turn'] = True
-        player_data['points'] = min(4, player_data['points'] + 1)
-        opponent_data['points'] = min(4, opponent_data['points'] + 1)
-
-        self.save_game_data()
-
-        if opponent_data['hp'] <= 0:
-            self.end_battle(player, opponent_data)
-            return True, f"{player.name} wins! {opponent_data['name']} has been defeated."
-
-        return True, f"{player.name} has dealt {net_damage} damage to {opponent_data['name']}."
 
 
-    def surrender(self, player):
-        if not self.game_data['pvp'][str(player.id)]['in_battle']:
-            return False, "You are not in a battle."
-        
-        opponent_id = self.find_opponent(player)
-        if not opponent_id:
-            return False, "Opponent not found."
-
-        opponent = discord.utils.get(player.guild.members, id=opponent_id)
-        self.end_battle(opponent, player)
-        return True, f"{player.name} has surrendered. {opponent.name} wins!"
-    
 
 
-    def find_opponent(self, player):
-        for opponent_id, data in self.game_data['pvp'].items():
-            if data['in_battle'] and data['id'] != self.game_data['pvp'][str(player.id)]['id']:
-                return int(opponent_id)
-        return None
 
-    def get_stats(self, player):
-        player_data = self.game_data['pvp'][str(player.id)]
-        embed = discord.Embed(title=f"{player.name}'s Stats")
-        embed.add_field(name="Wins", value=player_data['win'])
-        embed.add_field(name="Losses", value=player_data['lose'])
-        return embed
-
-    def get_rankings(self):
-        rankings = sorted(self.game_data['pvp'].items(), key=lambda x: (-x[1]['win'], x[1]['lose']))
-        embed = discord.Embed(title="PvP Rankings")
-        for rank, (player_id, data) in enumerate(rankings, start=1):
-            player = discord.utils.get(bot.get_all_members(), id=int(player_id))
-            if player:
-                embed.add_field(name=f"{rank}. {player.name}", value=f"Wins: {data['win']}, Losses: {data['lose']}", inline=False)
-        return embed
 
 
 
