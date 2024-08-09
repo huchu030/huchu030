@@ -667,6 +667,7 @@ class pvp:
             }
             GameDataManager.save_game_data(game_data)
 
+
     async def start_game(self, interaction: discord.Interaction):
         try:
             guild = interaction.guild
@@ -701,7 +702,7 @@ class pvp:
                 return
 
             select_menu = discord.ui.Select(
-                placeholder="맞짱 뜰 상대를 선택하세요!",
+                placeholder="선택",
                 options=options
             )          
     
@@ -737,28 +738,51 @@ class pvp:
                         await select_interaction.response.send_message(f"{opponent_nickname}님은 현재 다른 사람과 전투 중입니다.\n"
                                                                        "다른 상대를 골라보세요!")
                         return
-
-                    data["pvp"][opponent_id]["in_battle"] = True
-                    data["pvp"][user_id]["in_battle"] = True
-                    data["pvp"][opponent_id]["turn"] = False
-                    data["pvp"][user_id]["turn"] = True
-
-                    GameDataManager.save_game_data(data)
                     
                     opponent_nickname = get_user_nickname(select_interaction.guild, int(opponent_id))
-                    await select_interaction.response.send_message(f"{opponent_nickname}님과의 전투가 시작되었습니다.\n"
-                                                                   "`/맞짱`으로 상대를 공격해보세요!")
+
+                    accept_button = discord.ui.Button(label="수락", style=discord.ButtonStyle.primary)
+                    
+                    async def accept_button_callback(button_interaction: discord.Interaction):
+                        if str(button_interaction.user.id) != opponent_id:
+                            await button_interaction.response.send_message("이 버튼은 상대방이 눌러야 합니다!", ephemeral=False)
+                            return
+
+                        data["pvp"][opponent_id]["in_battle"] = True
+                        data["pvp"][user_id]["in_battle"] = True
+                        data["pvp"][opponent_id]["turn"] = False
+                        data["pvp"][user_id]["turn"] = True
+                        data["pvp"][user_id]["id"] = 1
+
+                        GameDataManager.save_game_data(data)
+
+                        await button_interaction.response.send_message(f"{opponent_nickname}님과의 전투가 시작되었습니다.\n"
+                                                                       "`/행동`으로 포인트를 사용하세요!")
+                        if data["pvp"][challenger_id]["turn"]:
+                        await self.handle_turn(interaction)
+                        
+                    accept_button.callback = accept_button_callback
+
+                    view = discord.ui.View()
+                    view.add_item(accept_button)
+
+                    await select_interaction.response.send_message(f"{opponent_nickname}님에게 전투 요청을 보냈습니다. "
+                                                                   "상대방이 수락하면 전투가 시작됩니다!", ephemeral=False)
+                    await select_interaction.channel.send(f"<@{opponent_id}>님, {user_nickname}님의 전투 요청이 도착했습니다!",
+                                                          view=view)
                 except Exception as e:
                     print(f"[ERROR] select_callback: {e}")
                     await select_interaction.response.send_message(f"{e}")
 
             select_menu.callback = select_callback
-
-            await interaction.response.send_message("선택한 상대와 배틀을 시작합니다.", view=view)
+            view = discord.ui.View()
+            view.add_item(select_menu)
+            await interaction.response.send_message("맞짱 뜰 상대를 선택하세요!", view=view)
 
         except Exception as e:
             print(f"[ERROR] start_game: {e}")
             await interaction.response.send_message(f"{e}")
+            
 
     async def attack(self, interaction: discord.Interaction):
         guild = interaction.guild
