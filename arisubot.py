@@ -746,7 +746,7 @@ class pvp:
                     
                     async def accept_button_callback(button_interaction: discord.Interaction):
                         if str(button_interaction.user.id) != opponent_id:
-                            await button_interaction.response.send_message("이 버튼은 상대방이 눌러야 합니다!", ephemeral=True)
+                            await button_interaction.response.send_message("이 버튼은 상대방이 눌러야 합니다!")
                             return
 
                         data["pvp"][opponent_id]["in_battle"] = True
@@ -787,6 +787,9 @@ class pvp:
         user_id = str(interaction.user.id)
         data = GameDataManager.load_game_data()
         player_data = data["pvp"][user_id]
+        guild = interaction.guild
+        user_nickname = get_user_nickname(guild, interaction.user.id)
+        
 
         if player_data["id"] == 1:
             if player_data["points"] < 4:
@@ -803,15 +806,15 @@ class pvp:
 
         await interaction.response.send_message(f"현재 {user_nickname}님의 턴입니다.`/행동`으로 포인트를 사용하세요.")
 
-    async def action(self, ctx, attack_points: int, defense_points: int, store_points: int):
+    async def action(self, interaction, attack_points: int, defense_points: int, store_points: int):
         game_data = GameDataManager.load_game_data()
-        user_id = str(ctx.author.id)
+        user_id = str(interaction.author.id)
         data = GameDataManager.load_game_data()
         player = data["pvp"][user_id]
         opponent_id = next(uid for uid in data["pvp"] if uid != user_id and data["pvp"][uid]["in_battle"])
         opponent = data["pvp"][opponent_id]
-        guild = ctx.guild
-        user_nickname = get_user_nickname(guild, ctx.author.id)
+        guild = interaction.guild
+        user_nickname = get_user_nickname(guild, interaction.user.id)
         opponent_nickname = get_user_nickname(guild, int(opponent_id))
 
         if user_id not in data["pvp"] or not data["pvp"][user_id]["in_battle"]:
