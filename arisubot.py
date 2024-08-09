@@ -765,7 +765,7 @@ class pvp:
                                                                        "`/행동`으로 포인트를 사용하세요!")
                         await self.update_points(button_interaction)
  
-                accept_button.callback = accept_button_callback
+                    accept_button.callback = accept_button_callback
 
                 view = discord.ui.View()
                 view.add_item(accept_button)
