@@ -952,7 +952,7 @@ class pvp:
         user_nickname = get_user_nickname(guild, interaction.user.id)
         opponent_nickname = get_user_nickname(guild, int(opponent_id))
 
-        await interaction.response.send_message(f"{user_nickname}님이 {opponent_nickname}님에게 항복했습니다!")
+        await interaction.response.send_message(f"{user_nickname}님이 {opponent_nickname}님에게 항복했습니다! 끄앙")
 
     async def points(self, interaction: discord.Interaction):
         user_id = str(interaction.user.id)
