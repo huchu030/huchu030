@@ -764,7 +764,8 @@ class pvp:
                         GameDataManager.save_game_data(data)
 
                         await button_interaction.response.send_message(f"{opponent_nickname}님과의 전투가 시작되었습니다.\n"
-                                                                       "`/행동`으로 포인트를 사용하세요!")
+                                                                       "`/행동`으로 포인트를 사용하세요!\n"
+                                                                       "`/포인트`로 사용 가능 포인트를 조회할 수 있습니다.")
                             
                     accept_button.callback = accept_button_callback
 
@@ -943,8 +944,14 @@ class pvp:
 
         await interaction.response.send_message(f"{user_nickname}님이 {opponent_nickname}님에게 항복했습니다!")
 
+    async def points(self, interaction: discord.Interaction):
+        user_id = str(interaction.user.id)
+        guild = interaction.guild
+        user_nickname = get_user_nickname(guild, interaction.user.id)
+        data = GameDataManager.load_game_data()
 
-
+        await interaction.response.send_message(f"{user_nickname}님의 사용 가능 포인트 : {player_data['points']}", ephemeral=True)
+                                            
     async def stats(self, interaction: discord.Interaction):
         user_id = str(interaction.user.id)
         guild = interaction.guild
@@ -1209,6 +1216,10 @@ async def 전적(interaction: discord.Interaction):
 @bot.tree.command(name="pvp_순위", description="pvp - 유저들의 순위를 확인합니다")
 async def pvp_순위(interaction: discord.Interaction):
     await bot.pvp.leaderboard(interaction)
+
+@bot.tree.command(name="포인트", description="pvp - 사용 가능 포인트를 확인합니다")
+async def 포인트(interaction: discord.Interaction):
+    await interaction.response.send_message("뽜밤뽜밤-!")
 
         
 # 로또                                                     
