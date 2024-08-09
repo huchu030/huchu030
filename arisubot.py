@@ -752,15 +752,14 @@ class pvp:
                         data["pvp"][user_id]["in_battle"] = True
                         data["pvp"][opponent_id]["turn"] = False
                         data["pvp"][user_id]["turn"] = True
-                        data["pvp"][user_id]["id"] = 1
+                        data["pvp"][opponent_id]["id"] = 2
 
                         GameDataManager.save_game_data(data)
 
                         await button_interaction.response.send_message(f"{opponent_nickname}님과의 전투가 시작되었습니다.\n"
                                                                        "`/행동`으로 포인트를 사용하세요!")
-                        if data["pvp"][challenger_id]["turn"]:
                         await self.handle_turn(interaction)
-                        
+                            
                     accept_button.callback = accept_button_callback
 
                     view = discord.ui.View()
@@ -784,12 +783,41 @@ class pvp:
             await interaction.response.send_message(f"{e}")
             
 
-    async def attack(self, interaction: discord.Interaction):
-        guild = interaction.guild
-        user_nickname = get_user_nickname(guild, interaction.user.id)
-        
+    async def handle_turn(self, interaction: discord.Interaction):
         user_id = str(interaction.user.id)
         data = GameDataManager.load_game_data()
+        opponent_id = next((uid for uid in data["pvp"] if uid != user_id and data["pvp"][uid]["in_battle"]), None)
+        player = data["pvp"][user_id]
+        opponent = data["pvp"][opponent_id]
+
+
+        if player["id"] == 2:
+            if player["points"] == 0:
+                player["points"] = 2
+            elif player["points"] < 4:
+                player["points"] += 1
+            else:
+                player["points"] = 4
+
+        else:
+            if player["points"] < 4:
+                player["points"] += 1
+            else:
+                player["points"] = 4
+
+
+    async def attack(self, interaction: discord.Interaction):
+        data = GameDataManager.load_game_data()
+        guild = interaction.guild
+        
+        user_id = str(ctx.author.id)
+        opponent_id = next(uid for uid in game_data["pvp"] if uid != user_id and game_data["pvp"][uid]["in_battle"])
+
+        player = data["pvp"][user_id]
+        opponent = gdata["pvp"][opponent_id]
+
+        user_nickname = get_user_nickname(guild, interaction.user.id)
+        opponent_nickname = get_user_nickname(guild, int(opponent_id))
 
         if user_id not in data["pvp"]:
             await interaction.response.send_message("현재 전투 중이 아닙니다. `/pvp`로 전투를 시작해보세요!")
@@ -803,23 +831,14 @@ class pvp:
             await interaction.response.send_message(f"지금은 {user_nickname}님의 턴이 아닙니다. 인내심을 가지세요!")
             return
 
-        opponent_id = next((uid for uid in data["pvp"] if uid != user_id and data["pvp"][uid]["in_battle"]), None)
-        if opponent_id is None:
-            await interaction.response.send_message("[ERROR] 상대를 찾을 수 없습니다.")
-            return
 
-        opponent = data["pvp"][opponent_id]
-        challenger = data["pvp"][user_id]
 
-        opponent_nickname = get_user_nickname(guild, int(opponent_id))
 
-        damage = random.randint(30, 50)
-        opponent["hp"] = max(opponent["hp"] - damage, 0)
-        await interaction.response.send_message(f"{user_nickname}님이 {opponent_nickname}님에게 {damage}의 피해를 입혔습니다!\n"
-                                                f"{user_nickname}님의 체력: {challenger['hp']}, {opponent_nickname}님의 체력: {opponent['hp']}")
 
-        challenger["turn"] = False
+        player["turn"] = False
         opponent["turn"] = True
+
+        
         GameDataManager.save_game_data(data)
 
         if opponent["hp"] <= 0:
@@ -828,7 +847,7 @@ class pvp:
             await self.end_battle(interaction, winner_id, loser_id)
             return
 
-        await interaction.followup.send(f"\n\n이제 {opponent_nickname}님의 턴입니다. 빨리 복수하세요!")
+        await interaction.followup.send(f"\n이제 {opponent_nickname}님의 턴입니다!")
 
     async def end_battle(self, interaction, winner_id, loser_id):
         data = GameDataManager.load_game_data()
