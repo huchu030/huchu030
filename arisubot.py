@@ -874,17 +874,17 @@ class pvp:
                                                     f"{opponent_nickname}님이 {damage}의 데미지를 입었습니다.\n"
                                                     f"{user_nickname}님의 체력 : {player['hp']}, {opponent_nickname}님의 체력 : {opponent['hp']}\n"
                                                     f"\n이제 {opponent_nickname}님의 턴입니다!")
-
         except Exception as e:
             print(f"[ERROR in attack]: {e}")
             await interaction.response.send_message(f"오류 발생: {str(e)}")
 
 
     async def end_battle(self, interaction, winner_id, loser_id):
+        guild = interaction.guild
         data = GameDataManager.load_game_data()
         
-        winner_nickname = get_user_nickname(interaction.guild, int(winner_id))
-        loser_nickname = get_user_nickname(interaction.guild, int(loser_id))
+        winner_nickname = get_user_nickname(guild, interaction.winner_id)
+        loser_nickname = get_user_nickname(guild, interaction.loser_id)
 
         data["pvp"][winner_id]["pvp_win"] += 1
         data["pvp"][loser_id]["pvp_lose"] += 1
