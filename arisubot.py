@@ -819,6 +819,10 @@ class pvp:
         
         user_id = str(interaction.user.id)
         opponent_id = next(uid for uid in data["pvp"] if uid != user_id and data["pvp"][uid]["in_battle"])
+                
+        if opponent_id is None:
+            await interaction.response.send_message("현재 전투 중인 상대방이 없습니다.")
+            return
 
         player = data["pvp"][user_id]
         opponent = data["pvp"][opponent_id]
@@ -881,7 +885,7 @@ class pvp:
             
         except Exception as e:
             print(f"[ERROR] : {e}")
-            await interaction.response.send_message(f"{e}")
+            await interaction.response.send_message(f"{str(e)}")
 
     async def end_battle(self, interaction, winner_id, loser_id):
         data = GameDataManager.load_game_data()
