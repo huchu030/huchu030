@@ -814,36 +814,34 @@ class pvp:
 
 
     async def attack(self, interaction: discord.Interaction, attack: int, defense: int, store: int):
-        data = GameDataManager.load_game_data()
-        guild = interaction.guild
-        
-        user_id = str(interaction.user.id)
-        opponent_id = next((uid for uid in data["pvp"] if uid != user_id and data["pvp"][uid]["in_battle"]), None)
-                        
-        if opponent_id is None:
-            await interaction.response.send_message("현재 전투 중인 상대방이 없습니다.")
-            return
-
-
-        player = data["pvp"][user_id]
-        opponent = data["pvp"][opponent_id]
-
-        user_nickname = get_user_nickname(guild, interaction.user.id)
-        opponent_nickname = get_user_nickname(guild, int(opponent_id))
-
-        if user_id not in data["pvp"]:
-            await interaction.response.send_message("현재 전투 중이 아닙니다. `/pvp`로 전투를 시작해보세요!")
-            return
-        
-        if not player["in_battle"]:
-            await interaction.response.send_message("현재 전투 중이 아닙니다. `/pvp`로 전투를 시작해보세요!")
-            return
-        
-        if not player["turn"]:
-            await interaction.response.send_message(f"지금은 {user_nickname}님의 턴이 아닙니다. 인내심을 가지세요!")
-            return
-
         try:
+            data = GameDataManager.load_game_data()
+            guild = interaction.guild
+            
+            user_id = str(interaction.user.id)
+            opponent_id = next((uid for uid in data["pvp"] if uid != user_id and data["pvp"][uid]["in_battle"]), None)
+
+            if opponent_id is None:
+                await interaction.response.send_message("현재 전투 중인 상대방이 없습니다.")
+                return
+
+            player = data["pvp"][user_id]
+            opponent = data["pvp"][opponent_id]
+
+            user_nickname = get_user_nickname(guild, interaction.user.id)
+            opponent_nickname = get_user_nickname(guild, int(opponent_id))
+
+            if user_id not in data["pvp"]:
+                await interaction.response.send_message("현재 전투 중이 아닙니다. `/pvp`로 전투를 시작해보세요!")
+                return
+            
+            if not player["in_battle"]:
+                await interaction.response.send_message("현재 전투 중이 아닙니다. `/pvp`로 전투를 시작해보세요!")
+                return
+            
+            if not player["turn"]:
+                await interaction.response.send_message(f"지금은 {user_nickname}님의 턴이 아닙니다. 인내심을 가지세요!")
+                return
 
             if attack + defense + store != player['points']:
                 await interaction.response.send_message("포인트 분배가 올바르지 않습니다. 다시 입력해 주세요.\n"
@@ -860,18 +858,16 @@ class pvp:
 
             player["defense"] = defense
 
-            damage = attack*10
-            damage -= opponent["defense"] * 10
+            damage = attack * 10 - opponent["defense"] * 10
             if damage < 0:
                 damage = 0
             opponent["hp"] -= damage
 
             player["turn"] = False
             opponent["turn"] = True
-            
+
             await self.give_point(interaction)
 
-            
             GameDataManager.save_game_data(data)
 
             if opponent["hp"] <= 0:
@@ -884,12 +880,15 @@ class pvp:
             await interaction.followup.send(f"{user_nickname}님이 공격에 {attack}포인트를 사용했습니다.\n"
                                             f"{opponent_nickname}님이 {damage}의 데미지를 입었습니다.")
             await interaction.followup.send(f"\n이제 {opponent_nickname}님의 턴입니다!")
-            
-        except Exception as e:
-            print(f"[ERROR] : {e}")
-            await interaction.response.send_message(f"{str(e)}")
 
-    async def end_battle(self, interaction, winner_id, loser_id):
+        except Exception as e:
+            print(f"[ERROR in attack]: {e}")
+            await interaction.response.send_message(f"오류 발생: {str(e)}")
+
+
+
+
+       async def end_battle(self, interaction, winner_id, loser_id):
         data = GameDataManager.load_game_data()
         
         winner_nickname = get_user_nickname(interaction.guild, int(winner_id))
