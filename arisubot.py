@@ -1030,39 +1030,55 @@ async def 쓰담(interaction: discord.Interaction):
 
 
 
+
 @bot.tree.command(name="pvp", description="Start a PvP match with another player.")
-async def pvp_command(interaction: discord.Interaction, opponent: discord.Member):
+async def pvp_command(interaction: discord.Interaction):
     player = interaction.user
     bot.pvp.initialize_player(player)
-    bot.pvp.initialize_player(opponent)
+    
+    # 서버 내 모든 유저를 선택할 수 있는 Select 메뉴 생성
+    options = []
+    for member in interaction.guild.members:
+        if not member.bot and member.id != player.id:  # 봇과 자기 자신을 제외한 멤버
+            options.append(discord.SelectOption(label=member.name, value=str(member.id)))
 
-    if player.id == opponent.id:
-        await interaction.response.send_message("You cannot fight yourself!")
+    if not options:
+        await interaction.response.send_message("No available members to challenge.")
         return
 
-    success, message = bot.pvp.start_battle(player, opponent)
-    if not success:
-        await interaction.response.send_message(message)
-        return
+    select = discord.ui.Select(placeholder="Choose an opponent", options=options)
 
-    accept_button = discord.ui.Button(label="Accept", style=discord.ButtonStyle.green)
-    cancel_button = discord.ui.Button(label="Cancel", style=discord.ButtonStyle.red)
+    async def select_callback(select_interaction: discord.Interaction):
+        opponent_id = int(select.values[0])
+        opponent = interaction.guild.get_member(opponent_id)
 
-    async def accept_button_callback(interaction_accept: discord.Interaction):
-        if interaction_accept.user.id != opponent.id:
-            await interaction_accept.response.send_message("Only the challenged player can accept!")
+        success, message = bot.pvp.start_battle(player, opponent)
+        if not success:
+            await select_interaction.response.send_message(message)
             return
 
-        await interaction_accept.response.send_message(f"PvP battle started between {player.mention} and {opponent.mention}!")
+        accept_button = discord.ui.Button(label="Accept", style=discord.ButtonStyle.green)
 
-    accept_button.callback = accept_button_callback
+        async def accept_button_callback(accept_interaction: discord.Interaction):
+            if accept_interaction.user.id != opponent.id:
+                await accept_interaction.response.send_message("Only the challenged player can accept!")
+                return
+
+            await accept_interaction.response.send_message(f"PvP battle started between {player.mention} and {opponent.mention}!")
+
+        accept_button.callback = accept_button_callback
+
+        view = discord.ui.View()
+        view.add_item(accept_button)
+
+        await select_interaction.response.send_message(f"{opponent.mention}, you have been challenged to a PvP battle!", view=view)
+
+    select.callback = select_callback
 
     view = discord.ui.View()
-    view.add_item(accept_button)
-    view.add_item(cancel_button)
+    view.add_item(select)
 
-    await interaction.response.send_message(f"{opponent.mention}, you have been challenged to a PvP battle!", view=view)
-
+    await interaction.response.send_message("Select a player to challenge:", view=view)
 
 @bot.tree.command(name="행동", description="Take action in your turn.")
 async def action_command(interaction: discord.Interaction, 공격: int, 방어: int, 저장: int):
