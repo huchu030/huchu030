@@ -813,37 +813,46 @@ class pvp:
         GameDataManager.save_game_data(data)
 
 
+
+
     async def attack(self, interaction: discord.Interaction, attack: int, defense: int, store: int):
         try:
+            print("Starting attack function")
             data = GameDataManager.load_game_data()
             guild = interaction.guild
+            print("Data loaded and guild retrieved")
             
             user_id = str(interaction.user.id)
             opponent_id = next((uid for uid in data["pvp"] if uid != user_id and data["pvp"][uid]["in_battle"]), None)
+            print(f"Opponent ID: {opponent_id}")
 
             if opponent_id is None:
+                print("No opponent found")
                 await interaction.response.send_message("현재 전투 중인 상대방이 없습니다.")
                 return
 
             player = data["pvp"][user_id]
             opponent = data["pvp"][opponent_id]
 
-            user_nickname = get_user_nickname(guild, interaction.user.id)
-            opponent_nickname = get_user_nickname(guild, int(opponent_id))
+            print(f"Player and opponent data retrieved: {player}, {opponent}")
 
             if user_id not in data["pvp"]:
+                print("User not in battle")
                 await interaction.response.send_message("현재 전투 중이 아닙니다. `/pvp`로 전투를 시작해보세요!")
                 return
             
             if not player["in_battle"]:
+                print("Player not in battle")
                 await interaction.response.send_message("현재 전투 중이 아닙니다. `/pvp`로 전투를 시작해보세요!")
                 return
             
             if not player["turn"]:
+                print("Not player's turn")
                 await interaction.response.send_message(f"지금은 {user_nickname}님의 턴이 아닙니다. 인내심을 가지세요!")
                 return
 
             if attack + defense + store != player['points']:
+                print("Invalid point distribution")
                 await interaction.response.send_message("포인트 분배가 올바르지 않습니다. 다시 입력해 주세요.\n"
                                                         f"현재 사용 가능 포인트 : {player['points']}", ephemeral=True)
                 return
@@ -851,6 +860,7 @@ class pvp:
             player["store"] += store
 
             if player["store"] > 4:
+                print("Store points exceed limit")
                 player["store"] -= store
                 await interaction.response.send_message("저장된 포인트의 합계는 최대 4입니다. 다시 입력해 주세요.\n"
                                                         f"현재 저장된 포인트 : {player['points']}", ephemeral=True)
@@ -859,32 +869,36 @@ class pvp:
             player["defense"] = defense
 
             damage = attack * 10 - opponent["defense"] * 10
+            print(f"Calculated damage: {damage}")
             if damage < 0:
                 damage = 0
             opponent["hp"] -= damage
+            print(f"Opponent's HP after damage: {opponent['hp']}")
 
             player["turn"] = False
             opponent["turn"] = True
+            print("Turn switched")
 
             await self.give_point(interaction)
+            print("Points given")
 
             GameDataManager.save_game_data(data)
+            print("Game data saved")
 
             if opponent["hp"] <= 0:
+                print("Opponent defeated")
                 winner_id = user_id
                 loser_id = opponent_id
                 await self.end_battle(interaction, winner_id, loser_id)
                 return
 
-            await interaction.response.defer()
-            await interaction.followup.send(f"{user_nickname}님이 공격에 {attack}포인트를 사용했습니다.\n"
-                                            f"{opponent_nickname}님이 {damage}의 데미지를 입었습니다.")
+            await interaction.response.send_message(f"{user_nickname}님이 공격에 {attack}포인트를 사용했습니다.\n"
+                                                    f"{opponent_nickname}님이 {damage}의 데미지를 입었습니다.")
             await interaction.followup.send(f"\n이제 {opponent_nickname}님의 턴입니다!")
 
         except Exception as e:
             print(f"[ERROR in attack]: {e}")
             await interaction.response.send_message(f"오류 발생: {str(e)}")
-
 
 
 
