@@ -960,27 +960,9 @@ class pvp:
         user_nickname = get_user_nickname(guild, interaction.user.id)
         data = GameDataManager.load_game_data()
         player = data["pvp"][user_id]
-        
-        if player["id"] == 2:
-            if player["round"] == 1:
-                current_points = 2
-            elif player["round"] == 2:
-                current_points = 2
-            elif opponent["round"] == 3:
-                current_points = 3
-            else:
-                current_points = 4
-        else:
-            if player["round"] == 1:
-                current_points = 1
-            elif player["round"] == 2:
-                 current_points = 2
-            elif player["round"] == 3:
-                current_points = 2
-            else:
-                current_points = 4
 
-        await interaction.response.send_message(f"{user_nickname}님의 사용 가능 포인트 : {current_points + player['store']}", ephemeral=True)
+        await interaction.response.send_message(f"{user_nickname}님의 사용 가능 포인트 : {player['points'] + player['store']}\n"
+                                                "주의 : 자신의 턴일 때 조회해야 실제 값이 나옵니다!", ephemeral=True)
                                             
     async def stats(self, interaction: discord.Interaction):
         user_id = str(interaction.user.id)
