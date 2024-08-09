@@ -949,8 +949,9 @@ class pvp:
         guild = interaction.guild
         user_nickname = get_user_nickname(guild, interaction.user.id)
         data = GameDataManager.load_game_data()
+        player = data["pvp"][user_id]
 
-        await interaction.response.send_message(f"{user_nickname}님의 사용 가능 포인트 : {player_data['points']}", ephemeral=True)
+        await interaction.response.send_message(f"{user_nickname}님의 사용 가능 포인트 : {player['points']}", ephemeral=True)
                                             
     async def stats(self, interaction: discord.Interaction):
         user_id = str(interaction.user.id)
@@ -1228,7 +1229,6 @@ async def 포인트(interaction: discord.Interaction):
 async def 로또(interaction: discord.Interaction):
     guild = interaction.guild
     user_nickname = get_user_nickname(guild, interaction.user.id)
-    
     numbers = random.sample(range(1, 46), 6)
     numbers.sort()
     await interaction.response.send_message(f"{user_nickname}님의 이번 주 로또 번호는~ \n"
