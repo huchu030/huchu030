@@ -759,7 +759,7 @@ class pvp:
 
                         await button_interaction.response.send_message(f"{opponent_nickname}님과의 전투가 시작되었습니다.\n"
                                                                        "`/행동`으로 포인트를 사용하세요!")
-                        await self.handle_turn(button_interaction)
+                        await update_points(button_interaction)
                         
                     accept_button.callback = accept_button_callback
 
@@ -783,7 +783,7 @@ class pvp:
             print(f"[ERROR] start_game: {e}")
             await interaction.response.send_message(f"{e}")
 
-    async def handle_turn(self, interaction: discord.Interaction):
+    async def update_points(self, interaction: discord.Interaction):
         user_id = str(interaction.user.id)
         data = GameDataManager.load_game_data()
         player_data = data["pvp"][user_id]
@@ -855,7 +855,7 @@ class pvp:
 
         await interaction.followup.send(f"{user_nickname}님이 공격에 {attack_points}포인트를 사용했습니다.\n"
                                         f"{opponent_nickname}님의 체력 : {opponent['hp']}")
-        await self.handle_turn(interaction)
+        await self.update_points(interaction)
 
     async def end_game(self, interaction, winner_id, loser_id):
         data = GameDataManager.load_game_data()
