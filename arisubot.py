@@ -870,6 +870,7 @@ class pvp:
             await interaction.response.defer()
             await interaction.followup.send(f"{user_nickname}님이 공격에 {attack}포인트를 사용했습니다.\n"
                                             f"{opponent_nickname}님이 {damage}의 데미지를 입었습니다.\n"
+                                            f"{user_nickname}님의 체력 : {player['hp']}, {opponent_nickname}님의 체력 : {opponent['hp']}\n"
                                             f"\n이제 {opponent_nickname}님의 턴입니다!")
 
         except Exception as e:
