@@ -818,7 +818,7 @@ class pvp:
         guild = interaction.guild
         
         user_id = str(interaction.user.id)
-        opponent_id = next(uid for uid in data["pvp"] if uid != user_id and game_data["pvp"][uid]["in_battle"])
+        opponent_id = next(uid for uid in data["pvp"] if uid != user_id and data["pvp"][uid]["in_battle"])
 
         player = data["pvp"][user_id]
         opponent = data["pvp"][opponent_id]
