@@ -1047,12 +1047,12 @@ async def on_member_join(member):
 # 알림 메시지
 
 schedule_times_messages = [
-    ('02:27', '아리스랑 놀아주세요!')
+    ('02:31', '아리스랑 놀아주세요!')
     ]
 lock = asyncio.Lock()
 tz = pytz.timezone('Asia/Seoul')
 
-@tasks.loop(hours=1)
+@tasks.loop(minutes=1)
 async def scheduled_task():
     async with lock:
         try:
