@@ -6,6 +6,7 @@ import asyncio
 import tracemalloc
 import random
 import pytz
+from tokens import ttoken
 
 # 토큰, 채널 ID
 
@@ -234,7 +235,7 @@ async def 서브웨이(interaction: discord.Interaction):
 
 async def main():
     async with bot:
-        await bot.start(TOKEN)
+        await bot.start(ttoken)
 
 import asyncio
 asyncio.run(main())

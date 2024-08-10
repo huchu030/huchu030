@@ -9,7 +9,7 @@ import random
 import asyncio
 import json
 import os
-from token import atoken
+from tokens import atoken
 
 
 # 토큰, 채널 ID
