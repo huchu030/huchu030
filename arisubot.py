@@ -1047,7 +1047,7 @@ async def on_member_join(member):
 # 알림 메시지
 
 schedule_times_messages = [
-    ('19:00', '아리스랑 놀아주세요!')
+    ('02:22', '아리스랑 놀아주세요!')
     ]
 lock = asyncio.Lock()
 tz = pytz.timezone('Asia/Seoul')
@@ -1063,7 +1063,7 @@ async def scheduled_task():
             for time_str, message in schedule_times_messages:
                 if current_time == time_str:
                     print('[DEBUG] 지정시각입니다')
-                    channel = bot.get_channel(MCHID)
+                    channel = bot.get_channel(TCHID)
                 
                     if channel:
                         await channel.send(message)
