@@ -12,7 +12,7 @@ import os
 
 # 토큰, 채널 ID
 
-TOKEN = "MTI2NzEyNDUwNTY4MDI4MTYyMA.Gp_5nb.WpD1gpVbMCVCPrIHIb53jupN67qHj0ps58FE8k"
+TOKEN = open("atoken", "r").readline()
 MCHID = 1266916147639615639 
 
 # 인텐트 설정
