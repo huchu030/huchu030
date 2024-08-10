@@ -10,7 +10,6 @@ from tokens import ttoken
 
 # 토큰, 채널 ID
 
-TOKEN = open("ttoken", "r").readline()
 MCHID = 1266916147639615639
 
 # 인텐트 설정
