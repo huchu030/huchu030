@@ -9,7 +9,8 @@ import random
 import asyncio
 import json
 import os
-from atoken import TOKEN
+from token import atoken
+
 
 # 토큰, 채널 ID
 
@@ -1298,7 +1299,7 @@ async def 쓰담(interaction: discord.Interaction):
 
 async def main():
     async with bot:
-        await bot.start(TOKEN)
+        await bot.start(atoken)
 
 import asyncio
 asyncio.run(main())
