@@ -1290,6 +1290,10 @@ async def 쓰담(interaction: discord.Interaction):
     user_nickname = get_user_nickname(guild, interaction.user.id)
     await interaction.response.send_message(f"{user_nickname}님, 아리스는 행복합니다..")
 
+@bot.tree.command(name='테스트', description="테스트입니다")
+async def 테스트(interaction: discord.Interaction):
+    await interaction.response.send_message("ㅎㅇ")
+
 
 # 봇 실행
 
