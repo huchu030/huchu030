@@ -1055,7 +1055,7 @@ schedule_times_messages = [
 lock = asyncio.Lock()
 tz = pytz.timezone('Asia/Seoul')
 
-@tasks.loop(hours=1)
+@tasks.loop(minutes=1)
 async def scheduled_task():
     async with lock:
         try:
