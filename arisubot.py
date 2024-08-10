@@ -9,12 +9,8 @@ import random
 import asyncio
 import json
 import os
-from tokens import atoken
+from tokens import atoken, MCHID, TCHID
 
-
-# 토큰, 채널 ID
-
-MCHID = 1266916147639615639 
 
 # 인텐트 설정
 

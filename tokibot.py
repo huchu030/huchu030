@@ -6,11 +6,8 @@ import asyncio
 import tracemalloc
 import random
 import pytz
-from tokens import ttoken
+from tokens import ttoken, MCHID, TCHID
 
-# 토큰, 채널 ID
-
-MCHID = 1266916147639615639
 
 # 인텐트 설정
 
