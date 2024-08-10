@@ -1050,12 +1050,12 @@ async def on_member_join(member):
 # 알림 메시지
 
 schedule_times_messages = [
-    ('19:00', '아리스랑 놀아주세요!')
+    ('01:03', '아리스랑 놀아주세요!')
     ]
 lock = asyncio.Lock()
 tz = pytz.timezone('Asia/Seoul')
 
-@tasks.loop(hours=1)
+@tasks.loop(minutes=1)
 async def scheduled_task():
     async with lock:
         try:
@@ -1292,6 +1292,10 @@ async def 쓰담(interaction: discord.Interaction):
     guild = interaction.guild
     user_nickname = get_user_nickname(guild, interaction.user.id)
     await interaction.response.send_message(f"{user_nickname}님, 아리스는 행복합니다..")
+
+@bot.tree.command(name='테스트', description="테스트입니다")
+async def 테스트(interaction: discord.Interaction):
+    await interaction.response.send_message("끄앙")
 
 
 # 봇 실행
