@@ -544,16 +544,17 @@ class rpg:
         player_data = data.get("players", {}).get(user_id, None)
         enemy_data = data.get("current_enemies", {}).get(user_id, None)
 
-        buttons = []
-        
         if player_data:
-            for item_key, item in self.items.items():
-                buttons.append(
-                    ui.Button(label=item["label"], style=ButtonStyle.primary, custom_id=f'buy_{item_key}')
-                )
 
-            view = ui.View()
-            for button in buttons:
+            view = discord.ui.View()
+
+            for item_key, item in self.items.items():
+                button = discord.ui.Button(label=item["label"], style=ButtonStyle.primary, custom_id=f'buy_{item_key}')
+                
+                async def button_callback(interaction: discord.Interaction, item=item):
+                    await self.handle_purchase(interaction, item)
+
+                button.callback = button_callback
                 view.add_item(button)
 
             self.shop_message = await interaction.response.send_message(
@@ -1179,11 +1180,6 @@ async def rpg_순위(interaction: discord.Interaction):
 @bot.tree.command(name="상점", description="rpg - 상점으로 들어갑니다")
 async def shop(interaction: discord.Interaction):
     await bot.rpg.shop(interaction)
-
-@bot.event
-async def on_interaction(interaction: discord.Interaction):
-    if interaction.type == discord.InteractionType.component:
-        await bot.rpg.handle_shop_interaction(interaction)
 
 @bot.tree.command(name='rpg_규칙', description="아리스가 RPG게임의 규칙을 설명해줍니다")
 async def rpg_규칙(interaction: discord.Interaction):
