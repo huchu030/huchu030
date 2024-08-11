@@ -648,7 +648,7 @@ class rpg:
 
 class pvp:
 
-data_lock = lock()
+    data_lock = lock()
     def __init__(self):
         GameDataManager.initialize_game_data()
 
