@@ -7,7 +7,7 @@ import pytz
 import tracemalloc
 import random
 import asyncio
-from asyncio import lock
+from asyncio import Lock
 import json
 import os
 from tokens import atoken, MCHID, TCHID
@@ -648,7 +648,7 @@ class rpg:
 
 class pvp:
 
-    data_lock = lock()
+    data_lock = Lock()
     def __init__(self):
         GameDataManager.initialize_game_data()
 
