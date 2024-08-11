@@ -1046,6 +1046,7 @@ async def on_member_join(member):
 
 # 상호작용
 
+@bot.event
 async def on_interaction(interaction: discord.Interaction):
     try:
         if interaction.type == discord.InteractionType.component:
@@ -1191,7 +1192,7 @@ async def rpg_순위(interaction: discord.Interaction):
     await bot.rpg.leaderboard(interaction)
 
 @bot.tree.command(name="상점", description="rpg - 상점으로 들어갑니다")
-async def shop(interaction: discord.Interaction):
+async def 상점(interaction: discord.Interaction):
     await bot.rpg.shop(interaction)
 
 @bot.tree.command(name='rpg_규칙', description="아리스가 RPG게임의 규칙을 설명해줍니다")
