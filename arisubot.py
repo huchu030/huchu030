@@ -717,7 +717,7 @@ class pvp:
                 try:
                     values = select_interaction.data.get('values', [])
 
-                    if not values:
+                    if not values or len(values) == 0:
                         await select_interaction.response.send_message("상대가 선택되지 않았습니다.")
                         return
 
@@ -765,13 +765,12 @@ class pvp:
                         await button_interaction.response.send_message(f"{opponent_nickname}님과의 전투가 시작되었습니다.\n"
                                                                        "`/행동`으로 포인트를 사용하세요!\n"
                                                                        "`/포인트`로 사용 가능 포인트를 조회할 수 있습니다.")
-                            
                     accept_button.callback = accept_button_callback
 
                     view = discord.ui.View()
                     view.add_item(accept_button)
 
-                    await select_interaction.response.send_message(f"{opponent_nickname}님에게 전투 요청을 보냈습니다. "
+                    await select_interaction.response.send_message(f"{opponent_nickname}님에게 전투 요청을 보냈습니다.\n"
                                                                    "상대방이 수락하면 전투가 시작됩니다!", ephemeral=False)
                     await select_interaction.channel.send(f"<@{opponent_id}>님, {user_nickname}님의 전투 요청이 도착했습니다!",
                                                           view=view)
