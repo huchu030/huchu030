@@ -552,9 +552,9 @@ class rpg:
                 button = discord.ui.Button(label=item["label"], style=ButtonStyle.primary, custom_id=f'buy_{item_key}')
                 
                 async def button_callback(interaction: discord.Interaction, item=item):
-                    await self.handle_purchase(interaction, item)
+                    await self.handle_purchase(interaction)
 
-                button.callback = button_callback
+                button.callback = lambda i, item=item: button_callback(i, item=item)
                 view.add_item(button)
 
             self.shop_message = await interaction.response.send_message(
@@ -574,7 +574,7 @@ class rpg:
                 "코인이 없습니다. `/rpg`로 게임을 시작해보세요!"
             )
 
-    async def handle_shop_interaction(self, interaction: discord.Interaction):
+    async def handle_purchase(self, interaction: discord.Interaction):
         try:
             custom_id = interaction.data.get('custom_id', '')
             item_key = custom_id.split('_')[1]
