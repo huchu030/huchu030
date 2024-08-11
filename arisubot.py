@@ -544,17 +544,16 @@ class rpg:
         player_data = data.get("players", {}).get(user_id, None)
         enemy_data = data.get("current_enemies", {}).get(user_id, None)
 
+        buttons = []
+        
         if player_data:
-
-            view = discord.ui.View()
-
             for item_key, item in self.items.items():
-                button = discord.ui.Button(label=item["label"], style=ButtonStyle.primary, custom_id=f'buy_{item_key}')
-                
-                async def button_callback(interaction: discord.Interaction, item=item):
-                    await self.handle_purchase(interaction)
+                buttons.append(
+                    ui.Button(label=item["label"], style=ButtonStyle.primary, custom_id=f'buy_{item_key}')
+                )
 
-                button.callback = lambda i, item=item: button_callback(i, item=item)
+            view = ui.View()
+            for button in buttons:
                 view.add_item(button)
 
             self.shop_message = await interaction.response.send_message(
@@ -574,7 +573,7 @@ class rpg:
                 "코인이 없습니다. `/rpg`로 게임을 시작해보세요!"
             )
 
-    async def handle_purchase(self, interaction: discord.Interaction):
+    async def handle_shop_interaction(self, interaction: discord.Interaction):
         try:
             custom_id = interaction.data.get('custom_id', '')
             item_key = custom_id.split('_')[1]
@@ -1044,6 +1043,20 @@ async def on_member_join(member):
         await channel.send('인간이 이곳에 온 것은 수천 년 만이군...')
     else:
         print('[ERROR] 채널을 찾을 수 없습니다.')
+
+# 상호작용
+
+async def on_interaction(interaction: discord.Interaction):
+    try:
+        if interaction.type == discord.InteractionType.component:
+            custom_id = interaction.data.get('custom_id', '')
+
+            if custom_id.startswith('buy_'):
+                await bot.rpg.handle_shop_interaction(interaction)
+
+    except Exception as e:
+        print(f"[ERROR] on_interaction: {e}")
+        await interaction.response.send_message(f"{e}")
 
 # 알림 메시지
 
