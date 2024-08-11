@@ -735,10 +735,6 @@ class pvp:
 
                     accept_button = discord.ui.Button(label="수락", style=discord.ButtonStyle.primary, custom_id="pvp_accept")
 
-                    async def on_interaction(self, interaction: discord.Interaction):
-                        if interaction.data.get('custom_id', '') == "pvp_accept":
-                            await self.accept_button_callback(interaction)
-                    
                     async def accept_button_callback(self, button_interaction: discord.Interaction):
                         if str(button_interaction.user.id) != opponent_id:
                             await button_interaction.response.send_message("이 버튼은 상대방이 눌러야 합니다!", ephemeral=False)
@@ -779,8 +775,10 @@ class pvp:
         except Exception as e:
             print(f"[ERROR] start_game: {e}")
             await interaction.response.send_message(f"{e}")
-            
 
+    async def on_interaction(self, interaction: discord.Interaction):
+        if interaction.data.get('custom_id') == 'pvp_accept':
+            await self.accept_button_callback(interaction)
 
     async def attack(self, interaction: discord.Interaction, attack: int, defense: int, store: int):
         try:
