@@ -745,6 +745,11 @@ class pvp:
                     
                     opponent_nickname = get_user_nickname(select_interaction.guild, int(opponent_id))
 
+                    select_interaction.client.pvp_pending_requests[select_interaction.id] = {
+                        "opponent_id": opponent_id,
+                        "user_id": user_id
+                    }
+
                     accept_button = discord.ui.Button(label="수락", style=discord.ButtonStyle.primary, custom_id="pvp_accept")
                     view = discord.ui.View()
                     view.add_item(accept_button)
@@ -770,27 +775,40 @@ class pvp:
 
 
     async def handle_pvp_interaction(self, interaction: discord.Interaction):
-        custom_id = interaction.data['custom_id']
-        opponent_id = next((uid for uid in data["pvp"] if uid != user_id and data["pvp"][uid]["in_battle"] == False), None)
-        opponent_nickname = get_user_nickname(interaction.guild, int(opponent_id))
-        if custom_id == "pvp_accept":
-            if str(button_interaction.user.id) != opponent_id:
-                await button_interaction.response.send_message("이 버튼은 상대방이 눌러야 합니다!", ephemeral=False)
-                return
+        try:
+            custom_id = interaction.data['custom_id']
+            if custom_id == "pvp_accept":
+                pending_request = interaction.client.pvp_pending_requests.get(interaction.id)
+                if not pending_request:
+                    await interaction.response.send_message("[ERROR] 전투 요청 데이터를 찾을 수 없습니다.", ephemeral=True)
+                    return
+                
+                opponent_id = pending_request["opponent_id"]
+                user_id = pending_request["user_id"]
 
-            data["pvp"][opponent_id]["in_battle"] = True
-            data["pvp"][user_id]["in_battle"] = True
-            data["pvp"][opponent_id]["turn"] = False
-            data["pvp"][user_id]["turn"] = True
-            data["pvp"][opponent_id]["id"] = 2
-            data["pvp"][user_id]["points"] = 1
-            data["pvp"][user_id]["round"] = 1
+                if str(button_interaction.user.id) != opponent_id:
+                    await interaction.response.send_message("이 버튼은 상대방이 눌러야 합니다!", ephemeral=False)
+                    return
 
-            GameDataManager.save_game_data(data)
+                data = GameDataManager.load_game_data()
 
-            await interaction.response.send_message(f"{opponent_nickname}님과의 전투가 시작되었습니다.\n"
-                                                    "`/행동`으로 포인트를 사용하세요!\n"
-                                                    "`/포인트`로 사용 가능 포인트를 조회할 수 있습니다.")
+                data["pvp"][opponent_id]["in_battle"] = True
+                data["pvp"][user_id]["in_battle"] = True
+                data["pvp"][opponent_id]["turn"] = False
+                data["pvp"][user_id]["turn"] = True
+                data["pvp"][opponent_id]["id"] = 2
+                data["pvp"][user_id]["points"] = 1
+                data["pvp"][user_id]["round"] = 1
+
+                GameDataManager.save_game_data(data)
+                
+                opponent_nickname = get_user_nickname(interaction.guild, int(opponent_id))
+                await interaction.response.send_message(f"{opponent_nickname}님과의 전투가 시작되었습니다.\n"
+                                                        "`/행동`으로 포인트를 사용하세요!\n"
+                                                        "`/포인트`로 사용 가능 포인트를 조회할 수 있습니다.")
+        except Exception as e:
+            print(f"[ERROR] handle_pvp_interaction: {e}")
+            await interaction.response.send_message(f"{e}")
 
     async def attack(self, interaction: discord.Interaction, attack: int, defense: int, store: int):
         try:
