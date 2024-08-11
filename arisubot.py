@@ -771,7 +771,7 @@ class pvp:
                     view = discord.ui.View()
                     view.add_item(accept_button)
 
-                    await select_interaction.response.send_message(f"{opponent_nickname}님에게 전투 요청을 보냈습니다. "
+                    await select_interaction.response.send_message(f"{opponent_nickname}님에게 전투 요청을 보냈습니다.\n"
                                                                    "상대방이 수락하면 전투가 시작됩니다!", ephemeral=False)
                     await select_interaction.channel.send(f"<@{opponent_id}>님, {user_nickname}님의 전투 요청이 도착했습니다!",
                                                           view=view)
