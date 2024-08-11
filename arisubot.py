@@ -213,8 +213,7 @@ class GameDataManager:
 
 class rpg:
 
-    def __init__(self,bot):
-        self.bot = bot
+    def __init__(self):
         self.items = {
             "hp": {"label": "마시멜로", "cost": 100, "effect": "hp", "value": 50, "price_increase": 0},
             "attack": {"label": "버섯", "cost": 100, "effect": "attack", "value": 1, "price_increase": 20},
@@ -574,10 +573,6 @@ class rpg:
                 "코인이 없습니다. `/rpg`로 게임을 시작해보세요!"
             )
 
-    async def on_interaction(self, interaction: discord.Interaction):
-        if interaction.type == discord.InteractionType.component:
-            await self.handle_shop_interaction(interaction)
-
     async def handle_shop_interaction(self, interaction: discord.Interaction):
         try:
             custom_id = interaction.data.get('custom_id', '')
@@ -592,48 +587,66 @@ class rpg:
             if player_data:
                 item = self.items.get(item_key, None)
 
-         
-                item_cost = self.get_item_cost(item_key, user_id)
-                
-                if player_data["coins"] >= item_cost:
-                    player_data["coins"] -= item_cost
-                    player_data[item["effect"]] += item["value"]
+                if item:
+                    item_cost = self.get_item_cost(item_key, user_id)
                     
-                    data["purchases"][user_id][item_key] += 1
-                    GameDataManager.save_game_data(data)
+                    if player_data["coins"] >= item_cost:
+                        player_data["coins"] -= item_cost
+                        player_data[item["effect"]] += item["value"]
+                        
+                        data["purchases"][user_id][item_key] += 1
+                        GameDataManager.save_game_data(data)
 
-                    effect_message = {
-                        "hp": "체력을 50 회복했습니다!",
-                        "attack": "공격력이 1 증가했습니다!",
-                        "defense": "방어력이 1 증가했습니다!",
-                        "evasionchance": "회피 확률이 1%p 증가했습니다!",
-                        "attackchance": "공격 성공 확률이 1%p 증가했습니다!",
-                        "criticalchance": "크리티컬 확률이 1%p 증가했습니다!",
-                        "criticaldamage": "크리티컬 데미지가 5%p 증가했습니다!",
-                        "evasionitems": f"수학의 정석이 {player_data['evasionitems']}권이 되었습니다!"
-                    }
+                        effect_message = {
+                            "hp": "체력을 50 회복했습니다!",
+                            "attack": "공격력이 1 증가했습니다!",
+                            "defense": "방어력이 1 증가했습니다!",
+                            "evasionchance": "회피 확률이 1%p 증가했습니다!",
+                            "attackchance": "공격 성공 확률이 1%p 증가했습니다!",
+                            "criticalchance": "크리티컬 확률이 1%p 증가했습니다!",
+                            "criticaldamage": "크리티컬 데미지가 5%p 증가했습니다!",
+                            "evasionitems": f"수학의 정석이 {player_data['evasionitems']}권이 되었습니다!"
+                        }
 
-                    response_message = effect_message.get(item["effect"], "아이템 효과를 적용했습니다.")
+                        response_message = effect_message.get(item["effect"], "아이템 효과를 적용했습니다.")
 
-                    await interaction.response.send_message(f"{response_message}\n"
+                        if interaction.response.is_done():
+                            await interaction.followup.send(f"{response_message}\n"
                                                             f"현재 코인: {player_data['coins']}\n"
                                                             f"`/스탯`으로 {user_nickname}님의 현재 능력치를 확인해보세요~")
+                        else:
+                            await interaction.response.send_message(f"{response_message}\n"
+                                                                    f"현재 코인: {player_data['coins']}\n"
+                                                                    f"`/스탯`으로 {user_nickname}님의 현재 능력치를 확인해보세요~")
+                    else:
+                        if interaction.response.is_done():
+                            await interaction.followup.send(f"코인이 부족합니다! 현재 코인: {player_data['coins']}")
+                        else:
+                            await interaction.response.send_message(f"코인이 부족합니다! 현재 코인: {player_data['coins']}")
                 else:
-                    await interaction.response.send_message(f"코인이 부족합니다! 현재 코인: {player_data['coins']}")
+                    if interaction.response.is_done():
+                        await interaction.followup.send("[ERROR] 아이템이 품절되었습니다.")
+                    else:
+                        await interaction.response.send_message("[ERROR] 아이템이 품절되었습니다.")    
             else:
-                await interaction.response.send_message("코인이 없습니다. `/rpg`로 게임을 시작해보세요!")
-                    
+                if interaction.response.is_done():
+                    await interaction.followup.send("코인이 없습니다. `/rpg`로 게임을 시작해보세요!")
+                else:
+                    await interaction.response.send_message("코인이 없습니다. `/rpg`로 게임을 시작해보세요!")
         except Exception as e:
             print(f"[ERROR] Error handling shop interaction: {str(e)}")
-            await interaction.followup.send(f"{e}\n"
-                                            "상점이 폐업했습니다. 쟌넨")
 
+            if interaction.response.is_done():
+                await interaction.followup.send(f"{e}\n"
+                                                "상점이 폐업했습니다. 쟌넨")
+            else:
+                await interaction.response.send_message(f"{e}\n"
+                                                        "상점이 폐업했습니다. 쟌넨")
 # pvp
 
 
 class pvp:
-    def __init__(self,bot):
-        self.bot = bot
+    def __init__(self):
         GameDataManager.initialize_game_data()
 
     def initialize_player(self, user_id):
@@ -732,9 +745,28 @@ class pvp:
                     
                     opponent_nickname = get_user_nickname(select_interaction.guild, int(opponent_id))
 
-                    accept_button = discord.ui.Button(label="수락", style=discord.ButtonStyle.primary, custom_id="pvp_accept")
+                    accept_button = discord.ui.Button(label="수락", style=discord.ButtonStyle.primary)
+                    
+                    async def accept_button_callback(button_interaction: discord.Interaction):
+                        if str(button_interaction.user.id) != opponent_id:
+                            await button_interaction.response.send_message("이 버튼은 상대방이 눌러야 합니다!", ephemeral=False)
+                            return
 
-                    accept_button.callback = lambda button_interaction: self.accept_button_callback(button_interaction, user_id, opponent_id)
+                        data["pvp"][opponent_id]["in_battle"] = True
+                        data["pvp"][user_id]["in_battle"] = True
+                        data["pvp"][opponent_id]["turn"] = False
+                        data["pvp"][user_id]["turn"] = True
+                        data["pvp"][opponent_id]["id"] = 2
+                        data["pvp"][user_id]["points"] = 1
+                        data["pvp"][user_id]["round"] = 1
+
+                        GameDataManager.save_game_data(data)
+
+                        await button_interaction.response.send_message(f"{opponent_nickname}님과의 전투가 시작되었습니다.\n"
+                                                                       "`/행동`으로 포인트를 사용하세요!\n"
+                                                                       "`/포인트`로 사용 가능 포인트를 조회할 수 있습니다.")
+                            
+                    accept_button.callback = accept_button_callback
 
                     view = discord.ui.View()
                     view.add_item(accept_button)
@@ -755,30 +787,8 @@ class pvp:
         except Exception as e:
             print(f"[ERROR] start_game: {e}")
             await interaction.response.send_message(f"{e}")
+            
 
-    async def accept_button_callback(self, button_interaction: discord.Interaction):
-        try:
-            if str(button_interaction.user.id) != opponent_id:
-                await button_interaction.response.send_message("이 버튼은 상대방이 눌러야 합니다!", ephemeral=False)
-                return
-
-            data["pvp"][opponent_id]["in_battle"] = True
-            data["pvp"][user_id]["in_battle"] = True
-            data["pvp"][opponent_id]["turn"] = False
-            data["pvp"][user_id]["turn"] = True
-            data["pvp"][opponent_id]["id"] = 2
-            data["pvp"][user_id]["points"] = 1
-            data["pvp"][user_id]["round"] = 1
-
-            GameDataManager.save_game_data(data)
-
-            opponent_nickname = get_user_nickname(interaction.guild, int(opponent_id))
-            await interaction.response.send_message(f"{opponent_nickname}님과의 전투가 시작되었습니다.\n"
-                                                    "`/행동`으로 포인트를 사용하세요!\n"
-                                                    "`/포인트`로 사용 가능 포인트를 조회할 수 있습니다.")
-        except Exception as e:
-            print(f"[ERROR] accept_button_callback: {e}")
-            await interaction.response.send_message(f"{e}")
 
     async def attack(self, interaction: discord.Interaction, attack: int, defense: int, store: int):
         try:
@@ -1001,8 +1011,8 @@ class MyBot(commands.Bot):
         self.synced = False
         self.number_baseball = NumberBaseball()
         self.number_guessing = NumberGuessing()
-        self.rpg = rpg(self)
-        self.pvp = pvp(self)
+        self.rpg = rpg()
+        self.pvp = pvp()
         self.GameDataManager = GameDataManager()
         
     async def on_ready(self):
@@ -1013,12 +1023,6 @@ class MyBot(commands.Bot):
             self.synced = True
         scheduled_task.start()
         tracemalloc.start()
-
-    async def on_interaction(self, interaction: discord.Interaction):
-        if interaction.data.get('custom_id', '').startswith('buy_'): 
-            await self.rpg.on_interaction(interaction)
-        elif interaction.data.get('custom_id', '').startswith('pvp_'): 
-            await self.pvp.on_interaction(interaction)
 
 bot = MyBot()
 
@@ -1175,6 +1179,11 @@ async def rpg_순위(interaction: discord.Interaction):
 @bot.tree.command(name="상점", description="rpg - 상점으로 들어갑니다")
 async def shop(interaction: discord.Interaction):
     await bot.rpg.shop(interaction)
+
+@bot.event
+async def on_interaction(interaction: discord.Interaction):
+    if interaction.type == discord.InteractionType.component:
+        await bot.rpg.handle_shop_interaction(interaction)
 
 @bot.tree.command(name='rpg_규칙', description="아리스가 RPG게임의 규칙을 설명해줍니다")
 async def rpg_규칙(interaction: discord.Interaction):
