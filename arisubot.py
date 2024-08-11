@@ -574,10 +574,7 @@ class rpg:
                 "코인이 없습니다. `/rpg`로 게임을 시작해보세요!"
             )
 
-
-    async def on_interaction(self, interaction: discord.Interaction):
-        if interaction.type == discord.InteractionType.component:
-            await self.handle_shop_interaction(interaction)
+        accept_button.callback = lambda button_interaction: self.handle_shop_interaction(button_interaction, interaction: discord.Interaction)
 
     async def handle_shop_interaction(self, interaction: discord.Interaction):
         try:
@@ -735,26 +732,7 @@ class pvp:
 
                     accept_button = discord.ui.Button(label="수락", style=discord.ButtonStyle.primary, custom_id="pvp_accept")
 
-                    async def accept_button_callback(self, button_interaction: discord.Interaction):
-                        if str(button_interaction.user.id) != opponent_id:
-                            await button_interaction.response.send_message("이 버튼은 상대방이 눌러야 합니다!", ephemeral=False)
-                            return
-
-                        data["pvp"][opponent_id]["in_battle"] = True
-                        data["pvp"][user_id]["in_battle"] = True
-                        data["pvp"][opponent_id]["turn"] = False
-                        data["pvp"][user_id]["turn"] = True
-                        data["pvp"][opponent_id]["id"] = 2
-                        data["pvp"][user_id]["points"] = 1
-                        data["pvp"][user_id]["round"] = 1
-
-                        GameDataManager.save_game_data(data)
-
-                        await button_interaction.response.send_message(f"{opponent_nickname}님과의 전투가 시작되었습니다.\n"
-                                                                       "`/행동`으로 포인트를 사용하세요!\n"
-                                                                       "`/포인트`로 사용 가능 포인트를 조회할 수 있습니다.")
-                            
-                    accept_button.callback = accept_button_callback
+                    accept_button.callback = lambda button_interaction: self.accept_button_callback(button_interaction, user_id, opponent_id)
 
                     view = discord.ui.View()
                     view.add_item(accept_button)
@@ -776,9 +754,29 @@ class pvp:
             print(f"[ERROR] start_game: {e}")
             await interaction.response.send_message(f"{e}")
 
-    async def on_interaction(self, interaction: discord.Interaction):
-        if interaction.data.get('custom_id') == 'pvp_accept':
-            await self.accept_button_callback(interaction)
+    async def accept_button_callback(self, button_interaction: discord.Interaction):
+        try:
+            if str(button_interaction.user.id) != opponent_id:
+                await button_interaction.response.send_message("이 버튼은 상대방이 눌러야 합니다!", ephemeral=False)
+                return
+
+            data["pvp"][opponent_id]["in_battle"] = True
+            data["pvp"][user_id]["in_battle"] = True
+            data["pvp"][opponent_id]["turn"] = False
+            data["pvp"][user_id]["turn"] = True
+            data["pvp"][opponent_id]["id"] = 2
+            data["pvp"][user_id]["points"] = 1
+            data["pvp"][user_id]["round"] = 1
+
+            GameDataManager.save_game_data(data)
+
+            opponent_nickname = get_user_nickname(interaction.guild, int(opponent_id))
+            await interaction.response.send_message(f"{opponent_nickname}님과의 전투가 시작되었습니다.\n"
+                                                    "`/행동`으로 포인트를 사용하세요!\n"
+                                                    "`/포인트`로 사용 가능 포인트를 조회할 수 있습니다.")
+        except Exception as e:
+            print(f"[ERROR] accept_button_callback: {e}")
+            await interaction.response.send_message(f"{e}")
 
     async def attack(self, interaction: discord.Interaction, attack: int, defense: int, store: int):
         try:
