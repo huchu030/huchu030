@@ -7,7 +7,7 @@ import pytz
 import tracemalloc
 import random
 import asyncio
-from ayncio import lock
+from asyncio import lock
 import json
 import os
 from tokens import atoken, MCHID, TCHID
