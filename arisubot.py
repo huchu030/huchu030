@@ -1034,6 +1034,7 @@ class MyBot(commands.Bot):
         self.rpg = rpg()
         self.pvp = pvp()
         self.GameDataManager = GameDataManager()
+        self.pvp_pending_requests = {}
         
     async def on_ready(self):
         print(f'봇이 로그인되었습니다: {self.user.name}')
