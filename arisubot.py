@@ -648,7 +648,6 @@ class rpg:
 
 class pvp:
 
-    data_lock = Lock()
     def __init__(self):
         GameDataManager.initialize_game_data()
 
@@ -679,7 +678,7 @@ class pvp:
             guild = interaction.guild
             user_nickname = get_user_nickname(guild, interaction.user.id)
             user_id = str(interaction.user.id)
-
+            data_lock = Lock()
             async with data_lock:
                 data = GameDataManager.load_game_data()
     
