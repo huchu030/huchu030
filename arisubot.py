@@ -213,7 +213,8 @@ class GameDataManager:
 
 class rpg:
 
-    def __init__(self):
+    def __init__(self,bot):
+        self.bot = bot
         self.items = {
             "hp": {"label": "마시멜로", "cost": 100, "effect": "hp", "value": 50, "price_increase": 0},
             "attack": {"label": "버섯", "cost": 100, "effect": "attack", "value": 1, "price_increase": 20},
@@ -573,6 +574,11 @@ class rpg:
                 "코인이 없습니다. `/rpg`로 게임을 시작해보세요!"
             )
 
+
+    async def on_interaction(self, interaction: discord.Interaction):
+        if interaction.type == discord.InteractionType.component:
+            await self.handle_shop_interaction(interaction)
+
     async def handle_shop_interaction(self, interaction: discord.Interaction):
         try:
             custom_id = interaction.data.get('custom_id', '')
@@ -628,6 +634,7 @@ class rpg:
 
 class pvp:
     def __init__(self):
+        self.bot = bot
         GameDataManager.initialize_game_data()
 
     def initialize_player(self, user_id):
@@ -726,9 +733,14 @@ class pvp:
                     
                     opponent_nickname = get_user_nickname(select_interaction.guild, int(opponent_id))
 
-                    accept_button = discord.ui.Button(label="수락", style=discord.ButtonStyle.primary)
+                    accept_button = discord.ui.Button(label="수락", style=discord.ButtonStyle.primary, custom_id="pvp_accept")
+
+                     async def on_interaction(self, interaction: discord.Interaction):
+                        custom_id = interaction.data.get('custom_id', '')
+                        if custom_id == "pvp_accept":
+                            await self.accept_button_callback(interaction)
                     
-                    async def accept_button_callback(button_interaction: discord.Interaction):
+                    async def accept_button_callback(self, button_interaction: discord.Interaction):
                         if str(button_interaction.user.id) != opponent_id:
                             await button_interaction.response.send_message("이 버튼은 상대방이 눌러야 합니다!", ephemeral=False)
                             return
@@ -992,8 +1004,8 @@ class MyBot(commands.Bot):
         self.synced = False
         self.number_baseball = NumberBaseball()
         self.number_guessing = NumberGuessing()
-        self.rpg = rpg()
-        self.pvp = pvp()
+        self.rpg = rpg(self)
+        self.pvp = pvp(self)
         self.GameDataManager = GameDataManager()
         
     async def on_ready(self):
@@ -1004,6 +1016,12 @@ class MyBot(commands.Bot):
             self.synced = True
         scheduled_task.start()
         tracemalloc.start()
+
+    async def on_interaction(self, interaction: discord.Interaction):
+        if interaction.data.get('custom_id', '').startswith('buy_'): 
+            await self.rpg.on_interaction(interaction)
+        elif interaction.data.get('custom_id', '').startswith('pvp_'): 
+            await self.pvp.on_interaction(interaction)
 
 bot = MyBot()
 
