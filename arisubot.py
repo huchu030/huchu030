@@ -736,8 +736,7 @@ class pvp:
                     accept_button = discord.ui.Button(label="수락", style=discord.ButtonStyle.primary, custom_id="pvp_accept")
 
                     async def on_interaction(self, interaction: discord.Interaction):
-                        custom_id = interaction.data.get('custom_id', '')
-                        if custom_id == "pvp_accept":
+                        if interaction.data.get('custom_id', '') == "pvp_accept":
                             await self.accept_button_callback(interaction)
                     
                     async def accept_button_callback(self, button_interaction: discord.Interaction):
