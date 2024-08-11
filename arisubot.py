@@ -745,20 +745,36 @@ class pvp:
                     
                     opponent_nickname = get_user_nickname(select_interaction.guild, int(opponent_id))
 
-                    select_interaction.client.pvp_pending_requests[select_interaction.id] = {
-                        "opponent_id": opponent_id,
-                        "user_id": user_id
-                    }
+                    accept_button = discord.ui.Button(label="수락", style=discord.ButtonStyle.primary)
+                    
+                    async def accept_button_callback(button_interaction: discord.Interaction):
+                        if str(button_interaction.user.id) != opponent_id:
+                            await button_interaction.response.send_message("이 버튼은 상대방이 눌러야 합니다!", ephemeral=False)
+                            return
 
-                    accept_button = discord.ui.Button(label="수락", style=discord.ButtonStyle.primary, custom_id="pvp_accept")
+                        data["pvp"][opponent_id]["in_battle"] = True
+                        data["pvp"][user_id]["in_battle"] = True
+                        data["pvp"][opponent_id]["turn"] = False
+                        data["pvp"][user_id]["turn"] = True
+                        data["pvp"][opponent_id]["id"] = 2
+                        data["pvp"][user_id]["points"] = 1
+                        data["pvp"][user_id]["round"] = 1
+
+                        GameDataManager.save_game_data(data)
+
+                        await button_interaction.response.send_message(f"{opponent_nickname}님과의 전투가 시작되었습니다.\n"
+                                                                       "`/행동`으로 포인트를 사용하세요!\n"
+                                                                       "`/포인트`로 사용 가능 포인트를 조회할 수 있습니다.")
+                            
+                    accept_button.callback = accept_button_callback
+
                     view = discord.ui.View()
                     view.add_item(accept_button)
 
                     await select_interaction.response.send_message(f"{opponent_nickname}님에게 전투 요청을 보냈습니다. "
-                                                                    "상대방이 수락하면 전투가 시작됩니다!", ephemeral=False)
+                                                                   "상대방이 수락하면 전투가 시작됩니다!", ephemeral=False)
                     await select_interaction.channel.send(f"<@{opponent_id}>님, {user_nickname}님의 전투 요청이 도착했습니다!",
                                                           view=view)
-                    
                 except Exception as e:
                     print(f"[ERROR] select_callback: {e}")
                     await select_interaction.response.send_message(f"{e}")
@@ -771,44 +787,8 @@ class pvp:
         except Exception as e:
             print(f"[ERROR] start_game: {e}")
             await interaction.response.send_message(f"{e}")
+            
 
-
-
-    async def handle_pvp_interaction(self, interaction: discord.Interaction):
-        try:
-            custom_id = interaction.data['custom_id']
-            if custom_id == "pvp_accept":
-                pending_request = interaction.client.pvp_pending_requests.get(interaction.id)
-                if not pending_request:
-                    await interaction.response.send_message("[ERROR] 전투 요청 데이터를 찾을 수 없습니다.", ephemeral=True)
-                    return
-                
-                opponent_id = pending_request["opponent_id"]
-                user_id = pending_request["user_id"]
-
-                if str(button_interaction.user.id) != opponent_id:
-                    await interaction.response.send_message("이 버튼은 상대방이 눌러야 합니다!", ephemeral=False)
-                    return
-
-                data = GameDataManager.load_game_data()
-
-                data["pvp"][opponent_id]["in_battle"] = True
-                data["pvp"][user_id]["in_battle"] = True
-                data["pvp"][opponent_id]["turn"] = False
-                data["pvp"][user_id]["turn"] = True
-                data["pvp"][opponent_id]["id"] = 2
-                data["pvp"][user_id]["points"] = 1
-                data["pvp"][user_id]["round"] = 1
-
-                GameDataManager.save_game_data(data)
-                
-                opponent_nickname = get_user_nickname(interaction.guild, int(opponent_id))
-                await interaction.response.send_message(f"{opponent_nickname}님과의 전투가 시작되었습니다.\n"
-                                                        "`/행동`으로 포인트를 사용하세요!\n"
-                                                        "`/포인트`로 사용 가능 포인트를 조회할 수 있습니다.")
-        except Exception as e:
-            print(f"[ERROR] handle_pvp_interaction: {e}")
-            await interaction.response.send_message(f"{e}")
 
     async def attack(self, interaction: discord.Interaction, attack: int, defense: int, store: int):
         try:
@@ -1034,7 +1014,6 @@ class MyBot(commands.Bot):
         self.rpg = rpg()
         self.pvp = pvp()
         self.GameDataManager = GameDataManager()
-        self.pvp_pending_requests = {}
         
     async def on_ready(self):
         print(f'봇이 로그인되었습니다: {self.user.name}')
@@ -1064,19 +1043,6 @@ async def on_member_join(member):
         await channel.send('인간이 이곳에 온 것은 수천 년 만이군...')
     else:
         print('[ERROR] 채널을 찾을 수 없습니다.')
-
-# 상호작용
-
-@bot.event
-async def on_interaction(interaction: discord.Interaction):
-    if interaction.type == discord.InteractionType.component:
-        custom_id = interaction.data.get('custom_id', '')
-
-        if custom_id.startswith('buy_'):
-            await bot.rpg.handle_shop_interaction(interaction)
-
-        elif custom_id.startswith('pvp_'):
-            await bot.pvp.handle_pvp_interaction(interaction)
 
 # 알림 메시지
 
@@ -1213,6 +1179,11 @@ async def rpg_순위(interaction: discord.Interaction):
 @bot.tree.command(name="상점", description="rpg - 상점으로 들어갑니다")
 async def shop(interaction: discord.Interaction):
     await bot.rpg.shop(interaction)
+
+@bot.event
+async def on_interaction(interaction: discord.Interaction):
+    if interaction.type == discord.InteractionType.component:
+        await bot.rpg.handle_shop_interaction(interaction)
 
 @bot.tree.command(name='rpg_규칙', description="아리스가 RPG게임의 규칙을 설명해줍니다")
 async def rpg_규칙(interaction: discord.Interaction):
