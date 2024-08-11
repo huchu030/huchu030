@@ -573,10 +573,9 @@ class rpg:
                 "코인이 없습니다. `/rpg`로 게임을 시작해보세요!"
             )
 
-    @bot.event
-    async def on_interaction(interaction: discord.Interaction):
-        if interaction.type == discord.InteractionType.component:
-            await bot.rpg.handle_shop_interaction(interaction)
+        async def on_interaction(self, interaction: discord.Interaction):
+            if interaction.type == discord.InteractionType.component:
+                await self.rpg.handle_shop_interaction(interaction)
 
     async def handle_shop_interaction(self, interaction: discord.Interaction):
         try:
