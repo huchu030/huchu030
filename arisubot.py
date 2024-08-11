@@ -680,7 +680,7 @@ class pvp:
             }
             GameDataManager.save_game_data(game_data)
             
-data_lock = Lock()
+    data_lock = Lock()
     async def start_game(self, interaction: discord.Interaction):
         async with data_lock:
             try:
