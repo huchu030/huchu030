@@ -538,111 +538,118 @@ class rpg:
         purchase_data = data["purchases"].get(user_id, {})
         purchase_count = purchase_data.get(item_key, 0)
         return base_cost + (price_increase * purchase_count)
-    
+
+    data_lock = Lock()
     async def shop(self, interaction: discord.Interaction):
-        data = GameDataManager.load_game_data()
-        user_id = str(interaction.user.id)
-        player_data = data.get("players", {}).get(user_id, None)
-        enemy_data = data.get("current_enemies", {}).get(user_id, None)
-
-        buttons = []
-        
-        if player_data:
-            for item_key, item in self.items.items():
-                buttons.append(
-                    ui.Button(label=item["label"], style=ButtonStyle.primary, custom_id=f'buy_{item_key}')
-                )
-
-            view = ui.View()
-            for button in buttons:
-                view.add_item(button)
-
-            self.shop_message = await interaction.response.send_message(
-                "뽜밤뽜밤-! 아리스 상점에 오신 것을 환영합니다!\n"
-                f"\n1. 마시멜로 : 맛있습니다. 일시적으로 체력을 50 회복합니다. ( {self.get_item_cost('hp', user_id)} coins )\n"
-                f"2. 버섯 : {enemy_data['name']}이 싫어합니다. 공격력이 1 증가합니다. ( {self.get_item_cost('attack', user_id)} coins )\n"
-                f"3. 고양이 : {enemy_data['name']}이 좋아합니다. 방어력이 1 증가합니다. ( {self.get_item_cost('defense', user_id)} coins )\n"
-                f"4. 네잎클로버 : 행운을 불러옵니다. 회피 확률이 1%p 증가합니다. ( {self.get_item_cost('evasionchance', user_id)} coins )\n"
-                f"5. 헬스장 월간이용권 : 회원님 한개만 더! 공격 성공 확률이 1%p 증가합니다. ( {self.get_item_cost('attackchance', user_id)} coins )\n"
-                f"6. 안경 : 시력이 상승합니다. 크리티컬 확률이 1%p 증가합니다. ( {self.get_item_cost('criticalchance', user_id)} coins )\n"
-                f"7. 민트초코 : {enemy_data['name']}이 극혐합니다. 크리티컬 데미지가 5%p 증가합니다. ( {self.get_item_cost('criticaldamage', user_id)} coins )\n"
-                f"8. 수학의 정석 : 책이 공격을 대신 받아줍니다. 찢어지면 다시 쓸 수 없으며, 여러 개 구매할 수 있습니다. ( {self.get_item_cost('evasionitems', user_id)} coins )\n",                 
-                view=view
-            )
-        else:
-            await interaction.response.send_message(
-                "코인이 없습니다. `/rpg`로 게임을 시작해보세요!"
-            )
-
-    async def handle_shop_interaction(self, interaction: discord.Interaction):
-        try:
-            custom_id = interaction.data.get('custom_id', '')
-            item_key = custom_id.split('_')[1]
-
+        async with data_lock:
             data = GameDataManager.load_game_data()
             user_id = str(interaction.user.id)
-            guild = interaction.guild
-            user_nickname = get_user_nickname(guild, interaction.user.id)
-            player_data = data["players"].get(user_id, None)
-
+            player_data = data.get("players", {}).get(user_id, None)
+            enemy_data = data.get("current_enemies", {}).get(user_id, None)
+    
+            buttons = []
+            
             if player_data:
-                item = self.items.get(item_key, None)
+                for item_key, item in self.items.items():
+                    buttons.append(
+                        ui.Button(label=item["label"], style=ButtonStyle.primary, custom_id=f'buy_{item_key}')
+                    )
+    
+                view = ui.View()
+                for button in buttons:
+                    view.add_item(button)
+    
+                self.shop_message = await interaction.response.send_message(
+                    "뽜밤뽜밤-! 아리스 상점에 오신 것을 환영합니다!\n"
+                    f"\n1. 마시멜로 : 맛있습니다. 일시적으로 체력을 50 회복합니다. ( {self.get_item_cost('hp', user_id)} coins )\n"
+                    f"2. 버섯 : {enemy_data['name']}이 싫어합니다. 공격력이 1 증가합니다. ( {self.get_item_cost('attack', user_id)} coins )\n"
+                    f"3. 고양이 : {enemy_data['name']}이 좋아합니다. 방어력이 1 증가합니다. ( {self.get_item_cost('defense', user_id)} coins )\n"
+                    f"4. 네잎클로버 : 행운을 불러옵니다. 회피 확률이 1%p 증가합니다. ( {self.get_item_cost('evasionchance', user_id)} coins )\n"
+                    f"5. 헬스장 월간이용권 : 회원님 한개만 더! 공격 성공 확률이 1%p 증가합니다. ( {self.get_item_cost('attackchance', user_id)} coins )\n"
+                    f"6. 안경 : 시력이 상승합니다. 크리티컬 확률이 1%p 증가합니다. ( {self.get_item_cost('criticalchance', user_id)} coins )\n"
+                    f"7. 민트초코 : {enemy_data['name']}이 극혐합니다. 크리티컬 데미지가 5%p 증가합니다. ( {self.get_item_cost('criticaldamage', user_id)} coins )\n"
+                    f"8. 수학의 정석 : 책이 공격을 대신 받아줍니다. 찢어지면 다시 쓸 수 없으며, 여러 개 구매할 수 있습니다. ( {self.get_item_cost('evasionitems', user_id)} coins )\n",                 
+                    view=view
+                )
+            else:
+                await interaction.response.send_message(
+                    "코인이 없습니다. `/rpg`로 게임을 시작해보세요!"
+                )
+        pass
 
-                if item:
-                    item_cost = self.get_item_cost(item_key, user_id)
-                    
-                    if player_data["coins"] >= item_cost:
-                        player_data["coins"] -= item_cost
-                        player_data[item["effect"]] += item["value"]
+    data_lock = Lock()
+    async def handle_shop_interaction(self, interaction: discord.Interaction):
+        async with data_lock:
+            try:
+                custom_id = interaction.data.get('custom_id', '')
+                item_key = custom_id.split('_')[1]
+    
+                data = GameDataManager.load_game_data()
+                user_id = str(interaction.user.id)
+                guild = interaction.guild
+                user_nickname = get_user_nickname(guild, interaction.user.id)
+                player_data = data["players"].get(user_id, None)
+    
+                if player_data:
+                    item = self.items.get(item_key, None)
+    
+                    if item:
+                        item_cost = self.get_item_cost(item_key, user_id)
                         
-                        data["purchases"][user_id][item_key] += 1
-                        GameDataManager.save_game_data(data)
-
-                        effect_message = {
-                            "hp": "체력을 50 회복했습니다!",
-                            "attack": "공격력이 1 증가했습니다!",
-                            "defense": "방어력이 1 증가했습니다!",
-                            "evasionchance": "회피 확률이 1%p 증가했습니다!",
-                            "attackchance": "공격 성공 확률이 1%p 증가했습니다!",
-                            "criticalchance": "크리티컬 확률이 1%p 증가했습니다!",
-                            "criticaldamage": "크리티컬 데미지가 5%p 증가했습니다!",
-                            "evasionitems": f"수학의 정석이 {player_data['evasionitems']}권이 되었습니다!"
-                        }
-
-                        response_message = effect_message.get(item["effect"], "아이템 효과를 적용했습니다.")
-
-                        if interaction.response.is_done():
-                            await interaction.followup.send(f"{response_message}\n"
-                                                            f"현재 코인: {player_data['coins']}\n"
-                                                            f"`/스탯`으로 {user_nickname}님의 현재 능력치를 확인해보세요~")
+                        if player_data["coins"] >= item_cost:
+                            player_data["coins"] -= item_cost
+                            player_data[item["effect"]] += item["value"]
+                            
+                            data["purchases"][user_id][item_key] += 1
+                            GameDataManager.save_game_data(data)
+    
+                            effect_message = {
+                                "hp": "체력을 50 회복했습니다!",
+                                "attack": "공격력이 1 증가했습니다!",
+                                "defense": "방어력이 1 증가했습니다!",
+                                "evasionchance": "회피 확률이 1%p 증가했습니다!",
+                                "attackchance": "공격 성공 확률이 1%p 증가했습니다!",
+                                "criticalchance": "크리티컬 확률이 1%p 증가했습니다!",
+                                "criticaldamage": "크리티컬 데미지가 5%p 증가했습니다!",
+                                "evasionitems": f"수학의 정석이 {player_data['evasionitems']}권이 되었습니다!"
+                            }
+    
+                            response_message = effect_message.get(item["effect"], "아이템 효과를 적용했습니다.")
+    
+                            if interaction.response.is_done():
+                                await interaction.followup.send(f"{response_message}\n"
+                                                                f"현재 코인: {player_data['coins']}\n"
+                                                                f"`/스탯`으로 {user_nickname}님의 현재 능력치를 확인해보세요~")
+                            else:
+                                await interaction.response.send_message(f"{response_message}\n"
+                                                                        f"현재 코인: {player_data['coins']}\n"
+                                                                        f"`/스탯`으로 {user_nickname}님의 현재 능력치를 확인해보세요~")
                         else:
-                            await interaction.response.send_message(f"{response_message}\n"
-                                                                    f"현재 코인: {player_data['coins']}\n"
-                                                                    f"`/스탯`으로 {user_nickname}님의 현재 능력치를 확인해보세요~")
+                            if interaction.response.is_done():
+                                await interaction.followup.send(f"코인이 부족합니다! 현재 코인: {player_data['coins']}")
+                            else:
+                                await interaction.response.send_message(f"코인이 부족합니다! 현재 코인: {player_data['coins']}")
                     else:
                         if interaction.response.is_done():
-                            await interaction.followup.send(f"코인이 부족합니다! 현재 코인: {player_data['coins']}")
+                            await interaction.followup.send("[ERROR] 아이템이 품절되었습니다.")
                         else:
-                            await interaction.response.send_message(f"코인이 부족합니다! 현재 코인: {player_data['coins']}")
+                            await interaction.response.send_message("[ERROR] 아이템이 품절되었습니다.")    
                 else:
                     if interaction.response.is_done():
-                        await interaction.followup.send("[ERROR] 아이템이 품절되었습니다.")
+                        await interaction.followup.send("코인이 없습니다. `/rpg`로 게임을 시작해보세요!")
                     else:
-                        await interaction.response.send_message("[ERROR] 아이템이 품절되었습니다.")    
-            else:
+                        await interaction.response.send_message("코인이 없습니다. `/rpg`로 게임을 시작해보세요!")
+            except Exception as e:
+                print(f"[ERROR] Error handling shop interaction: {str(e)}")
+    
                 if interaction.response.is_done():
-                    await interaction.followup.send("코인이 없습니다. `/rpg`로 게임을 시작해보세요!")
+                    await interaction.followup.send(f"{e}\n"
+                                                    "상점이 폐업했습니다. 쟌넨")
                 else:
-                    await interaction.response.send_message("코인이 없습니다. `/rpg`로 게임을 시작해보세요!")
-        except Exception as e:
-            print(f"[ERROR] Error handling shop interaction: {str(e)}")
-
-            if interaction.response.is_done():
-                await interaction.followup.send(f"{e}\n"
-                                                "상점이 폐업했습니다. 쟌넨")
-            else:
-                await interaction.response.send_message(f"{e}\n"
-                                                        "상점이 폐업했습니다. 쟌넨")
+                    await interaction.response.send_message(f"{e}\n"
+                                                            "상점이 폐업했습니다. 쟌넨")
+            pass
+            
 # pvp
 
 
@@ -672,14 +679,15 @@ class pvp:
                 "round": 0
             }
             GameDataManager.save_game_data(game_data)
-
+            
+ data_lock = Lock()
     async def start_game(self, interaction: discord.Interaction):
-        try:
-            guild = interaction.guild
-            user_nickname = get_user_nickname(guild, interaction.user.id)
-            user_id = str(interaction.user.id)
-            data_lock = Lock()
-            async with data_lock:
+        async with data_lock:
+            try:
+                guild = interaction.guild
+                user_nickname = get_user_nickname(guild, interaction.user.id)
+                user_id = str(interaction.user.id)
+                
                 data = GameDataManager.load_game_data()
     
                 if user_id in data["pvp"] and data["pvp"][user_id]["in_battle"]:
@@ -785,10 +793,12 @@ class pvp:
                 view.add_item(select_menu)
                 await interaction.response.send_message("맞짱 뜰 상대를 선택하세요!", view=view)
 
-        except Exception as e:
-            print(f"[ERROR] start_game: {e}")
-            await interaction.response.send_message(f"{e}")
-            
+            except Exception as e:
+                print(f"[ERROR] start_game: {e}")
+                await interaction.response.send_message(f"{e}")
+
+            pass
+                
 
 
     async def attack(self, interaction: discord.Interaction, attack: int, defense: int, store: int):
