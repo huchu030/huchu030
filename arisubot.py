@@ -633,7 +633,7 @@ class rpg:
 
 
 class pvp:
-    def __init__(self):
+    def __init__(self,bot):
         self.bot = bot
         GameDataManager.initialize_game_data()
 
