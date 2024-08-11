@@ -873,6 +873,7 @@ class pvp:
 
 
             GameDataManager.save_game_data(data)
+            print("save")
 
             if opponent["hp"] <= 0:
                 opponent["hp"] = 0
