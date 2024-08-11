@@ -746,6 +746,13 @@ class pvp:
                     opponent_nickname = get_user_nickname(select_interaction.guild, int(opponent_id))
 
                     accept_button = discord.ui.Button(label="수락", style=discord.ButtonStyle.primary, custom_id="pvp_accept")
+                    view = discord.ui.View()
+                    view.add_item(accept_button)
+
+                    await select_interaction.response.send_message(f"{opponent_nickname}님에게 전투 요청을 보냈습니다. "
+                                                                    "상대방이 수락하면 전투가 시작됩니다!", ephemeral=False)
+                    await select_interaction.channel.send(f"<@{opponent_id}>님, {user_nickname}님의 전투 요청이 도착했습니다!",
+                                                          view=view)
                     
                 except Exception as e:
                     print(f"[ERROR] select_callback: {e}")
@@ -760,16 +767,12 @@ class pvp:
             print(f"[ERROR] start_game: {e}")
             await interaction.response.send_message(f"{e}")
 
-        view = discord.ui.View()
-        view.add_item(accept_button)
 
-        await select_interaction.response.send_message(f"{opponent_nickname}님에게 전투 요청을 보냈습니다. "
-                                                       "상대방이 수락하면 전투가 시작됩니다!", ephemeral=False)
-        await select_interaction.channel.send(f"<@{opponent_id}>님, {user_nickname}님의 전투 요청이 도착했습니다!",
-                                              view=view)
 
     async def handle_pvp_interaction(self, interaction: discord.Interaction):
         custom_id = interaction.data['custom_id']
+        opponent_id = next((uid for uid in data["pvp"] if uid != user_id and data["pvp"][uid]["in_battle"] == False), None)
+        opponent_nickname = get_user_nickname(interaction.guild, int(opponent_id))
         if custom_id == "pvp_accept":
             if str(button_interaction.user.id) != opponent_id:
                 await button_interaction.response.send_message("이 버튼은 상대방이 눌러야 합니다!", ephemeral=False)
@@ -785,9 +788,9 @@ class pvp:
 
             GameDataManager.save_game_data(data)
 
-            await button_interaction.response.send_message(f"{opponent_nickname}님과의 전투가 시작되었습니다.\n"
-                                                           "`/행동`으로 포인트를 사용하세요!\n"
-                                                           "`/포인트`로 사용 가능 포인트를 조회할 수 있습니다.")
+            await interaction.response.send_message(f"{opponent_nickname}님과의 전투가 시작되었습니다.\n"
+                                                    "`/행동`으로 포인트를 사용하세요!\n"
+                                                    "`/포인트`로 사용 가능 포인트를 조회할 수 있습니다.")
 
     async def attack(self, interaction: discord.Interaction, attack: int, defense: int, store: int):
         try:
