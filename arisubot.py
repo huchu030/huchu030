@@ -573,10 +573,6 @@ class rpg:
                 "코인이 없습니다. `/rpg`로 게임을 시작해보세요!"
             )
 
-        async def on_interaction(self, interaction: discord.Interaction):
-            if interaction.type == discord.InteractionType.component:
-                await self.rpg.handle_shop_interaction(interaction)
-
     async def handle_shop_interaction(self, interaction: discord.Interaction):
         try:
             custom_id = interaction.data.get('custom_id', '')
@@ -684,8 +680,6 @@ class pvp:
             user_id = str(interaction.user.id)
             data = GameDataManager.load_game_data()
 
-            
-
             if user_id in data["pvp"] and data["pvp"][user_id]["in_battle"]:
                 opponent_id = next((uid for uid in data["pvp"] if uid != user_id and data["pvp"][uid]["in_battle"]), None)
                 if opponent_id:
@@ -723,16 +717,12 @@ class pvp:
                 try:
                     values = select_interaction.data.get('values', [])
 
-                    if not values or len(values) == 0:
+                    if not values:
                         await select_interaction.response.send_message("상대가 선택되지 않았습니다.")
                         return
 
                     opponent_id = values[0]
                     user_id = str(select_interaction.user.id)
-
-                    if opponent_id not in data["pvp"]:
-                        await select_interaction.response.send_message("[ERROR] 선택된 상대의 데이터를 찾을 수 없습니다.")
-                        return
 
                     self.initialize_player(opponent_id)
 
@@ -775,12 +765,13 @@ class pvp:
                         await button_interaction.response.send_message(f"{opponent_nickname}님과의 전투가 시작되었습니다.\n"
                                                                        "`/행동`으로 포인트를 사용하세요!\n"
                                                                        "`/포인트`로 사용 가능 포인트를 조회할 수 있습니다.")
+                            
                     accept_button.callback = accept_button_callback
 
                     view = discord.ui.View()
                     view.add_item(accept_button)
 
-                    await select_interaction.response.send_message(f"{opponent_nickname}님에게 전투 요청을 보냈습니다.\n"
+                    await select_interaction.response.send_message(f"{opponent_nickname}님에게 전투 요청을 보냈습니다. "
                                                                    "상대방이 수락하면 전투가 시작됩니다!", ephemeral=False)
                     await select_interaction.channel.send(f"<@{opponent_id}>님, {user_nickname}님의 전투 요청이 도착했습니다!",
                                                           view=view)
@@ -873,7 +864,6 @@ class pvp:
 
 
             GameDataManager.save_game_data(data)
-            print("save")
 
             if opponent["hp"] <= 0:
                 opponent["hp"] = 0
@@ -1190,6 +1180,11 @@ async def rpg_순위(interaction: discord.Interaction):
 async def shop(interaction: discord.Interaction):
     await bot.rpg.shop(interaction)
 
+@bot.event
+async def on_interaction(interaction: discord.Interaction):
+    if interaction.type == discord.InteractionType.component:
+        await bot.rpg.handle_shop_interaction(interaction)
+
 @bot.tree.command(name='rpg_규칙', description="아리스가 RPG게임의 규칙을 설명해줍니다")
 async def rpg_규칙(interaction: discord.Interaction):
     guild = interaction.guild
@@ -1294,6 +1289,7 @@ async def 쓰담(interaction: discord.Interaction):
     guild = interaction.guild
     user_nickname = get_user_nickname(guild, interaction.user.id)
     await interaction.response.send_message(f"{user_nickname}님, 아리스는 행복합니다..")
+
 
 # 봇 실행
 
