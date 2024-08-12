@@ -9,10 +9,7 @@ import random
 import asyncio
 import json
 import os
-
-TOKEN = "토큰"
-MCHID = 123123123
-TCHID = 123123123
+from tokens import jtoken
 
 intents = discord.Intents.all()
 intents.message_content = True
@@ -39,7 +36,7 @@ async def 안녕(interaction: discord.Interaction):
 
 async def main():
     async with bot:
-        await bot.start(TOKEN)
+        await bot.start(jtoken)
 
 import asyncio
 asyncio.run(main())
