@@ -76,7 +76,7 @@ class ThirtyOneGame:
         self.last_added = 0
         turn = player
 
-    def make_add(self, add):
+    async def make_add(self, add):
         add = int(add)
         start = total
         total += add
