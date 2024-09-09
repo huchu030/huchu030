@@ -90,7 +90,7 @@ class ThirtyOneGame:
             await interaction.response.send_message ("제가 이겼습니다. 예이~")
             game.game_active = False
 
-        elif total = 30:
+        elif total == 30:
             await interaction.response.send_message ("...제가 졌습니다.")
             game.game_active = False
 
