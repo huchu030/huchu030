@@ -72,12 +72,6 @@ class ThirtyOneGame:
     def __init__(self):
         self.reset_game()
 
-    def reset_game(self)
-        self.game_active = False
-        total = 0
-        self.last_added = 0
-        turn = player
-
     def start_game(self, min_number=1, max_number=100):
         self.game_active = True
         total = 0
@@ -95,21 +89,22 @@ class ThirtyOneGame:
 
 
         if 26 < total < 30
-            return ("제가 이겼습니다. 예이~")
+            await interaction.response.send_message ("제가 이겼습니다. 예이~")
+            game.game_active = False
 
         elif total = 30
-            return ("...제가 졌습니다.")
-            self.reset_game
+            await interaction.response.send_message ("...제가 졌습니다.")
+            game.game_active = False
 
         else:
-            return (f"{user_nickname} : {numbers_added}")
+            await interaction.response.send_message (f"{user_nickname} : {numbers_added}")
             turn = bot
             start = total
             bot_choice = random.randint(1,3)
             total += bot_choice
             numbers_added = list(range(start, total))
 
-            return (f"토키 : {numbers_added}")
+            await interaction.followup.send_message (f"토키 : {numbers_added}")
 
 
 class ThirtyOne:
