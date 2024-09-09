@@ -17,7 +17,7 @@ from tokens import atoken, MCHID, TCHID
 intents = discord.Intents.all()
 intents.message_content = True
 intents.members = True
-
+ 
 # 숫자야구
 
 class NumberBaseballGame:

@@ -66,6 +66,96 @@ class FortuneManager:
     def set_last_fortune(self, user_id, fortune):
         self.user_last_fortune[user_id] = fortune
 
+# 31
+
+class ThirtyOneGame:
+    def __init__(self):
+        self.reset_game()
+
+    def reset_game(self)
+        self.game_active = False
+        total = 0
+        self.last_added = 0
+        turn = player
+
+    def start_game(self, min_number=1, max_number=100):
+        self.game_active = True
+        total = 0
+        self.last_added = 0
+        turn = player
+
+    def make_add(self, add):
+        add = int(add)
+        start = total
+        total += add
+        numbers_added = list(range(start, total))
+
+        guild = interaction.guild
+        user_nickname = get_user_nickname(guild, interaction.user.id)
+
+
+        if 26 < total < 30
+            return ("제가 이겼습니다. 예이~")
+
+        elif total = 30
+            return ("...제가 졌습니다.")
+            self.reset_game
+
+        else:
+            return (f"{user_nickname} : {numbers_added}")
+            turn = bot
+            start = total
+            bot_choice = random.randint(1,3)
+            total += bot_choice
+            numbers_added = list(range(start, total))
+
+            return (f"토키 : {numbers_added}")
+
+
+class ThirtyOne:
+    def __init__(self):
+        self.games = {} 
+
+    def get_game(self, user):
+        if user.id not in self.games:
+            self.games[user.id] = NumberGuessingGame()
+        return self.games[user.id]
+
+    async def start_game_interaction(self, interaction: discord.Interaction):
+        user = interaction.user
+        game = self.get_game(user)
+        if game.game_active:
+            await interaction.response.send_message("저와 이미 게임을 하고 있습니다.")
+        else:
+            game.start_game()
+            await interaction.response.send_message("베스킨라빈스 써리원~ \n"
+                                                    "`/31`로 1부터 3까지의 숫자를 입력하세요.")
+
+    async def add_number(self, interaction: discord.Interaction, add: str):
+        user = interaction.user
+        game = self.get_game(user)
+        if not game.game_active:
+            await interaction.response.send_message("진행 중인 게임이 없습니다. 저랑 놀아주세요.")
+        else:
+            if not add.isdigit() or not (1 <= int(add) <= 3):
+                await interaction.response.send_message("1부터 3까지의 숫자만 입력할 수 있습니다.")
+                return
+
+            result = game.make_add(add)
+            await interaction.response.send_message(result)
+
+    async def give_up(self, interaction: discord.Interaction):
+        user = interaction.user
+        game = self.get_game(user)
+        if not game.game_active:
+            await interaction.response.send_message("진행 중인 게임이 없습니다. `/31_시작`으로 게임을 시작해보세요.")
+        else:
+            game.game_active = False
+            await interaction.response.send_message("게임을 포기했습니다. 저랑 그만 노실 건가요..?")
+
+
+
+
 # 봇
 
 class MyBot(commands.Bot):
@@ -73,6 +163,7 @@ class MyBot(commands.Bot):
         super().__init__(command_prefix='!', intents=intents, **kwargs)
         self.synced = False
         self.fortune_manager = FortuneManager()
+        self.ThirtyOne = ThirtyOne()
         
     async def on_ready(self):
         print(f'봇이 로그인되었습니다: {self.user.name}')
@@ -129,6 +220,10 @@ async def scheduled_task():
         except Exception as e:
             print(f'[ERROR] 오류 발생: {e}')
 
+
+
+
+
 # 가위바위보
 
 @bot.tree.command(name="가위바위보", description="토키와 가위바위보를 합니다")
@@ -166,6 +261,21 @@ async def button_callback(interaction: discord.Interaction, user: discord.User):
                   f"( {user_nickname} : {user_choice}, 토키 : {bot_choice} )")
 
     await interaction.response.edit_message(content=result, view=None)
+
+# 31
+
+
+@bot.tree.command(name="31_시작", description="토키와 베스킨라빈스 게임을 시작합니다")
+async def thirtyone_start(interaction: discord.Interaction):
+    await bot.ThirtyOne.start_game_interaction(interaction)
+
+@bot.tree.command(name="31", description="31 - 숫자를 추측합니다")
+async def thirtyone(interaction: discord.Interaction, add: str):
+    await bot.ThirtyOne.adf_number(interaction, add)
+
+@bot.tree.command(name="31_포기", description="31 - 게임을 포기합니다")
+async def thirtyone_giveup(interaction: discord.Interaction):
+    await bot.ThirtyOne.give_up(interaction)
 
 # 운세 명령어
 
