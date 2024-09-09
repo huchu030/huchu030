@@ -86,11 +86,11 @@ class ThirtyOneGame:
         user_nickname = get_user_nickname(guild, interaction.user.id)
 
 
-        if 26 < total < 30
+        if 26 < total < 30:
             await interaction.response.send_message ("제가 이겼습니다. 예이~")
             game.game_active = False
 
-        elif total = 30
+        elif total = 30:
             await interaction.response.send_message ("...제가 졌습니다.")
             game.game_active = False
 
