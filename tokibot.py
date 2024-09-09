@@ -70,38 +70,35 @@ class FortuneManager:
 
 class ThirtyOneGame:
 
-    def start_game(self, min_number=1, max_number=100):
+    def start_game(self):
         self.game_active = True
-        total = 0
+        self.total = 0
         self.last_added = 0
-        turn = player
 
-    async def make_add(self, add):
+    async def make_add(self, add, interaction):
         add = int(add)
-        start = total
-        total += add
-        numbers_added = list(range(start, total))
+        start = self.total
+        self.total += add
+        numbers_added = list(range(start, self.total))
 
         guild = interaction.guild
         user_nickname = get_user_nickname(guild, interaction.user.id)
 
 
-        if 26 < total < 30:
+        if 26 < self.total < 30:
             await interaction.response.send_message ("제가 이겼습니다. 예이~")
-            game.game_active = False
+            self..game_active = False
 
-        elif total == 30:
+        elif self.total == 30:
             await interaction.response.send_message ("...제가 졌습니다.")
-            game.game_active = False
+            self.game_active = False
 
         else:
             await interaction.response.send_message (f"{user_nickname} : {numbers_added}")
-            turn = bot
-            start = total
+            start = self.total
             bot_choice = random.randint(1,3)
-            total += bot_choice
+            self.total += bot_choice
             numbers_added = list(range(start, total))
-
             await interaction.followup.send_message (f"토키 : {numbers_added}")
 
 
@@ -111,7 +108,7 @@ class ThirtyOne:
 
     def get_game(self, user):
         if user.id not in self.games:
-            self.games[user.id] = NumberGuessingGame()
+            self.games[user.id] = ThirtyOneGame()
         return self.games[user.id]
 
     async def start_game_interaction(self, interaction: discord.Interaction):
@@ -134,7 +131,7 @@ class ThirtyOne:
                 await interaction.response.send_message("1부터 3까지의 숫자만 입력할 수 있습니다.")
                 return
 
-            result = game.make_add(add)
+            result = await game.make_add(add, interaction)
             await interaction.response.send_message(result)
 
     async def give_up(self, interaction: discord.Interaction):
@@ -264,7 +261,7 @@ async def thirtyone_start(interaction: discord.Interaction):
 
 @bot.tree.command(name="31", description="31 - 숫자를 추측합니다")
 async def thirtyone(interaction: discord.Interaction, add: str):
-    await bot.ThirtyOne.adf_number(interaction, add)
+    await bot.ThirtyOne.add_number(interaction, add)
 
 @bot.tree.command(name="31_포기", description="31 - 게임을 포기합니다")
 async def thirtyone_giveup(interaction: discord.Interaction):
