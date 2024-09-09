@@ -69,8 +69,6 @@ class FortuneManager:
 # 31
 
 class ThirtyOneGame:
-    def __init__(self):
-        self.reset_game()
 
     def start_game(self, min_number=1, max_number=100):
         self.game_active = True
