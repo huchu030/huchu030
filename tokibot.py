@@ -98,7 +98,7 @@ class ThirtyOneGame:
             start = self.total
             bot_choice = random.randint(1,3)
             self.total += bot_choice
-            numbers_added = list(range(start, total))
+            numbers_added = list(range(start, self.total))
             await interaction.followup.send_message (f"토키 : {numbers_added}")
 
 
@@ -132,7 +132,6 @@ class ThirtyOne:
                 return
 
             result = await game.make_add(add, interaction)
-            await interaction.response.send_message(result)
 
     async def give_up(self, interaction: discord.Interaction):
         user = interaction.user
