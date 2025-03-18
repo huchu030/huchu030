@@ -69,80 +69,95 @@ class FortuneManager:
 # 31
 
 class ThirtyOneGame:
+    def __init__(self):
+        self.reset_game()
+
+    def reset_game(self):
+        self.game_active = False
+        total = 0
+        add = 0
 
     def start_game(self):
         self.game_active = True
-        self.total = 0
-        self.last_added = 0
 
-    async def make_add(self, add, interaction):
-        add = int(add)
-        start = self.total
-        self.total += add
-        numbers_added = list(range(start, self.total))
-
+    def make_add(self, add):
         guild = interaction.guild
         user_nickname = get_user_nickname(guild, interaction.user.id)
+        if not add.isdigit() or not ( 1 <= int(add) <= 3):
+            return "1~3 사이의 숫자를 입력해주세요."
+        add = int(add)
+        total += add
 
-
-        if 26 < self.total < 30:
-            await interaction.response.send_message ("제가 이겼습니다. 예이~")
+        if 27 <= total <= 29:
             self.game_active = False
+            return "내가이김"
 
-        elif self.total == 30:
-            await interaction.response.send_message ("...제가 졌습니다.")
+        elif total == 30:
             self.game_active = False
+            return "졌다"
 
+        if add == 1:
+            interaction.response.send_message(f"{user_nickname} : {', '.join(map(str, range(total-1, total+1)))}")
+        elif add == 2:
+            interaction.response.send_message(f"{user_nickname} : {', '.join(map(str, range(total-2, total+1)))}")
         else:
-            await interaction.response.send_message (f"{user_nickname} : {numbers_added}")
-            start = self.total
-            bot_choice = random.randint(1,3)
-            self.total += bot_choice
-            numbers_added = list(range(start, self.total))
-            await interaction.followup.send_message (f"토키 : {numbers_added}")
+            interaction.response.send_message(f"{user_nickname} : {', '.join(map(str, range(total-3, total+1)))}")
+
+        add == randint(1, 3)
+        total += add
+        if add == 1:
+            interaction.response.send_message("토키 : {', '.join(map(str, range(total-1, total+1)))}")
+        elif add == 2:
+            interaction.response.send_message("토키 : {', '.join(map(str, range(total-2, total+1)))}")
+        else:
+            interaction.response.send_message("토키 : {', '.join(map(str, range(total-3, total+1)))}")
+
 
 
 class ThirtyOne:
+
     def __init__(self):
-        self.games = {} 
+        self.games = {}
 
     def get_game(self, user):
         if user.id not in self.games:
             self.games[user.id] = ThirtyOneGame()
         return self.games[user.id]
-
-    async def start_game_interaction(self, interaction: discord.Interaction):
+        
+    async def start_game(self, interaction: discord.Interaction):
         user = interaction.user
         game = self.get_game(user)
-        if game.game_active:
-            await interaction.response.send_message("저와 이미 게임을 하고 있습니다.")
-        else:
-            game.start_game()
-            await interaction.response.send_message("베스킨라빈스 써리원~ \n"
-                                                    "`/31`로 1부터 3까지의 숫자를 입력하세요.")
+            if game.game_active:
+                await interaction.response.send_message("이미 게임이 진행 중입니다.")
+            else:
+                game.start_game()
+                total = random.randit(1,3)
+                if total == 1:
+                    start = "1"
+                elif total == 2:
+                    start = "2"
+                else:
+                    start = "3"
+                await interaction.response.send_message("게임이 시작되었습니다. {start}")
 
     async def add_number(self, interaction: discord.Interaction, add: str):
         user = interaction.user
         game = self.get_game(user)
         if not game.game_active:
-            await interaction.response.send_message("진행 중인 게임이 없습니다. 저랑 놀아주세요.")
+            await interaction.response.send_message("게임이 진행중이지 않음")
         else:
-            if not add.isdigit() or not (1 <= int(add) <= 3):
-                await interaction.response.send_message("1부터 3까지의 숫자만 입력할 수 있습니다.")
-                return
-
-            result = await game.make_add(add, interaction)
+            result = game.make_add(add)
+            await interaction.response.send_message(result)
 
     async def give_up(self, interaction: discord.Interaction):
         user = interaction.user
         game = self.get_game(user)
         if not game.game_active:
-            await interaction.response.send_message("진행 중인 게임이 없습니다. `/31_시작`으로 게임을 시작해보세요.")
+            await interaction.response.send_message("포기할게임이없")
         else:
             game.game_active = False
-            await interaction.response.send_message("게임을 포기했습니다. 저랑 그만 노실 건가요..?")
-
-
+            await interaction.response.send_message("게임이 포기되었습니다.")
+                                                    
 
 
 # 봇
@@ -256,7 +271,7 @@ async def button_callback(interaction: discord.Interaction, user: discord.User):
 
 @bot.tree.command(name="31_시작", description="토키와 베스킨라빈스 게임을 시작합니다")
 async def thirtyone_start(interaction: discord.Interaction):
-    await bot.ThirtyOne.start_game_interaction(interaction)
+    await bot.ThirtyOne.start_game(interaction)
 
 @bot.tree.command(name="31", description="31 - 숫자를 추측합니다")
 async def thirtyone(interaction: discord.Interaction, add: str):
