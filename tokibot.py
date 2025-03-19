@@ -75,7 +75,6 @@ class ThirtyOneGame:
     def reset_game(self):
         self.game_active = False
         self.total = 0
-        self.add = 0
 
     def start_game(self):
         self.game_active = True
@@ -96,15 +95,15 @@ class ThirtyOneGame:
             self.game_active = False
             return "졌다"
 
-        u_numbers = ', '.join(map(str, range(self.total - add + 1, self.total + 1)))
+        u_numbers = ', '.join(map(str, range(self.total - add + 2, self.total + 1)))
         await interaction.response.send_message(f"{user_nickname} : {u_numbers}")
 
-        self.add = random.randint(1, 3)
-        self.total += self.add
+        t_add = random.randint(1, 3)
+        self.total += t_add
 
-        print(f"봇 : {self.add}")
+        print(f"봇 : {t_add}")
         
-        t_numbers = ', '.join(map(str, range(self.total - add + 1, self.total + 1)))
+        t_numbers = ', '.join(map(str, range(self.total - t_add + 2, self.total + 1)))
         await interaction.followup.send(f"토키 : {t_numbers}")
 
 
