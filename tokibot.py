@@ -101,6 +101,8 @@ class ThirtyOneGame:
 
         self.add = random.randint(1, 3)
         self.total += self.add
+
+        print(f"봇 : {self.add}")
         
         t_numbers = ', '.join(map(str, range(self.total - add + 1, self.total + 1)))
         await interaction.followup.send(f"토키 : {t_numbers}")
@@ -126,6 +128,7 @@ class ThirtyOne:
             game.start_game()
             total = random.randint(1, 3)
             await interaction.response.send_message(', '.join(map(str, range(1, total + 1))))
+            print(f"봇 : {total}")
             
     async def add_number(self, interaction: discord.Interaction, add: str):
         user = interaction.user
