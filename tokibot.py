@@ -124,15 +124,9 @@ class ThirtyOne:
             await interaction.response.send_message("이미 게임이 진행 중입니다.")
         else:
             game.start_game()
-            total = random.randint(1,3)
-            if total == 1:
-                start = "1"
-            elif total == 2:
-                start = "2"
-            else:
-                start = "3"
-            await interaction.response.send_message(', '.join(map(str, range(0, start + 1))))
-
+            total = random.randint(1, 3)
+            await interaction.response.send_message(', '.join(map(str, range(1, total + 1))))
+            
     async def add_number(self, interaction: discord.Interaction, add: str):
         user = interaction.user
         game = self.get_game(user)
