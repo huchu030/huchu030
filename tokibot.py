@@ -87,6 +87,9 @@ class ThirtyOneGame:
         add = int(add)
         self.total += add
 
+        u_numbers = ', '.join(map(str, range(self.total - add + 1, self.total + 1)))
+        await interaction.response.send_message(f"{user_nickname} : {u_numbers}")
+        
         if 27 <= self.total <= 29:
             self.game_active = False
             return f"{', '.join(map(str, range(self.total + 1, 31)))}. 제가 이겼습니다. 예이~"
@@ -94,16 +97,11 @@ class ThirtyOneGame:
         elif self.total == 30:
             self.game_active = False
             return "엇, 제가 졌습니다..."
-
-        u_numbers = ', '.join(map(str, range(self.total - add + 1, self.total + 1)))
-        await interaction.response.send_message(f"{user_nickname} : {u_numbers}")
-
+            
         t_add = random.randint(1, 3)
         self.total += t_add
-
-        print(f"봇 : {t_add}")
-        
         t_numbers = ', '.join(map(str, range(self.total - t_add + 1, self.total + 1)))
+        
         await interaction.followup.send(f"토키 : {t_numbers}")
 
 
