@@ -96,13 +96,13 @@ class ThirtyOneGame:
             self.game_active = False
             return "졌다"
 
-        numbers = ', '.join(map(str, range(self.total - add, self.total + 1)))
+        numbers = ', '.join(map(str, range(self.total - add + 1, self.total + 1)))
         await interaction.response.send_message(f"{user_nickname} : {numbers}")
 
         self.add = random.randint(1, 3)
         self.total += self.add
         
-        numbers = ', '.join(map(str, range(self.total - add, self.total + 1)))
+        numbers = ', '.join(map(str, range(self.total - add + 1, self.total + 1)))
         await interaction.followup.send(f"토키 : {numbers}")
 
 
@@ -131,7 +131,7 @@ class ThirtyOne:
                 start = "2"
             else:
                 start = "3"
-            await interaction.response.send_message(f"게임이 시작되었습니다. {start}")
+            await interaction.response.send_message(', '.join(map(str, range(0, start + 1))))
 
     async def add_number(self, interaction: discord.Interaction, add: str):
         user = interaction.user
