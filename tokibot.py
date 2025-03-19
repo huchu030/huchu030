@@ -127,18 +127,18 @@ class ThirtyOne:
     async def start_game(self, interaction: discord.Interaction):
         user = interaction.user
         game = self.get_game(user)
-            if game.game_active:
-                await interaction.response.send_message("이미 게임이 진행 중입니다.")
+        if game.game_active:
+            await interaction.response.send_message("이미 게임이 진행 중입니다.")
+        else:
+            game.start_game()
+            total = random.randit(1,3)
+            if total == 1:
+                start = "1"
+            elif total == 2:
+                start = "2"
             else:
-                game.start_game()
-                total = random.randit(1,3)
-                if total == 1:
-                    start = "1"
-                elif total == 2:
-                    start = "2"
-                else:
-                    start = "3"
-                await interaction.response.send_message("게임이 시작되었습니다. {start}")
+                start = "3"
+            await interaction.response.send_message("게임이 시작되었습니다. {start}")
 
     async def add_number(self, interaction: discord.Interaction, add: str):
         user = interaction.user
