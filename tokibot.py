@@ -89,11 +89,11 @@ class ThirtyOneGame:
 
         if 27 <= self.total <= 29:
             self.game_active = False
-            return "내가이김"
+            return f"{', '.join(map(str, range(self.total - add + 1, 31)))}. 제가 이겼습니다. 예이~"
 
         elif self.total == 30:
             self.game_active = False
-            return "졌다"
+            return "엇, 제가 졌습니다..."
 
         u_numbers = ', '.join(map(str, range(self.total - add + 1, self.total + 1)))
         await interaction.response.send_message(f"{user_nickname} : {u_numbers}")
@@ -125,15 +125,14 @@ class ThirtyOne:
             await interaction.response.send_message("이미 게임이 진행 중입니다.")
         else:
             game.start_game()
-            total = random.randint(1, 3)
-            await interaction.response.send_message(', '.join(map(str, range(1, total + 1))))
-            print(f"봇 : {total}")
+            self.total = random.randint(1, 3)
+            await interaction.response.send_message(f"제가 먼저 시작하겠습니다. {', '.join(map(str, range(1, self.total + 1)))}")
             
     async def add_number(self, interaction: discord.Interaction, add: str):
         user = interaction.user
         game = self.get_game(user)
         if not game.game_active:
-            await interaction.response.send_message("게임이 진행중이지 않음")
+                await interaction.response.send_message("진행중인 게임이 없습니다.")
         else:
             result = await game.make_add(add, interaction)
             await interaction.response.send_message(result)
@@ -142,10 +141,10 @@ class ThirtyOne:
         user = interaction.user
         game = self.get_game(user)
         if not game.game_active:
-            await interaction.response.send_message("포기할게임이없")
+            await interaction.response.send_message("진행중인 게임이 없습니다.")
         else:
             game.game_active = False
-            await interaction.response.send_message("게임이 포기되었습니다.")
+            await interaction.response.send_message("게임을 포기했습니다. 저랑 그만 노실 건가요..?")
                                                     
 
 
