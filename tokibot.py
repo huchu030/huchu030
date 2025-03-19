@@ -260,7 +260,7 @@ async def button_callback(interaction: discord.Interaction, user: discord.User):
 async def thirtyone_start(interaction: discord.Interaction):
     await bot.ThirtyOne.start_game(interaction)
 
-@bot.tree.command(name="31", description="31 - 숫자를 추측합니다")
+@bot.tree.command(name="31", description="31 - 숫자를 추가합니다")
 async def thirtyone(interaction: discord.Interaction, add: str):
     await bot.ThirtyOne.add_number(interaction, add)
 
