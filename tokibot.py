@@ -139,6 +139,7 @@ class ThirtyOne:
         if not game.game_active:
             await interaction.response.send_message("게임이 진행중이지 않음")
         else:
+            result = await game.make_add(add, interaction)
             await interaction.response.send_message(result)
 
     async def give_up(self, interaction: discord.Interaction):
