@@ -126,7 +126,7 @@ class ThirtyOne:
         else:
             game.start_game()
             self.total = random.randint(1, 3)
-            await interaction.response.send_message(f"제가 먼저 시작하겠습니다. {', '.join(map(str, range(1, self.total + 1)))}")
+            await interaction.response.send_message(f"제가 먼저 시작하겠습니다. {', '.join(map(str, range(1, game.total + 1)))}")
             
     async def add_number(self, interaction: discord.Interaction, add: str):
         user = interaction.user
