@@ -97,12 +97,13 @@ class ThirtyOneGame:
         elif self.total == 30:
             self.game_active = False
             await interaction.followup.send("엇, 제가 졌습니다...")
-            
-        t_add = random.randint(1, 3)
-        self.total += t_add
-        t_numbers = ', '.join(map(str, range(self.total - t_add + 1, self.total + 1)))
+
+        else:
+            t_add = random.randint(1, 3)
+            self.total += t_add
+            t_numbers = ', '.join(map(str, range(self.total - t_add + 1, self.total + 1)))
         
-        await interaction.followup.send(f"토키 : {t_numbers}")
+            await interaction.followup.send(f"토키 : {t_numbers}")
 
 
 
