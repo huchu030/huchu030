@@ -96,13 +96,13 @@ class ThirtyOneGame:
             self.game_active = False
             return "졌다"
 
-        numbers = ', '.join(map(str, range(self.total - add, self.total + 1)))
+        numbers = ', '.join(map(str, range(self.total - add + 1, self.total + 1)))
         await interaction.response.send_message(f"{user_nickname} : {numbers}")
 
         self.add = random.randint(1, 3)
         self.total += self.add
         
-        numbers = ', '.join(map(str, range(self.total - add, self.total + 1)))
+        numbers = ', '.join(map(str, range(self.total - add + 1, self.total + 1)))
         await interaction.followup.send(f"토키 : {numbers}")
 
 
