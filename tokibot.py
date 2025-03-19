@@ -89,7 +89,7 @@ class ThirtyOneGame:
 
         if 27 <= self.total <= 29:
             self.game_active = False
-            return f"{', '.join(map(str, range(self.total - add + 1, 31)))}. 제가 이겼습니다. 예이~"
+            return f"{', '.join(map(str, range(self.total + 1, 31)))}. 제가 이겼습니다. 예이~"
 
         elif self.total == 30:
             self.game_active = False
