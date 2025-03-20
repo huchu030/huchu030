@@ -203,7 +203,6 @@ class ThirtyOneGame:
             t_add = 4-add
             self.total += t_add
             t_numbers = ', '.join(map(str, range(self.total - t_add + 1, self.total + 1)))
-
             await interaction.followup.send(f"아리스 : {t_numbers}")
 
 
