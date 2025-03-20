@@ -225,6 +225,7 @@ class ThirtyOne:
             await interaction.response.send_message("이미 게임이 진행 중입니다!")
         else:
             game.start_game()
+            game.total = 2
             await interaction.response.send_message("제가 먼저 할게요! 1, 2")
 
     async def add_number(self, interaction: discord.Interaction, add: str):
@@ -233,8 +234,7 @@ class ThirtyOne:
         if not game.game_active:
                 await interaction.response.send_message("진행중인 게임이 없습니다!")
         else:
-            result = await game.make_add(add, interaction)
-            await interaction.response.send_message(result)
+            await game.make_add(add, interaction)
 
     async def give_up(self, interaction: discord.Interaction):
         user = interaction.user
