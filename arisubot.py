@@ -1084,6 +1084,7 @@ class MyBot(commands.Bot):
         self.synced = False
         self.number_baseball = NumberBaseball()
         self.number_guessing = NumberGuessing()
+        self.ThirtyOne = ThirtyOne()
         self.rpg = rpg()
         self.pvp = pvp()
         self.GameDataManager = GameDataManager()
