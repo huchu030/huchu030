@@ -171,6 +171,80 @@ class NumberGuessing:
             game.game_active = False
             await interaction.response.send_message(f"게임을 포기했습니다. 정답은 {game.secret_number}입니다! \n"
                                                     "아리스랑 놀아주세요...")
+
+# 31
+
+class ThirtyOneGame:
+    def __init__(self):
+        self.reset_game()
+
+    def reset_game(self):
+        self.game_active = False
+        self.total = 0
+
+    def start_game(self):
+        self.game_active = True
+
+    async def make_add(self, add, interaction):
+        guild = interaction.guild
+        user_nickname = get_user_nickname(guild, interaction.user.id)
+        if not add.isdigit() or not ( 1 <= int(add) <= 3):
+            return "1~3 사이의 숫자를 입력해주세요!"
+        add = int(add)
+        self.total += add
+
+        u_numbers = ', '.join(map(str, range(self.total - add + 1, self.total + 1)))
+        await interaction.response.send_message(f"{user_nickname} : {u_numbers}")
+
+        if 27 <= self.total <= 29:
+            self.game_active = False
+            await interaction.followup.send(f"{', '.join(map(str, range(self.total + 1, 31)))}! 아리스가 이겼습니다!!!")
+        else:
+            t_add = 4-add
+            self.total += t_add
+            t_numbers = ', '.join(map(str, range(self.total - t_add + 1, self.total + 1)))
+
+            await interaction.followup.send(f"아리스 : {t_numbers}")
+
+
+
+class ThirtyOne:
+
+    def __init__(self):
+        self.games = {}
+
+    def get_game(self, user):
+        if user.id not in self.games:
+            self.games[user.id] = ThirtyOneGame()
+        return self.games[user.id]
+
+    async def start_game(self, interaction: discord.Interaction):
+        user = interaction.user
+        game = self.get_game(user)
+        if game.game_active:
+            await interaction.response.send_message("이미 게임이 진행 중입니다!")
+        else:
+            game.start_game()
+            await interaction.response.send_message("제가 먼저 할게요! 1, 2")
+
+    async def add_number(self, interaction: discord.Interaction, add: str):
+        user = interaction.user
+        game = self.get_game(user)
+        if not game.game_active:
+                await interaction.response.send_message("진행중인 게임이 없습니다!")
+        else:
+            result = await game.make_add(add, interaction)
+            await interaction.response.send_message(result)
+
+    async def give_up(self, interaction: discord.Interaction):
+        user = interaction.user
+        game = self.get_game(user)
+        if not game.game_active:
+            await interaction.response.send_message("진행중인 게임이 없습니다.")
+        else:
+            game.game_active = False
+            await interaction.response.send_message("게임을 포기했습니다. 혹시 쫄 ?")
+
 # 게임 데이터 관리
 
 data_file = 'game_data.json'
@@ -1172,6 +1246,20 @@ async def 숫자게임_추측(interaction: discord.Interaction, guess: str):
 @bot.tree.command(name="숫자게임_포기", description="숫자게임 - 게임을 포기합니다")
 async def 숫자게임_포기(interaction: discord.Interaction):
     await bot.number_guessing.give_up(interaction)
+
+# 31
+
+@bot.tree.command(name="31_시작", description="아리스와 베스킨라빈스 게임을 시작합니다")
+async def thirtyone_start(interaction: discord.Interaction):
+    await bot.ThirtyOne.start_game(interaction)
+
+@bot.tree.command(name="31", description="31 - 숫자를 추가합니다")
+async def thirtyone(interaction: discord.Interaction, add: str):
+    await bot.ThirtyOne.add_number(interaction, add)
+
+@bot.tree.command(name="31_포기", description="31 - 게임을 포기합니다")
+async def thirtyone_giveup(interaction: discord.Interaction):
+    await bot.ThirtyOne.give_up(interaction)
 
 # rpg 명령어
 
