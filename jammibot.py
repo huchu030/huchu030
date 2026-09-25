@@ -32,7 +32,7 @@ bot = MyBot()
 
 @bot.tree.command(name='안녕', description="봇한테 인사를 합니다")
 async def 안녕(interaction: discord.Interaction):
-    await interaction.response.send_message("안녕하세요")
+    await interaction.response.send_message("안녕하노")
 
 async def main():
     async with bot:
