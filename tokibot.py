@@ -188,21 +188,15 @@ async def scheduled_task():
         try:
             now = datetime.now(tz)
             current_time = now.strftime('%H:%M')
-            print(f'[DEBUG] 현재시각: {current_time}')
         
             for time_str, message in schedule_times_messages:
                 if current_time == time_str:
-                    print('[DEBUG] 지정시각입니다')
                     channel = bot.get_channel(MCHID)
                 
                     if channel:
                         await channel.send(message)
-                        print(f'[DEBUG] 성공')
-                    else:
-                        print(f'[ERROR] 채널이 없습니다')
                     break
-            else:
-                print('[DEBUG] 지정시각이 아닙니다.')
+
         except Exception as e:
             print(f'[ERROR] 오류 발생: {e}')
 
