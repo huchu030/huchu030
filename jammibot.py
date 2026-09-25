@@ -34,6 +34,10 @@ bot = MyBot()
 async def 안녕(interaction: discord.Interaction):
     await interaction.response.send_message("안녕하노")
 
+@bot.tree.command(name='니얼굴', description="맞짱신청")
+async def 안녕(interaction: discord.Interaction):
+    await interaction.response.send_message("ㅗ")
+
 async def main():
     async with bot:
         await bot.start(jtoken)
