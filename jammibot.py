@@ -82,7 +82,7 @@ async def 추가(interaction: discord.Interaction):
     add_count = random.randint(1, 3)
     data["count"] += add_count
     AddDataManager.save_data(data)
-    await interaction.response.send_message(f"석유 {add_count}L 발견! \n누적 채굴량 : {data['count']}L")
+    await interaction.response.send_message(f"석유 {add_count}L 발견! \n- 누적 채굴량 : {data['count']}L")
 
 async def main():
     async with bot:
