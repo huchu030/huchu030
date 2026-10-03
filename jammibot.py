@@ -80,6 +80,10 @@ async def 니얼굴(interaction: discord.Interaction):
 async def 재형이때리기(interaction: discord.Interaction):
     await interaction.response.send_message("재형: 흐앙")
 
+@bot.tree.command(name='쨈미때리기', description="쨈미를개팹니다")
+async def 쨈미때리기(interaction: discord.Interaction):
+    await interaction.response.send_message("응못때려ㅋㅋ")
+
 @bot.tree.command(name='경제살리기', description="대한민국의 경제발전에 기여합니다")
 async def 추가(interaction: discord.Interaction):
     data = AddDataManager.load_data()
